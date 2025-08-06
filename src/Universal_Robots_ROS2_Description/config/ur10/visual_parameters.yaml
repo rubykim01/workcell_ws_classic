@@ -1,5 +1,6 @@
 # Visualisation
 
+# UR arm
 mesh_files:
   base:
     visual:
@@ -61,7 +62,7 @@ mesh_files:
         path: meshes/ur10/visual/wrist1.dae
       material:
         name: "LightGrey"
-        color: "0.7 0.7 0.7 1.0"
+        color: "0.0 0.0 0.0 1.0"
     collision:
       mesh:
         package: ur_description
@@ -95,4 +96,125 @@ mesh_files:
         package: ur_description
         path: meshes/ur10/collision/wrist3.stl
     visual_offset: -0.0922
+
+# UR10 Trolley + plate
+  trolley1:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/ur10/collision/trolley1.STL
+      material:
+        name : "Grey"
+        colour: "0.89 0.9 0.93 1.0"      
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/ur10/collision/trolley1.STL
+        visual_offset: -0.1158
+  
+  ur10_plate:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/ur10/collision/UR_plate.STL
+      material:
+        name : "Grey"
+        colour: "0.69 0.71 0.83 1.0"      
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/ur10/collision/UR_plate.STL
+        visual_offset: -0.1158
+
+# UR10 feeder
+  ur10_feeder:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/ur10_feeder/UR10_feeder.STL
+      material:
+        name : "Grey"
+        colour: "0.59 0.61 0.73 1.0"      
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/ur10_feeder/UR10_feeder.STL
+  
+  heating_plate1:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/ur10_feeder/heating_plate1.STL
+      material:
+        name : "Grey"
+        colour: "0.85 0.86 0.92 1.0"      
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/ur10_feeder/heating_plate1.STL
+
+  heating_plate2:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/ur10_feeder/heating_plate2.STL
+      material:
+        name : "Grey"
+        colour: "0.85 0.86 0.92 1.0"      
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/ur10_feeder/heating_plate2.STL
+  
+  heating_plate_cover1:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/ur10_feeder/heating_plate_cover1.STL
+      material:
+        name : "Grey"
+        colour: "0.2 0.2 0.2 1.0"
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/ur10_feeder/heating_plate_cover1.STL
+  
+  heating_plate_cover2:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/ur10_feeder/heating_plate_cover2.STL
+      material:
+        name : "Grey"
+        colour: "0.2 0.2 0.2 1.0"
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/ur10_feeder/heating_plate_cover2.STL
+  
+  heating_plate_cover3_1:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/ur10_feeder/heating_plate_cover3-1.STL
+      material:
+        name : "Black"
+        colour: "0.0 0.0 0.0 1.0"
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/ur10_feeder/heating_plate_cover3-1.STL
+  
+  heating_plate_cover3_2:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/ur10_feeder/heating_plate_cover3-2.STL
+      material: 
+        name : "Black"
+        colour: "0.0 0.0 0.0 1.0"
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/ur10_feeder/heating_plate_cover3-2.STL
 
