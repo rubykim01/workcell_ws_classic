@@ -1,0 +1,272 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+
+  <xacro:macro name="arf" params="parent">
+  <xacro:property name="arf_visual_params" value="${xacro.load_yaml('$(find ur_description)/config/arf_visual_parameters.yaml')}"/>
+  <xacro:property name="sec_mesh_files" value="${arf_visual_params['mesh_files']}" scope="parent"/>
+  <xacro:property name="force_abs_paths" value="true" scope="parent"/>
+
+<!-- arf trolley link -->
+    <link name="arf_trolley_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="arf_trolley" type="visual"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.89 0.91 0.93 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="arf_trolley" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="5.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
+      </inertial>
+    </link>
+
+    <!-- world to trolley joint -->
+   <joint name="arf_trolley_joint" type="fixed">
+      <parent link="${parent}" />
+      <child link="arf_trolley_link" />
+      <origin xyz="0 0.805 0" rpy="0 0 0"/>
+    </joint>
+
+<!-- arf base plate link -->
+    <link name="arf_base_plate_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="arf_base_plate" type="visual"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.4 0.42 0.45 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="arf_base_plate" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="3.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.05" ixy="0" ixz="0" iyy="0.05" iyz="0" izz="0.05"/>
+      </inertial>
+    </link>
+
+    <!-- trolley to arf base jig joint -->
+    <joint name="arf_base_plate_joint" type="fixed">
+      <parent link="arf_trolley_link" />
+      <child link="arf_base_plate_link" />
+      <origin xyz="0.37 -0.385 0.820" rpy="0 0 0"/>
+    </joint>
+
+<!-- arf slider base link -->
+    <link name="arf_slider_base_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="arf_slider_base" type="visual"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.4 0.42 0.45 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="arf_slider_base" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="2.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.02" ixy="0" ixz="0" iyy="0.02" iyz="0" izz="0.02"/>
+      </inertial>
+    </link>
+
+    <!-- arf base plate to arf slider base joint -->
+    <joint name="arf_slider_base_joint" type="fixed">
+      <parent link="arf_base_plate_link" />
+      <child link="arf_slider_base_link" />
+      <origin xyz="-0.03426 0.0375 0.014" rpy="0 0 0"/>
+    </joint>
+
+    <!-- arf slider link -->
+    <link name="arf_slider_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="arf_slider" type="visual"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.33 0.42 0.18 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="arf_slider" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="1.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+      </inertial>
+    </link>
+
+    <!-- ** arf_axis_1_joint ** arf slider base to slider joint -->
+    <joint name="arf_axis_1_joint" type="fixed">
+      <parent link="arf_slider_base_link" />
+      <child link="arf_slider_link" />
+      <origin xyz="-0.1068 0 0.04" rpy="0 0 0"/>
+      <axis xyz="1 0 0"/>
+      <limit lower="-0.35" upper="0" effort="100" velocity="10" />
+    </joint>
+
+  <!-- dummy link for slider and jig joints -->
+    <link name = "arf_slider_dummy_link">
+      <inertial>
+        <mass value="0.001"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+      </inertial>
+    </link>
+
+      <!-- slider to dummy link joint -->
+    <joint name="arf_slider_dummy_joint" type="fixed">
+      <parent link="arf_slider_link" />
+      <child link="arf_slider_dummy_link" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- arf slider jig link -->
+    <link name="arf_slider_jig_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="arf_slider_jig" type="visual"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.33 0.61 0.72 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="arf_slider_jig" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="1.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+      </inertial>
+    </link> 
+
+    <!-- ** arf_axis_2_joint **arf slider dummy to slider jig joint -->
+    <joint name="arf_axis_2_joint" type="fixed">
+      <parent link="arf_slider_dummy_link" />
+      <child link="arf_slider_jig_link" />
+      <origin xyz="0 0.4185 0.107" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+      <limit lower="-0.25" upper="0" effort="100" velocity="10" />
+    </joint>
+
+    <!-- dummy link for slider and jig joints -->
+    <link name = "arf_aircyl_dummy_link">
+      <inertial>
+        <mass value="0.001"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+      </inertial>
+    </link>
+
+      <!-- slider to dummy link joint -->
+    <joint name="arf_aircyl_dummy_joint" type="fixed">
+      <parent link="arf_slider_jig_link" />
+      <child link="arf_aircyl_dummy_link" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+
+    <!-- arf front aircyl link -->
+    <link name="arf_front_aircyl_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="arf_front_aircyl" type="visual"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.23 0.51 0.62 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="arf_front_aircyl" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.5"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+      </inertial>
+    </link>
+
+    <!-- arf slider jig to front aircyl joint ****** PRISMATIC ****** -->
+    <joint name="arf_gripper_joint_1" type="fixed">
+      <parent link="arf_aircyl_dummy_link" />
+      <child link="arf_front_aircyl_link" />
+      <origin xyz="0.226 0.0 0.065" rpy="0 0 0"/>
+      <axis xyz="1 0 0"/>
+      <limit lower="-0.25" upper="1.0" effort="100" velocity="10" />
+    </joint>
+
+       <!-- arf back aircyl link -->
+    <link name="arf_back_aircyl_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 -3.141592"/>
+        <geometry>
+          <xacro:get_mesh name="arf_back_aircyl" type="visual"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.43 0.71 0.82 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 -3.141592"/>
+        <geometry>
+          <xacro:get_mesh name="arf_back_aircyl" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.5"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+      </inertial>
+    </link>
+
+    <!-- arf slider jig to front aircyl joint ****** PRISMATIC ****** -->
+    <joint name="arf_gripper_joint_2" type="fixed">
+      <parent link="arf_aircyl_dummy_link" />
+      <child link="arf_back_aircyl_link" />
+      <origin xyz="-0.226 0.0 0.065" rpy="0 0 0"/>
+      <axis xyz="1 0 0"/>
+      <limit lower="-0.25" upper="1.0" effort="100" velocity="10" />
+    </joint>
+
+
+
+
+  </xacro:macro>
+</robot>
+
