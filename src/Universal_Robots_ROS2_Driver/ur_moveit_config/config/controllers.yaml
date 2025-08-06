@@ -1,7 +1,6 @@
 controller_names:
   - scaled_joint_trajectory_controller
   - joint_trajectory_controller
-  - tooltip_trajectory_controller
 
 
 scaled_joint_trajectory_controller:
@@ -28,11 +27,3 @@ joint_trajectory_controller:
     - wrist_1_joint
     - wrist_2_joint
     - wrist_3_joint
-
-tooltip_trajectory_controller:
-  action_ns: follow_joint_trajectory
-  type: FollowJointTrajectory
-  default: false
-  joints:
-    - tooltip1_joint
-    - tooltip2_joint

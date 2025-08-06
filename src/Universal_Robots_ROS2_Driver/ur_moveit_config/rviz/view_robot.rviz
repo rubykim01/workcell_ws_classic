@@ -148,7 +148,7 @@ Visualization Manager:
         Interactive Marker Size: 0
         Joint Violation Color: 255; 0; 255
         Planning Group: ur_manipulator
-        Query Goal State: false
+        Query Goal State: true
         Query Start State: false
         Show Workspace: false
         Start State Alpha: 1
@@ -231,7 +231,6 @@ Visualization Manager:
     Background Color: 48; 48; 48
     Fixed Frame: world
     Frame Rate: 30
-    Use Sim Time: true
   Name: root
   Tools:
     - Class: rviz_default_plugins/Interact

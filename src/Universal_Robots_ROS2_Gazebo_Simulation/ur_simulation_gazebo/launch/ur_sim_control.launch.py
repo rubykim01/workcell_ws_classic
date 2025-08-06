@@ -34,7 +34,6 @@ from launch.actions import (
     IncludeLaunchDescription,
     OpaqueFunction,
     RegisterEventHandler,
-    TimerAction,
 )
 from launch.conditions import IfCondition, UnlessCondition
 from launch.event_handlers import OnProcessExit
@@ -42,7 +41,6 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
-from launch_ros.parameter_descriptions import ParameterValue
 
 
 def launch_setup(context, *args, **kwargs):
@@ -110,14 +108,9 @@ def launch_setup(context, *args, **kwargs):
             " ",
             "initial_positions_file:=",
             initial_positions_file_abs,
-            " ",
-            "use_gazebo_control:=true",
-            " ",
-            "tf_prefix:=",
-            prefix,
         ]
     )
-    robot_description = {"robot_description": ParameterValue(robot_description_content, value_type=str)}
+    robot_description = {"robot_description": robot_description_content}
 
     robot_state_publisher_node = Node(
         package="robot_state_publisher",
@@ -139,13 +132,6 @@ def launch_setup(context, *args, **kwargs):
         package="controller_manager",
         executable="spawner",
         arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
-    )
-
-    # for denso
-    denso_joint_state_broadcaster_spawner = Node(
-        package="controller_manager",
-        executable="spawner",
-        arguments=["denso_joint_state_broadcaster", "--controller-manager", "/controller_manager"],
     )
 
     # Delay rviz start after `joint_state_broadcaster`
@@ -171,46 +157,6 @@ def launch_setup(context, *args, **kwargs):
         condition=UnlessCondition(start_joint_controller),
     )
 
-    # Gripper
-    tooltip_controller_spawner = Node(
-        package="controller_manager",
-        executable="spawner",
-        arguments=["tooltip_trajectory_controller", "-c", "/controller_manager"],
-        output="screen"
-    )
-
-    # Denso Robot Controller
-    denso_joint_trajectory_controller_spawner = Node(
-        package="controller_manager",
-        executable="spawner",
-        arguments=["denso_joint_trajectory_controller", "-c", "/controller_manager"],
-        output="screen"
-    )
-
-    # ARF Axis Controller
-    arf_axis_controller_spawner = Node(
-        package="controller_manager",
-        executable="spawner",
-        arguments=["arf_axis_trajectory_controller", "-c", "/controller_manager"],
-        output="screen"
-    )
-
-    # ARF Gripper Controller
-    arf_gripper_controller_spawner = Node(
-        package="controller_manager",
-        executable="spawner",
-        arguments=["arf_gripper_trajectory_controller", "-c", "/controller_manager"],
-        output="screen"
-    )
-
-    # Denso Axis Controller 
-    denso_axis_controller_spawner = Node(
-        package="controller_manager",
-        executable="spawner",
-        arguments=["denso_axis_trajectory_controller", "-c", "/controller_manager"],
-        output="screen"
-    )
-
     # Gazebo nodes
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -230,33 +176,14 @@ def launch_setup(context, *args, **kwargs):
         output="screen",
     )
 
-    # Manual controller manager node for Gazebo
-    controller_manager_node = Node(
-        package="controller_manager",
-        executable="ros2_control_node",
-        parameters=[
-            robot_description,
-            initial_joint_controllers,
-        ],
-        output="screen",
-    )
-
     nodes_to_start = [
         robot_state_publisher_node,
         joint_state_broadcaster_spawner,
-        denso_joint_state_broadcaster_spawner,
-        # joint_state_publisher_gui_node, # Add joint state publisher GUI
         delay_rviz_after_joint_state_broadcaster_spawner,
-        initial_joint_controller_spawner_started,
         initial_joint_controller_spawner_stopped,
-        tooltip_controller_spawner, #Gripper
-        denso_joint_trajectory_controller_spawner, #Denso Robot Controller
-        arf_axis_controller_spawner, #ARF Axis Controller
-        arf_gripper_controller_spawner, #ARF Gripper Controller
-        denso_axis_controller_spawner, #Denso Axis Controller
+        initial_joint_controller_spawner_started,
         gazebo,
         gazebo_spawn_robot,
-        controller_manager_node,
     ]
 
     return nodes_to_start

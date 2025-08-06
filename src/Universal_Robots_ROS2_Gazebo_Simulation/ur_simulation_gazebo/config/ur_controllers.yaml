@@ -1,11 +1,9 @@
 controller_manager:
   ros__parameters:
-    update_rate: 500  # Hz
+
+    update_rate: 100 # Hz
 
     joint_state_broadcaster:
-      type: joint_state_broadcaster/JointStateBroadcaster
-
-    denso_joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
     io_and_status_controller:
@@ -13,6 +11,9 @@ controller_manager:
 
     speed_scaling_state_broadcaster:
       type: ur_controllers/SpeedScalingStateBroadcaster
+
+    force_torque_sensor_broadcaster:
+      type: ur_controllers/ForceTorqueStateBroadcaster
 
     joint_trajectory_controller:
       type: joint_trajectory_controller/JointTrajectoryController
@@ -26,31 +27,25 @@ controller_manager:
     forward_position_controller:
       type: position_controllers/JointGroupPositionController
 
-    #UR Robot Gripper
-    tooltip_trajectory_controller:
-      type: joint_trajectory_controller/JointTrajectoryController
-
-    #ARF Axis Joints
-    arf_axis_trajectory_controller:
-      type: joint_trajectory_controller/JointTrajectoryController
-
-    #ARF Gripper Joints
-    arf_gripper_trajectory_controller:
-      type: joint_trajectory_controller/JointTrajectoryController
-
-    #Denso Robot Controller
-    denso_joint_trajectory_controller:
-      type: joint_trajectory_controller/JointTrajectoryController
-
-    #Denso Axis Controller 
-    denso_axis_trajectory_controller:
-      type: joint_trajectory_controller/JointTrajectoryController
-
-
 
 speed_scaling_state_broadcaster:
   ros__parameters:
     state_publish_rate: 100.0
+
+
+force_torque_sensor_broadcaster:
+  ros__parameters:
+    sensor_name: tcp_fts_sensor
+    state_interface_names:
+      - force.x
+      - force.y
+      - force.z
+      - torque.x
+      - torque.y
+      - torque.z
+    frame_id: tool0
+    topic_name: ft_data
+
 
 joint_trajectory_controller:
   ros__parameters:
@@ -94,7 +89,6 @@ scaled_joint_trajectory_controller:
     state_interfaces:
       - position
       - velocity
-    speed_scaling_interface_name: ""
     state_publish_rate: 100.0
     action_monitor_rate: 20.0
     allow_partial_joints_goal: false
@@ -128,104 +122,3 @@ forward_position_controller:
       - wrist_1_joint
       - wrist_2_joint
       - wrist_3_joint
-
-
-# UR Robot Gripper
-tooltip_trajectory_controller:
-  ros__parameters:
-    joints:
-      - tooltip1_joint
-      - tooltip2_joint
-    command_interfaces:
-      - position
-    state_interfaces:
-      - position
-      - velocity
-    state_publish_rate: 100.0
-    action_monitor_rate: 20.0
-    allow_partial_joints_goal: false
-    constraints:
-      stopped_velocity_tolerance: 0.01
-      goal_time: 0.0
-      # tooltip1_joint: { trajectory: 0.05, goal: 0.01 }
-      # tooltip2_joint: { trajectory: 0.05, goal: 0.01 }
-
-# ARF Axis Joints
-arf_axis_trajectory_controller:
-  ros__parameters:
-    joints:
-      - arf_axis_1_joint
-      - arf_axis_2_joint
-    command_interfaces:
-      - position
-    state_interfaces:
-      - position
-      - velocity
-    state_publish_rate: 100.0
-    action_monitor_rate: 20.0
-    allow_partial_joints_goal: false
-    constraints:
-      stopped_velocity_tolerance: 0.01
-      goal_time: 0.0
-
-# ARF Gripper Joints
-arf_gripper_trajectory_controller:
-  ros__parameters:
-    joints:
-      - arf_gripper_joint_1
-      - arf_gripper_joint_2
-    command_interfaces:
-      - position
-    state_interfaces:
-      - position
-      - velocity
-    state_publish_rate: 100.0
-    action_monitor_rate: 20.0
-    allow_partial_joints_goal: false
-    constraints:
-      stopped_velocity_tolerance: 0.01
-      goal_time: 0.0
-
-# Denso Robot Controller (HSR065 - 4 joints)
-denso_joint_trajectory_controller:
-  ros__parameters:
-    joints:
-      - denso_joint_1
-      - denso_joint_2
-      - denso_joint_3
-      - denso_joint_4
-    command_interfaces:
-      - position
-    state_interfaces:
-      - position
-      - velocity
-    state_publish_rate: 100.0
-    action_monitor_rate: 20.0
-    allow_partial_joints_goal: true
-    open_loop_control: false
-    allow_nonzero_velocity_at_trajectory_end: true
-    constraints:
-      stopped_velocity_tolerance: 0.1
-      goal_time: 0.5
-
-# Denso Axis Controller 
-denso_axis_trajectory_controller:
-  ros__parameters:
-    joints:
-      - denso_axis_joint
-    command_interfaces:
-      - position
-    state_interfaces:
-      - position
-      - velocity
-    state_publish_rate: 100.0
-    action_monitor_rate: 20.0
-    allow_partial_joints_goal: true
-    open_loop_control: false
-    allow_nonzero_velocity_at_trajectory_end: true
-    constraints:
-      stopped_velocity_tolerance: 0.01
-      goal_time: 2.0
-      denso_axis_joint: { trajectory: 0.1, goal: 0.05 }
-
-

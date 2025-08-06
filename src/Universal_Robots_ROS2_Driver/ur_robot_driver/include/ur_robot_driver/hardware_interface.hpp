@@ -40,10 +40,11 @@
 #define UR_ROBOT_DRIVER__HARDWARE_INTERFACE_HPP_
 
 // System
+#include <limits>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
-#include <limits>
 
 // ros2_control hardware_interface
 #include "hardware_interface/hardware_info.hpp"
@@ -114,6 +115,7 @@ class URPositionHardwareInterface : public hardware_interface::SystemInterface
 {
 public:
   RCLCPP_SHARED_PTR_DEFINITIONS(URPositionHardwareInterface);
+  URPositionHardwareInterface();
   virtual ~URPositionHardwareInterface();
 
   hardware_interface::CallbackReturn on_init(const hardware_interface::HardwareInfo& system_info) final;
@@ -299,7 +301,7 @@ protected:
   double pausing_ramp_up_increment_;
 
   // resources switching aux vars
-  std::vector<std::vector<uint>> stop_modes_;
+  std::vector<std::vector<uint32_t>> stop_modes_;
   std::vector<std::vector<std::string>> start_modes_;
   bool position_controller_running_;
   bool velocity_controller_running_;
@@ -316,6 +318,8 @@ protected:
   const std::string FORCE_MODE_GPIO = "force_mode";
   const std::string FREEDRIVE_MODE_GPIO = "freedrive_mode";
   const std::string TOOL_CONTACT_GPIO = "tool_contact";
+
+  std::unordered_map<std::string, std::unordered_map<std::string, bool>> mode_compatibility_;
 };
 }  // namespace ur_robot_driver
 
