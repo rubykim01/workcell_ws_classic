@@ -361,7 +361,7 @@ void RobotStateHelper::setModeExecute(const std::shared_ptr<RobotStateHelper::Se
           result_->message = "Play program service not available on this robot.";
         } else {
           // The dashboard denies playing immediately after switching the mode to RUNNING
-          std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+          sleep(1);
           result_->success = safeDashboardTrigger(this->play_program_srv_);
         }
       }

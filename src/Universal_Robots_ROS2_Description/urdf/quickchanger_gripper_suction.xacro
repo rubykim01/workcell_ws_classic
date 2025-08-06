@@ -1,0 +1,185 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+
+  <xacro:macro name="quickchanger_gripper_suction" params="parent">
+
+    <!-- quickchanger_link -->
+    <link name="quickchanger_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://ur_description/meshes/quickchanger_grippers/converted_quickchanger.stl"/>
+        </geometry>
+        <material name="Gray">
+          <color rgba="0.6 0.6 0.6 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://ur_description/meshes/quickchanger_grippers/converted_quickchanger.stl"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- quickchanger_joint -->
+    <joint name="quickchanger_joint" type="fixed">
+      <parent link="${parent}"/>
+      <child link="quickchanger_link"/>
+      <!-- Test - Commenting out original origin -->
+      <!-- <origin xyz="0 0 0" rpy="3.14 0 1.57"/> -->
+      <origin xyz="0 0 0" rpy="0 0 -1.57"/>
+    </joint>
+
+    <!-- suction_master_link-->
+    <link name="suction_master_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://ur_description/meshes/quickchanger_grippers/converted_suction_master.stl"/>
+        </geometry>
+        <material name="DarkGray">
+          <color rgba="0.3 0.3 0.3 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://ur_description/meshes/quickchanger_grippers/converted_suction_master.stl"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- suction_master_joint -->
+    <joint name="suction_master_joint" type="fixed">
+      <parent link="quickchanger_link"/>
+      <child link="suction_master_link"/>
+      <!-- Test - Commenting out original origin -->
+      <!-- <origin xyz="0 0 -0.0658" rpy="0 0 0"/> -->
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- suction_link-->
+    <link name="suction_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://ur_description/meshes/quickchanger_grippers/converted_suction.stl"/>
+        </geometry>
+        <material name="DarkGray">
+          <color rgba="0.3 0.3 0.3 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://ur_description/meshes/quickchanger_grippers/converted_suction.stl"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- suction_joint -->
+    <joint name="suction_joint" type="fixed">
+      <parent link="quickchanger_link"/>
+      <child link="suction_link"/>
+      <!-- Test - Commenting out original origin -->
+      <!-- <origin xyz="0 0 -0.0658" rpy="0 0 0"/> -->
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- gripper_link -->
+    <link name="gripper_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://ur_description/meshes/quickchanger_grippers/converted_gripper.stl"/>
+        </geometry>
+        <material name="Black">
+          <color rgba="0.1 0.1 0.1 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://ur_description/meshes/quickchanger_grippers/converted_gripper.stl"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- gripper_joint -->
+    <joint name="gripper_joint" type="fixed">
+      <parent link="quickchanger_link"/>
+      <child link="gripper_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- tooltip1_link -->
+    <link name="tooltip1_link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.05"/>
+        <inertia ixx="1e-5" ixy="0" ixz="0" iyy="1e-5" iyz="0" izz="1e-5"/>
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://ur_description/meshes/quickchanger_grippers/converted_tooltip1.stl"/>
+        </geometry>
+        <material name="Silver">
+          <color rgba="0.8 0.8 0.8 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://ur_description/meshes/quickchanger_grippers/converted_tooltip1.stl"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- tooltip1_joint -->
+
+    <joint name="tooltip1_joint" type="prismatic">
+      <parent link="gripper_link"/>
+      <child link="tooltip1_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="1 0 0"/>
+      <limit lower="-1.0" upper="0.041" effort="50" velocity="10"/>
+    </joint>
+
+    <!-- tooltip2 -->
+    <link name="tooltip2_link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.05"/>
+        <inertia ixx="1e-5" ixy="0" ixz="0" iyy="1e-5" iyz="0" izz="1e-5"/>
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://ur_description/meshes/quickchanger_grippers/converted_tooltip2.stl"/>
+        </geometry>
+        <material name="Silver">
+          <color rgba="0.8 0.8 0.8 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://ur_description/meshes/quickchanger_grippers/converted_tooltip2.stl"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="tooltip2_joint" type="prismatic">
+      <parent link="gripper_link"/>
+      <child link="tooltip2_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="1 0 0"/>
+      <limit lower="-1.0" upper="0.041" effort="50" velocity="10"/>
+    </joint>
+
+
+  </xacro:macro>
+</robot>
+

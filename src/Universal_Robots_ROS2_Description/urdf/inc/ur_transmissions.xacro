@@ -68,6 +68,85 @@
       </actuator>
     </transmission>
 
+<!-- UR Robot Gripper Tooltips -->
+
+<transmission name="tooltip1_trans">
+  <type>transmission_interface/SimpleTransmission</type>
+  <joint name="tooltip1_joint">
+    <hardwareInterface>${hw_interface}</hardwareInterface>
+  </joint>
+  <actuator name="tooltip1_motor">
+    <mechanicalReduction>1</mechanicalReduction>
+  </actuator>
+</transmission>
+
+<transmission name="tooltip2_trans">
+  <type>transmission_interface/SimpleTransmission</type>
+  <joint name="tooltip2_joint">
+    <hardwareInterface>${hw_interface}</hardwareInterface>
+  </joint>
+  <actuator name="tooltip2_motor">
+    <mechanicalReduction>1</mechanicalReduction>
+  </actuator>
+</transmission>
+
+<!-- ARF Axis Joints -->
+
+<transmission name="arf_axis_1_trans">
+  <type>transmission_interface/SimpleTransmission</type>
+  <joint name="arf_axis_1_joint">
+    <hardwareInterface>${hw_interface}</hardwareInterface>
+  </joint>
+  <actuator name="arf_axis_1_motor">
+    <mechanicalReduction>1</mechanicalReduction>
+  </actuator>
+</transmission>
+
+<transmission name="arf_axis_2_trans">
+  <type>transmission_interface/SimpleTransmission</type>
+  <joint name="arf_axis_2_joint">
+    <hardwareInterface>${hw_interface}</hardwareInterface>
+  </joint>
+  <actuator name="arf_axis_2_motor">
+    <mechanicalReduction>1</mechanicalReduction>
+  </actuator>
+</transmission>
+
+<!-- ARF Gripper Joints -->
+
+<transmission name="arf_gripper1_trans">
+  <type>transmission_interface/SimpleTransmission</type>
+  <joint name="arf_gripper_joint_1">
+    <hardwareInterface>${hw_interface}</hardwareInterface>
+  </joint>
+  <actuator name="arf_gripper_motor_1">
+    <mechanicalReduction>1</mechanicalReduction>
+  </actuator>
+</transmission>
+
+<transmission name="arf_gripper2_trans">
+  <type>transmission_interface/SimpleTransmission</type>
+  <joint name="arf_gripper_joint_2">
+    <hardwareInterface>${hw_interface}</hardwareInterface>
+  </joint>
+  <actuator name="arf_gripper_motor_2">
+    <mechanicalReduction>1</mechanicalReduction>
+  </actuator>
+</transmission>
+
+<!-- Denso Axis Joint -->
+
+<transmission name="denso_axis_trans">
+  <type>transmission_interface/SimpleTransmission</type>
+  <joint name="denso_axis_joint">
+    <hardwareInterface>${hw_interface}</hardwareInterface>
+  </joint>
+  <actuator name="denso_axis_motor">
+    <mechanicalReduction>1</mechanicalReduction>
+  </actuator>
+</transmission>
+
+
   </xacro:macro>
 
 </robot>

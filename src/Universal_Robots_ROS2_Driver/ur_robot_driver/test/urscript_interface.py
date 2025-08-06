@@ -81,9 +81,7 @@ class URScriptInterfaceTest(unittest.TestCase):
         time.sleep(1)
         self.assertTrue(self._io_status_controller_interface.resend_robot_program().success)
 
-        self._controller_manager_interface.wait_for_controller(
-            "io_and_status_controller", target_state="active"
-        )
+        self._controller_manager_interface.wait_for_controller("io_and_status_controller")
 
     def test_set_io(self):
         """Test setting an IO using a direct program call."""

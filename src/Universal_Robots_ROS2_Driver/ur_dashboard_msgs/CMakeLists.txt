@@ -23,7 +23,6 @@ set(srv_files
   srv/Load.srv
   srv/Popup.srv
   srv/RawRequest.srv
-  srv/IsInRemoteControl.srv
 )
 
 set(action_files
