@@ -146,8 +146,250 @@
     <!--<xacro:ur_arm_transmission prefix="${prefix}" hw_interface="${transmission_hw_interface}" />-->
     <!-- Placeholder for ros2_control transmission which don't yet exist -->
 
-    <!-- links -  main serial chain -->
+    <!-- links and joints - main serial chain -->
+    <!-- trolley 1 link -->
+    <link name="${tf_prefix}ur10_trolley_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="trolley" type="visual"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.89 0.91 0.93 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="trolley" type="collision"/>
+        </geometry>
+      </collision>
+    </link>
+    
+    <!-- world to trolley 1 joint -->
+    <joint name="${tf_prefix}ur10_trolley_joint" type="fixed">
+      <xacro:insert_block name="origin" />
+      <parent link="${parent}" />
+      <child link="${tf_prefix}ur10_trolley_link" />
+    </joint>
+
+    <!-- UR feeder link -->
+    <link name="${tf_prefix}ur10_feeder_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="ur10_feeder" type="visual"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.59 0.61 0.73 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="ur10_feeder" type="collision"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- UR feeder joint -->
+    <joint name="${tf_prefix}ur10_feeder_joint" type="fixed">
+      <parent link="${tf_prefix}ur10_trolley_link" />
+      <child link="${tf_prefix}ur10_feeder_link" />
+      <origin xyz="0.525 0.025 0.82" rpy="0 0 0"/>
+    </joint>
+
+    <!-- heating plate 1 link -->
+    <link name="${tf_prefix}ur10_heating_plate_1_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="heating_plate1" type="visual"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.85 0.86 0.92 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="heating_plate1" type="collision"/>
+        </geometry>
+      </collision>
+    </link>
+    <!-- ur feeder to heating plate 1 joint -->
+    <joint name="${tf_prefix}ur10_heating_plate1_joint" type="fixed">
+      <parent link="${tf_prefix}ur10_feeder_link" />
+      <child link="${tf_prefix}ur10_heating_plate_1_link" />
+      <origin xyz="0.0351 -0.1379 0.01" rpy="0 0 0"/>
+    </joint>
+
+    <!-- heating plate 2 link -->
+    <link name="${tf_prefix}ur10_heating_plate_2_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="heating_plate2" type="visual"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.85 0.86 0.92 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="heating_plate2" type="collision"/>
+        </geometry>
+      </collision>
+    </link>
+    <!-- ur feeder to heating plate 2 joint -->
+    <joint name="${tf_prefix}ur10_heating_plate2_joint" type="fixed">
+      <parent link="${tf_prefix}ur10_feeder_link" />
+      <child link="${tf_prefix}ur10_heating_plate_2_link" />
+      <origin xyz="0.0351 -0.2521 0.01" rpy="0 0 0"/>
+    </joint>
+
+    <!-- heating plate cover 1 link -->
+    <link name="${tf_prefix}ur10_heating_plate_cover_1_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="heating_plate_cover1" type="visual"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.2 0.2 0.2 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="heating_plate_cover1" type="collision"/>
+        </geometry>
+      </collision>
+    </link>
+    <!-- ur feeder to heating plate cover 1 joint -->
+    <joint name="${tf_prefix}ur10_heating_plate_cover1_joint" type="fixed">
+      <parent link="${tf_prefix}ur10_feeder_link" />
+      <child link="${tf_prefix}ur10_heating_plate_cover_1_link" />
+      <origin xyz="-0.034 0.125 0.01" rpy="0 0 0"/>
+    </joint>
+
+    <!-- heating plate cover 2 link -->
+    <link name="${tf_prefix}ur10_heating_plate_cover_2_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="heating_plate_cover2" type="visual"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.2 0.2 0.2 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="heating_plate_cover2" type="collision"/>
+        </geometry>
+      </collision>
+    </link>
+    <!-- ur feeder to heating plate cover 2 joint -->
+    <joint name="${tf_prefix}ur10_heating_plate_cover2_joint" type="fixed">
+      <parent link="${tf_prefix}ur10_feeder_link" />
+      <child link="${tf_prefix}ur10_heating_plate_cover_2_link" />
+      <origin xyz="0.094 0.125 0.01" rpy="0 0 0"/>
+    </joint>
+
+    <!-- heating plate cover 3-1 link -->
+    <link name="${tf_prefix}ur10_heating_plate_cover_3_1_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="heating_plate_cover3_1" type="visual"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.0 0.0 0.0 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="heating_plate_cover3_1" type="collision"/>
+        </geometry>
+      </collision>
+    </link>
+    <!-- ur feeder to heating plate cover 3-1 joint -->
+    <joint name="${tf_prefix}ur10_heating_plate_cover3_1_joint" type="fixed">
+      <parent link="${tf_prefix}ur10_feeder_link" />
+      <child link="${tf_prefix}ur10_heating_plate_cover_3_1_link" />
+      <origin xyz="-0.156 -0.0095 0.01" rpy="0 0 0"/>
+    </joint>
+
+
+    <!-- heating plate cover 3-2 link -->
+    <link name="${tf_prefix}ur10_heating_plate_cover_3_2_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="heating_plate_cover3_2" type="visual"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.0 0.0 0.0 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="heating_plate_cover3_2" type="collision"/>
+        </geometry>
+      </collision>
+    </link>
+    <!-- ur feeder to heating plate cover 3-2 joint -->
+    <joint name="${tf_prefix}ur10_heating_plate_cover3_2_joint" type="fixed">
+      <parent link="${tf_prefix}ur10_feeder_link" />
+      <child link="${tf_prefix}ur10_heating_plate_cover_3_2_link" />
+      <origin xyz="-0.156 0.1705 0.01" rpy="0 0 0"/>
+    </joint>  
+
+
+    <!-- UR plate link-->
+    <link name="${tf_prefix}ur10_plate_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="plate" type="visual"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.69 0.71 0.83 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="plate" type="collision"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- trolley1 to UR plate joint -->
+    <joint name="${tf_prefix}ur10_plate_joint" type="fixed">
+      <parent link="${tf_prefix}ur10_trolley_link" />
+      <child link="${tf_prefix}ur10_plate_link" />
+      <origin xyz="0 0.05 0.835" rpy="0 0 0"/>
+    </joint>
+
+    <!-- ur robot base link -->
     <link name="${tf_prefix}base_link"/>
+    
+
+    <!-- plate to base joint -->
+    <joint name="${tf_prefix}base_joint" type="fixed">
+      <parent link="${tf_prefix}ur10_plate_link" />
+      <child link="${tf_prefix}base_link" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+    
+
+    <!-- ur robot base link inertia -->
     <link name="${tf_prefix}base_link_inertia">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 ${pi}"/>
@@ -165,6 +407,21 @@
         <origin xyz="0 0 0" rpy="0 0 0" />
       </xacro:cylinder_inertial>
     </link>
+
+    <!-- base_link to base_link_inertia joint -->
+    <joint name="${tf_prefix}base_link-base_link_inertia" type="fixed">
+      <parent link="${tf_prefix}base_link" />
+      <child link="${tf_prefix}base_link_inertia" />
+      <!-- 'base_link' is REP-103 aligned (so X+ forward), while the internal
+           frames of the robot/controller have X+ pointing backwards.
+           Use the joint between 'base_link' and 'base_link_inertia' (a dummy
+           link/frame) to introduce the necessary rotation over Z (of pi rad).
+           Additional 90-degree rotation added for custom orientation.
+      -->
+      <origin xyz="0 0 0" rpy="0 0 ${pi + pi/2}" />
+    </joint>
+
+    <!-- ur robot shoulder link -->
     <link name="${tf_prefix}shoulder_link">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 ${pi}"/>
@@ -189,7 +446,24 @@
             iyz="${shoulder_inertia_iyz}"
             izz="${shoulder_inertia_izz}"
         />
-      </inertial>    </link>
+      </inertial>
+    </link>
+
+    <!-- shoulder pan joint -->
+    <joint name="${tf_prefix}shoulder_pan_joint" type="revolute">
+      <parent link="${tf_prefix}base_link_inertia" />
+      <child link="${tf_prefix}shoulder_link" />
+      <origin xyz="${shoulder_x} ${shoulder_y} ${shoulder_z}" rpy="${shoulder_roll} ${shoulder_pitch} ${shoulder_yaw}" />
+      <axis xyz="0 0 1" />
+      <limit lower="${shoulder_pan_lower_limit}" upper="${shoulder_pan_upper_limit}"
+        effort="${shoulder_pan_effort_limit}" velocity="${shoulder_pan_velocity_limit}"/>
+      <xacro:if value="${safety_limits}">
+         <safety_controller soft_lower_limit="${shoulder_pan_lower_limit + safety_pos_margin}" soft_upper_limit="${shoulder_pan_upper_limit - safety_pos_margin}" k_position="${safety_k_position}" k_velocity="0.0"/>
+      </xacro:if>
+      <dynamics damping="0" friction="0"/>
+    </joint>
+    
+    <!-- ur robot upper arm link -->
     <link name="${tf_prefix}upper_arm_link">
       <visual>
         <origin xyz="0 0 ${shoulder_offset}" rpy="${pi/2} 0 ${-pi/2}"/>
@@ -216,6 +490,22 @@
         />
       </inertial>
     </link>
+
+    <!-- shoulder lift joint -->
+    <joint name="${tf_prefix}shoulder_lift_joint" type="revolute">
+      <parent link="${tf_prefix}shoulder_link" />
+      <child link="${tf_prefix}upper_arm_link" />
+      <origin xyz="${upper_arm_x} ${upper_arm_y} ${upper_arm_z}" rpy="${upper_arm_roll} ${upper_arm_pitch} ${upper_arm_yaw}" />
+      <axis xyz="0 0 1" />
+      <limit lower="${shoulder_lift_lower_limit}" upper="${shoulder_lift_upper_limit}"
+        effort="${shoulder_lift_effort_limit}" velocity="${shoulder_lift_velocity_limit}"/>
+      <xacro:if value="${safety_limits}">
+         <safety_controller soft_lower_limit="${shoulder_lift_lower_limit + safety_pos_margin}" soft_upper_limit="${shoulder_lift_upper_limit - safety_pos_margin}" k_position="${safety_k_position}" k_velocity="0.0"/>
+      </xacro:if>
+      <dynamics damping="0" friction="0"/>
+    </joint>
+
+    <!-- ur robot forearm link -->
     <link name="${tf_prefix}forearm_link">
       <visual>
         <origin xyz="0 0 ${elbow_offset}" rpy="${pi/2} 0 ${-pi/2}"/>
@@ -242,6 +532,22 @@
         />
       </inertial>
     </link>
+
+    <!-- elbow joint -->
+    <joint name="${tf_prefix}elbow_joint" type="revolute">
+      <parent link="${tf_prefix}upper_arm_link" />
+      <child link="${tf_prefix}forearm_link" />
+      <origin xyz="${forearm_x} ${forearm_y} ${forearm_z}" rpy="${forearm_roll} ${forearm_pitch} ${forearm_yaw}" />
+      <axis xyz="0 0 1" />
+      <limit lower="${elbow_joint_lower_limit}" upper="${elbow_joint_upper_limit}"
+        effort="${elbow_joint_effort_limit}" velocity="${elbow_joint_velocity_limit}"/>
+      <xacro:if value="${safety_limits}">
+         <safety_controller soft_lower_limit="${elbow_joint_lower_limit + safety_pos_margin}" soft_upper_limit="${elbow_joint_upper_limit - safety_pos_margin}" k_position="${safety_k_position}" k_velocity="0.0"/>
+      </xacro:if>
+      <dynamics damping="0" friction="0"/>
+    </joint>
+
+    <!-- ur robot wrist 1 link -->
     <link name="${tf_prefix}wrist_1_link">
 	  <xacro:get_visual_params name="wrist_1" type="visual_offset"/>
       <visual>
@@ -269,6 +575,22 @@
         />
       </inertial>
     </link>
+
+    <!-- wrist 1 joint -->
+    <joint name="${tf_prefix}wrist_1_joint" type="revolute">
+      <parent link="${tf_prefix}forearm_link" />
+      <child link="${tf_prefix}wrist_1_link" />
+      <origin xyz="${wrist_1_x} ${wrist_1_y} ${wrist_1_z}" rpy="${wrist_1_roll} ${wrist_1_pitch} ${wrist_1_yaw}" />
+      <axis xyz="0 0 1" />
+      <limit lower="${wrist_1_lower_limit}" upper="${wrist_1_upper_limit}"
+        effort="${wrist_1_effort_limit}" velocity="${wrist_1_velocity_limit}"/>
+      <xacro:if value="${safety_limits}">
+         <safety_controller soft_lower_limit="${wrist_1_lower_limit + safety_pos_margin}" soft_upper_limit="${wrist_1_upper_limit - safety_pos_margin}" k_position="${safety_k_position}" k_velocity="0.0"/>
+      </xacro:if>
+      <dynamics damping="0" friction="0"/>
+    </joint>
+
+    <!-- ur robot wrist 2 link -->
     <link name="${tf_prefix}wrist_2_link">
           <xacro:get_visual_params name="wrist_2" type="visual_offset"/>
       <visual>
@@ -296,6 +618,22 @@
         />
       </inertial>
     </link>
+
+    <!-- wrist 2 joint -->
+    <joint name="${tf_prefix}wrist_2_joint" type="revolute">
+      <parent link="${tf_prefix}wrist_1_link" />
+      <child link="${tf_prefix}wrist_2_link" />
+      <origin xyz="${wrist_2_x} ${wrist_2_y} ${wrist_2_z}" rpy="${wrist_2_roll} ${wrist_2_pitch} ${wrist_2_yaw}" />
+      <axis xyz="0 0 1" />
+      <limit lower="${wrist_2_lower_limit}" upper="${wrist_2_upper_limit}"
+             effort="${wrist_2_effort_limit}" velocity="${wrist_2_velocity_limit}"/>
+      <xacro:if value="${safety_limits}">
+         <safety_controller soft_lower_limit="${wrist_2_lower_limit + safety_pos_margin}" soft_upper_limit="${wrist_2_upper_limit - safety_pos_margin}" k_position="${safety_k_position}" k_velocity="0.0"/>
+      </xacro:if>
+      <dynamics damping="0" friction="0"/>
+    </joint>
+      
+    <!-- ur robot wrist 3 link -->
     <link name="${tf_prefix}wrist_3_link">
       <!-- TODO: remove this once all wrist_3 meshes have the visual_offset_xyz tag -->
       <xacro:get_visual_params name="wrist_3" type="visual_offset_xyz"/>
@@ -331,84 +669,7 @@
       </inertial>
     </link>
 
-    <!-- base_joint fixes base_link to the environment -->
-    <joint name="${tf_prefix}base_joint" type="fixed">
-      <xacro:insert_block name="origin" />
-      <parent link="${parent}" />
-      <child link="${tf_prefix}base_link" />
-    </joint>
-
-    <!-- joints - main serial chain -->
-    <joint name="${tf_prefix}base_link-base_link_inertia" type="fixed">
-      <parent link="${tf_prefix}base_link" />
-      <child link="${tf_prefix}base_link_inertia" />
-      <!-- 'base_link' is REP-103 aligned (so X+ forward), while the internal
-           frames of the robot/controller have X+ pointing backwards.
-           Use the joint between 'base_link' and 'base_link_inertia' (a dummy
-           link/frame) to introduce the necessary rotation over Z (of pi rad).
-      -->
-      <origin xyz="0 0 0" rpy="0 0 ${pi}" />
-    </joint>
-    <joint name="${tf_prefix}shoulder_pan_joint" type="revolute">
-      <parent link="${tf_prefix}base_link_inertia" />
-      <child link="${tf_prefix}shoulder_link" />
-      <origin xyz="${shoulder_x} ${shoulder_y} ${shoulder_z}" rpy="${shoulder_roll} ${shoulder_pitch} ${shoulder_yaw}" />
-      <axis xyz="0 0 1" />
-      <limit lower="${shoulder_pan_lower_limit}" upper="${shoulder_pan_upper_limit}"
-        effort="${shoulder_pan_effort_limit}" velocity="${shoulder_pan_velocity_limit}"/>
-      <xacro:if value="${safety_limits}">
-         <safety_controller soft_lower_limit="${shoulder_pan_lower_limit + safety_pos_margin}" soft_upper_limit="${shoulder_pan_upper_limit - safety_pos_margin}" k_position="${safety_k_position}" k_velocity="0.0"/>
-      </xacro:if>
-      <dynamics damping="0" friction="0"/>
-    </joint>
-    <joint name="${tf_prefix}shoulder_lift_joint" type="revolute">
-      <parent link="${tf_prefix}shoulder_link" />
-      <child link="${tf_prefix}upper_arm_link" />
-      <origin xyz="${upper_arm_x} ${upper_arm_y} ${upper_arm_z}" rpy="${upper_arm_roll} ${upper_arm_pitch} ${upper_arm_yaw}" />
-      <axis xyz="0 0 1" />
-      <limit lower="${shoulder_lift_lower_limit}" upper="${shoulder_lift_upper_limit}"
-        effort="${shoulder_lift_effort_limit}" velocity="${shoulder_lift_velocity_limit}"/>
-      <xacro:if value="${safety_limits}">
-         <safety_controller soft_lower_limit="${shoulder_lift_lower_limit + safety_pos_margin}" soft_upper_limit="${shoulder_lift_upper_limit - safety_pos_margin}" k_position="${safety_k_position}" k_velocity="0.0"/>
-      </xacro:if>
-      <dynamics damping="0" friction="0"/>
-    </joint>
-    <joint name="${tf_prefix}elbow_joint" type="revolute">
-      <parent link="${tf_prefix}upper_arm_link" />
-      <child link="${tf_prefix}forearm_link" />
-      <origin xyz="${forearm_x} ${forearm_y} ${forearm_z}" rpy="${forearm_roll} ${forearm_pitch} ${forearm_yaw}" />
-      <axis xyz="0 0 1" />
-      <limit lower="${elbow_joint_lower_limit}" upper="${elbow_joint_upper_limit}"
-        effort="${elbow_joint_effort_limit}" velocity="${elbow_joint_velocity_limit}"/>
-      <xacro:if value="${safety_limits}">
-         <safety_controller soft_lower_limit="${elbow_joint_lower_limit + safety_pos_margin}" soft_upper_limit="${elbow_joint_upper_limit - safety_pos_margin}" k_position="${safety_k_position}" k_velocity="0.0"/>
-      </xacro:if>
-      <dynamics damping="0" friction="0"/>
-    </joint>
-    <joint name="${tf_prefix}wrist_1_joint" type="revolute">
-      <parent link="${tf_prefix}forearm_link" />
-      <child link="${tf_prefix}wrist_1_link" />
-      <origin xyz="${wrist_1_x} ${wrist_1_y} ${wrist_1_z}" rpy="${wrist_1_roll} ${wrist_1_pitch} ${wrist_1_yaw}" />
-      <axis xyz="0 0 1" />
-      <limit lower="${wrist_1_lower_limit}" upper="${wrist_1_upper_limit}"
-        effort="${wrist_1_effort_limit}" velocity="${wrist_1_velocity_limit}"/>
-      <xacro:if value="${safety_limits}">
-         <safety_controller soft_lower_limit="${wrist_1_lower_limit + safety_pos_margin}" soft_upper_limit="${wrist_1_upper_limit - safety_pos_margin}" k_position="${safety_k_position}" k_velocity="0.0"/>
-      </xacro:if>
-      <dynamics damping="0" friction="0"/>
-    </joint>
-    <joint name="${tf_prefix}wrist_2_joint" type="revolute">
-      <parent link="${tf_prefix}wrist_1_link" />
-      <child link="${tf_prefix}wrist_2_link" />
-      <origin xyz="${wrist_2_x} ${wrist_2_y} ${wrist_2_z}" rpy="${wrist_2_roll} ${wrist_2_pitch} ${wrist_2_yaw}" />
-      <axis xyz="0 0 1" />
-      <limit lower="${wrist_2_lower_limit}" upper="${wrist_2_upper_limit}"
-             effort="${wrist_2_effort_limit}" velocity="${wrist_2_velocity_limit}"/>
-      <xacro:if value="${safety_limits}">
-         <safety_controller soft_lower_limit="${wrist_2_lower_limit + safety_pos_margin}" soft_upper_limit="${wrist_2_upper_limit - safety_pos_margin}" k_position="${safety_k_position}" k_velocity="0.0"/>
-      </xacro:if>
-      <dynamics damping="0" friction="0"/>
-    </joint>
+    <!-- wrist 3 joint -->
     <joint name="${tf_prefix}wrist_3_joint" type="${wrist_3_joint_type}">
       <parent link="${tf_prefix}wrist_2_link" />
       <child link="${tf_prefix}wrist_3_link" />
@@ -430,7 +691,10 @@
       <dynamics damping="0" friction="0"/>
     </joint>
 
+    <!-- ft_frame link -->
     <link name="${tf_prefix}ft_frame"/>
+
+    <!-- wrist_3_link to ft_frame joint -->
     <joint name="${tf_prefix}wrist_3_link-ft_frame" type="fixed">
       <parent link="${tf_prefix}wrist_3_link"/>
       <child link="${tf_prefix}ft_frame"/>

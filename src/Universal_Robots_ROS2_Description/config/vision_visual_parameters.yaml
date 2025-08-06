@@ -1,0 +1,41 @@
+# Visualisation
+
+mesh_files:
+  vision_trolley:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/ur10/collision/trolley1.STL
+      material:
+        name: "LightGrey_vision_trolley"
+        color: "0.89 0.91 0.93 1.0"
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/ur10/collision/trolley1.STL
+
+  vision_cam_jig:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/vision/vision_cam_jig.STL
+      material:
+        name: "Purple_vision_cam_jig"
+        color: "0.5 0.4 0.55 1.0"
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/vision/vision_cam_jig.STL
+
+  vision_feeder:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/vision/vision_feeder.STL
+      material:
+        name: "Pink_vision_feeder"
+        color: "0.7 0.51 0.56 1.0"
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/vision/vision_feeder.STL

@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+
+  <xacro:macro name="vision" params="parent">
+    <xacro:property name="vision_visual_params" value="${xacro.load_yaml('$(find ur_description)/config/vision_visual_parameters.yaml')}"/>
+    <xacro:property name="sec_mesh_files" value="${vision_visual_params['mesh_files']}" scope="parent"/>
+    <xacro:property name="force_abs_paths" value="true" scope="parent"/>
+
+
+<!-- vision trolley link -->
+    <link name="vision_trolley_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="vision_trolley" type="visual"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.89 0.91 0.93 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="vision_trolley" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="5.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
+      </inertial>
+    </link>
+
+    <!-- world to trolley joint -->
+   <joint name="vision_trolley_joint" type="fixed">
+      <parent link="${parent}" />
+      <child link="vision_trolley_link" />
+      <origin xyz="0 1.605 0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- vision cam jig link -->
+
+    <link name="vision_cam_jig_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="vision_cam_jig" type="visual"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.5 0.4 0.55 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="vision_cam_jig" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="2.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.05" ixy="0" ixz="0" iyy="0.05" iyz="0" izz="0.05"/>
+      </inertial>
+    </link>
+
+    <!-- trolley to cam jig joint -->
+    <joint name="vision_cam_jig_joint" type="fixed">
+      <parent link="vision_trolley_link" />
+      <child link="vision_cam_jig_link" />
+      <origin xyz="0.05 0 0.82" rpy="0 0 0"/>
+    </joint>
+
+    <!-- vision feeder link -->
+    <link name="vision_feeder_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="vision_feeder" type="collision"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.7 0.51 0.56 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="vision_feeder" type="visual"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="3.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.08" ixy="0" ixz="0" iyy="0.08" iyz="0" izz="0.08"/>
+      </inertial>
+    </link>
+
+    <!-- trolley to feeder joint -->
+    <joint name="vision_feeder_joint" type="fixed">
+      <parent link="vision_trolley_link" />
+      <child link="vision_feeder_link" />
+      <origin xyz="-0.2 -0.15 0.82" rpy="0 0 0"/>
+    </joint>
+
+  </xacro:macro>
+</robot>
+

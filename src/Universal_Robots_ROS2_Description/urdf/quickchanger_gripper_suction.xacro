@@ -1,0 +1,193 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+
+  <xacro:macro name="quickchanger_gripper_suction" params="parent">
+  <!-- Load gripper visual parameters from YAML file -->
+    <xacro:property name="gripper_visual_params" value="${xacro.load_yaml('$(find ur_description)/config/gripper_visual_parameters.yaml')}"/>
+
+    <!-- Define mesh files and make them accessible in the parent scope -->
+    <xacro:property name="sec_mesh_files" value="${gripper_visual_params['mesh_files']}" scope="parent"/>
+
+    <!-- Define force_abs_paths for mesh loading -->
+    <xacro:property name="force_abs_paths" value="true" scope="parent"/>
+
+    <!-- quickchanger_link -->
+    <link name="quickchanger_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="quickchanger" type="visual"/>
+        </geometry>
+        <material name="Grey">
+          <color rgba="0.6 0.6 0.6 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="quickchanger" type="collision"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- quickchanger_joint -->
+    <joint name="quickchanger_joint" type="fixed">
+      <parent link="${parent}"/>
+      <child link="quickchanger_link"/>
+      <!-- Test - Commenting out original origin -->
+      <!-- <origin xyz="0 0 0" rpy="3.14 0 1.57"/> -->
+      <origin xyz="0 0 0" rpy="0 0 -1.57"/>
+    </joint>
+
+    <!-- suction_master_link-->
+    <link name="suction_master_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="suction_master" type="visual"/>
+        </geometry>
+        <material name="DarkGrey">
+          <color rgba="0.3 0.3 0.3 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="suction_master" type="collision"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- suction_master_joint -->
+    <joint name="suction_master_joint" type="fixed">
+      <parent link="quickchanger_link"/>
+      <child link="suction_master_link"/>
+      <!-- Test - Commenting out original origin -->
+      <!-- <origin xyz="0 0 -0.0658" rpy="0 0 0"/> -->
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- suction_link-->
+    <link name="suction_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="suction" type="visual"/>
+        </geometry>
+        <material name="DarkGray">
+          <color rgba="0.3 0.3 0.3 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="suction" type="collision"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- suction_joint -->
+    <joint name="suction_joint" type="fixed">
+      <parent link="quickchanger_link"/>
+      <child link="suction_link"/>
+      <!-- Test - Commenting out original origin -->
+      <!-- <origin xyz="0 0 -0.0658" rpy="0 0 0"/> -->
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- gripper_link -->
+    <link name="gripper_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="gripper" type="visual"/>
+        </geometry>
+        <material name="Black">
+          <color rgba="0.1 0.1 0.1 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="gripper" type="collision"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- gripper_joint -->
+    <joint name="gripper_joint" type="fixed">
+      <parent link="quickchanger_link"/>
+      <child link="gripper_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- tooltip1_link -->
+    <link name="tooltip1_link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.05"/>
+        <inertia ixx="1e-5" ixy="0" ixz="0" iyy="1e-5" iyz="0" izz="1e-5"/>
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="tooltip1" type="visual"/>
+        </geometry>
+        <material name="Silver">
+          <color rgba="0.8 0.8 0.8 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="tooltip1" type="collision"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- tooltip1_joint -->
+
+    <joint name="tooltip1_joint" type="fixed">
+      <parent link="gripper_link"/>
+      <child link="tooltip1_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="1 0 0"/>
+      <limit lower="-1.0" upper="0.041" effort="50" velocity="10"/>
+    </joint>
+
+    <!-- tooltip2 -->
+    <link name="tooltip2_link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.05"/>
+        <inertia ixx="1e-5" ixy="0" ixz="0" iyy="1e-5" iyz="0" izz="1e-5"/>
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="tooltip2" type="visual"/>
+        </geometry>
+        <material name="Silver">
+          <color rgba="0.8 0.8 0.8 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="tooltip2" type="collision"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="tooltip2_joint" type="fixed">
+      <parent link="gripper_link"/>
+      <child link="tooltip2_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="1 0 0"/>
+      <limit lower="-1.0" upper="0.041" effort="50" velocity="10"/>
+    </joint>
+
+
+  </xacro:macro>
+</robot>
+

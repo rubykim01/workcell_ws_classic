@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+
+  <xacro:macro name="toolchanger" params="parent">
+  <xacro:property name="toolchanger_visual_params" value="${xacro.load_yaml('$(find ur_description)/config/toolchanger_visual_parameters.yaml')}"/>
+  <xacro:property name="sec_mesh_files" value="${toolchanger_visual_params['mesh_files']}" scope="parent"/>
+  <xacro:property name="force_abs_paths" value="true" scope="parent"/>
+
+<!-- toolchanger trolley link -->
+    <link name="toolchanger_trolley_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="toolchanger_trolley" type="visual"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.89 0.91 0.93 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="toolchanger_trolley" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="5.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
+      </inertial>
+    </link>
+
+    <!-- world to trolley joint -->
+   <joint name="toolchanger_trolley_joint" type="fixed">
+      <parent link="${parent}" />
+      <child link="toolchanger_trolley_link" />
+      <origin xyz="-0.8049 0 0" rpy="0 0 0"/>
+    </joint>
+
+<!-- toolchanger tool stand link -->
+    <link name="tool_changer_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="tool_changer" type="visual"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.6 0.5 0.05 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="tool_changer" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="3.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.05" ixy="0" ixz="0" iyy="0.05" iyz="0" izz="0.05"/>
+      </inertial>
+    </link>
+
+      <!-- trolley to toolchanger joint -->
+  <joint name="toolchanger_tool_changer_joint" type="fixed">
+      <parent link="toolchanger_trolley_link" />
+      <child link="tool_changer_link" />
+      <origin xyz="0.2 0.15 0.82" rpy="0 0 0"/>
+    </joint>
+
+
+  </xacro:macro>
+</robot>
+
