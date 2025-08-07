@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+
+  <!-- Include Denso robot descriptions -->
+  <xacro:macro name="denso" params="parent">
+  <xacro:include filename="$(find denso_robot_descriptions)/robots/hsr065a1_n32/urdf/denso_robot_macro.xacro" />
+  <xacro:property name="denso_visual_params" value="${xacro.load_yaml('$(find ur_description)/config/denso_visual_parameters.yaml')}"/>
+  <xacro:property name="sec_mesh_files" value="${denso_visual_params['mesh_files']}" scope="parent"/>
+  <xacro:property name="force_abs_paths" value="true" scope="parent"/>
+  
+<!-- denso trolley link -->
+    <link name="denso_trolley_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="denso_trolley" type="visual"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.89 0.91 0.93 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="denso_trolley" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="5.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
+      </inertial>
+    </link>
+
+    <!-- world to trolley joint -->
+   <joint name="denso_trolley_joint" type="fixed">
+      <parent link="${parent}" />
+      <child link="denso_trolley_link" />
+      <origin xyz="-0.8049 0.805 0" rpy="0 0 0"/>
+    </joint>
+
+<!-- denso slider jig link -->
+    <link name="denso_slider_jig_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="denso_slider_jig" type="visual"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.4 0.42 0.45 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="denso_slider_jig" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="2.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.02" ixy="0" ixz="0" iyy="0.02" iyz="0" izz="0.02"/>
+      </inertial>
+    </link>
+
+    <!-- trolley to denso slider jig joint -->
+    <joint name="denso slider jig joint" type="fixed">
+      <parent link="denso_trolley_link" />
+      <child link="denso_slider_jig_link" />
+      <origin xyz="0.025 -0.025 0.82" rpy="0 0 0"/>
+    </joint>
+
+    <!-- Add Denso robot connected to the slider jig -->
+    <xacro:denso_robot parent="denso_slider_jig_link" />
+
+  </xacro:macro>
+</robot>
+

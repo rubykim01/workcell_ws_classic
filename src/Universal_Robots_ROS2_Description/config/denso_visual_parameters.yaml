@@ -1,0 +1,29 @@
+# Visualisation
+
+mesh_files:
+  denso_trolley:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/ur10/collision/trolley1.STL
+      material:
+        name: "LightGrey_denso_trolley"
+        color: "0.89 0.91 0.93 1.0"
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/ur10/collision/trolley1.STL
+
+  denso_slider_jig:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/denso/denso_slider_jig.STL
+      material:
+        name: "LightGrey_denso_slider_jig"
+        color: "0.4 0.42 0.45 1.0"
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/denso/denso_slider_jig.STL
+      
