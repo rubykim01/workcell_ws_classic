@@ -20,7 +20,7 @@ mesh_files:
         package: ur_description
         path: meshes/arf/ARF_Base_Plate.STL
       material:
-        name: "LightGrey_arf_base_plate"
+        name: "Grey_arf_base_plate"
         color: "0.4 0.42 0.45 1.0"
     collision:
       mesh:
@@ -33,7 +33,7 @@ mesh_files:
         package: ur_description
         path: meshes/arf/ARF_Slider_Base.STL
       material:
-        name: "LightGrey_arf_slider_base"
+        name: "Grey_arf_slider_base"
         color: "0.4 0.42 0.45 1.0"
     collision:
       mesh:
@@ -46,8 +46,8 @@ mesh_files:
         package: ur_description
         path: meshes/arf/ARF_Slider.STL
       material:
-        name: "LightGrey_arf_slider"
-        color: "0.4 0.42 0.45 1.0"
+        name: "Green_arf_slider"
+        color: "0.33 0.42 0.18 1.0"
     collision:
       mesh:
         package: ur_description
@@ -59,7 +59,7 @@ mesh_files:
         package: ur_description
         path: meshes/arf/ARF_Slider_Jig.STL
       material:
-        name: "Green_arf_slider_jig"
+        name: "Blue_arf_slider_jig"
         color: "0.33 0.61 0.72 1.0"
     collision:
       mesh:
@@ -85,7 +85,7 @@ mesh_files:
         package: ur_description
         path: meshes/arf/ARF_AirCyl.STL
       material:
-        name: "Red_arf_back_aircyl"
+        name: "Blue_arf_back_aircyl"
         color: "0.23 0.51 0.62 1.0"
     collision:
       mesh:

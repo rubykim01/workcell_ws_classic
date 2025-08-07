@@ -13,8 +13,8 @@
         <geometry>
           <xacro:get_mesh name="arf_trolley" type="visual"/>
         </geometry>
-        <material name="">
-          <color rgba="0.89 0.91 0.93 1.0"/>
+        <material name="${sec_mesh_files['arf_trolley']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['arf_trolley']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
@@ -44,8 +44,8 @@
         <geometry>
           <xacro:get_mesh name="arf_base_plate" type="visual"/>
         </geometry>
-        <material name="">
-          <color rgba="0.4 0.42 0.45 1.0"/>
+        <material name="${sec_mesh_files['arf_base_plate']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['arf_base_plate']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
@@ -75,8 +75,8 @@
         <geometry>
           <xacro:get_mesh name="arf_slider_base" type="visual"/>
         </geometry>
-        <material name="">
-          <color rgba="0.4 0.42 0.45 1.0"/>
+        <material name="${sec_mesh_files['arf_slider_base']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['arf_slider_base']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
@@ -106,8 +106,8 @@
         <geometry>
           <xacro:get_mesh name="arf_slider" type="visual"/>
         </geometry>
-        <material name="">
-          <color rgba="0.33 0.42 0.18 1.0"/>
+        <material name="${sec_mesh_files['arf_slider']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['arf_slider']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
@@ -155,8 +155,8 @@
         <geometry>
           <xacro:get_mesh name="arf_slider_jig" type="visual"/>
         </geometry>
-        <material name="">
-          <color rgba="0.33 0.61 0.72 1.0"/>
+        <material name="${sec_mesh_files['arf_slider_jig']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['arf_slider_jig']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
@@ -205,8 +205,8 @@
         <geometry>
           <xacro:get_mesh name="arf_front_aircyl" type="visual"/>
         </geometry>
-        <material name="">
-          <color rgba="0.23 0.51 0.62 1.0"/>
+        <material name="${sec_mesh_files['arf_front_aircyl']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['arf_front_aircyl']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
@@ -238,8 +238,8 @@
         <geometry>
           <xacro:get_mesh name="arf_back_aircyl" type="visual"/>
         </geometry>
-        <material name="">
-          <color rgba="0.43 0.71 0.82 1.0"/>
+        <material name="${sec_mesh_files['arf_back_aircyl']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['arf_back_aircyl']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>

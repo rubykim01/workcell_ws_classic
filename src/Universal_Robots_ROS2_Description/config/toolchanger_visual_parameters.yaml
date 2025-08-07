@@ -7,7 +7,7 @@ mesh_files:
         package: ur_description
         path: meshes/ur10/collision/trolley1.STL
       material:
-        name: "LightGrey_toolchanger"
+        name: "LightGrey_toolchanger_trolley"
         color: "0.89 0.91 0.93 1.0"
     collision:
       mesh:
@@ -20,7 +20,7 @@ mesh_files:
         package: ur_description
         path: meshes/toolchanger/tool_changer.STL
       material:
-        name: "LightGrey_toolchanger"
+        name: "Yellow_toolstand"
         color: "0.6 0.5 0.05 1.0"
     collision:
       mesh:

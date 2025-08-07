@@ -20,7 +20,7 @@ mesh_files:
         package: ur_description
         path: meshes/denso/denso_slider_jig.STL
       material:
-        name: "LightGrey_denso_slider_jig"
+        name: "Grey_denso_slider_jig"
         color: "0.4 0.42 0.45 1.0"
     collision:
       mesh:

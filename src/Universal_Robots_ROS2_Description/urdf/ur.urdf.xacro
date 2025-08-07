@@ -14,6 +14,8 @@
    <xacro:include filename="$(find ur_description)/urdf/arf.xacro"/>
    <!-- import denso macro -->
    <xacro:include filename="$(find ur_description)/urdf/denso.xacro"/>
+   <!-- import gazebo materials -->
+   <xacro:include filename="$(find ur_description)/urdf/gazebo_materials.xacro"/>
    <!-- possible 'ur_type' values: ur3, ur3e, ur5, ur5e, ur7e, ur10, ur10e, ur12e, ur16e, ur15, ur20, ur30 -->
    <!-- the default value should raise an error in case this was called without defining the type -->
    <xacro:arg name="ur_type" default="ur10"/>
@@ -159,6 +161,9 @@
         <parameters>$(arg simulation_controllers)</parameters>
       </plugin>
     </gazebo>
+    <!-- gazebo material definitions -->
+    
+    
   </xacro:if>
 
   <xacro:if value="$(arg sim_ignition)">

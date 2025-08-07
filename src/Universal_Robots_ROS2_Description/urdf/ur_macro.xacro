@@ -154,8 +154,8 @@
         <geometry>
           <xacro:get_mesh name="trolley" type="visual"/>
         </geometry>
-        <material name="">
-          <color rgba="0.89 0.91 0.93 1.0"/>
+        <material name="${sec_mesh_files['trolley']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['trolley']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
@@ -164,6 +164,11 @@
           <xacro:get_mesh name="trolley" type="collision"/>
         </geometry>
       </collision>
+      <inertial>
+        <mass value="50.0"/>
+        <origin xyz="0 0 0.4" rpy="0 0 0"/>
+        <inertia ixx="8.33" ixy="0" ixz="0" iyy="8.33" iyz="0" izz="2.08"/>
+      </inertial>
     </link>
     
     <!-- world to trolley 1 joint -->
@@ -180,8 +185,8 @@
         <geometry>
           <xacro:get_mesh name="ur10_feeder" type="visual"/>
         </geometry>
-        <material name="">
-          <color rgba="0.59 0.61 0.73 1.0"/>
+        <material name="${sec_mesh_files['ur10_feeder']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['ur10_feeder']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
@@ -190,6 +195,11 @@
           <xacro:get_mesh name="ur10_feeder" type="collision"/>
         </geometry>
       </collision>
+      <inertial>
+        <mass value="25.0"/>
+        <origin xyz="0 0 0.2" rpy="0 0 0"/>
+        <inertia ixx="2.08" ixy="0" ixz="0" iyy="2.08" iyz="0" izz="0.42"/>
+      </inertial>
     </link>
 
     <!-- UR feeder joint -->
@@ -206,8 +216,8 @@
         <geometry>
           <xacro:get_mesh name="heating_plate1" type="visual"/>
         </geometry>
-        <material name="">
-          <color rgba="0.85 0.86 0.92 1.0"/>
+        <material name="${sec_mesh_files['heating_plate1']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['heating_plate1']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
@@ -216,6 +226,11 @@
           <xacro:get_mesh name="heating_plate1" type="collision"/>
         </geometry>
       </collision>
+      <inertial>
+        <mass value="5.0"/>
+        <origin xyz="0 0 0.01" rpy="0 0 0"/>
+        <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.02"/>
+      </inertial>
     </link>
     <!-- ur feeder to heating plate 1 joint -->
     <joint name="${tf_prefix}ur10_heating_plate1_joint" type="fixed">
@@ -231,8 +246,8 @@
         <geometry>
           <xacro:get_mesh name="heating_plate2" type="visual"/>
         </geometry>
-        <material name="">
-          <color rgba="0.85 0.86 0.92 1.0"/>
+        <material name="${sec_mesh_files['heating_plate2']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['heating_plate2']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
@@ -241,6 +256,11 @@
           <xacro:get_mesh name="heating_plate2" type="collision"/>
         </geometry>
       </collision>
+      <inertial>
+        <mass value="5.0"/>
+        <origin xyz="0 0 0.01" rpy="0 0 0"/>
+        <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.02"/>
+      </inertial>
     </link>
     <!-- ur feeder to heating plate 2 joint -->
     <joint name="${tf_prefix}ur10_heating_plate2_joint" type="fixed">
@@ -256,8 +276,8 @@
         <geometry>
           <xacro:get_mesh name="heating_plate_cover1" type="visual"/>
         </geometry>
-        <material name="">
-          <color rgba="0.2 0.2 0.2 1.0"/>
+        <material name="${sec_mesh_files['heating_plate_cover1']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['heating_plate_cover1']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
@@ -266,6 +286,11 @@
           <xacro:get_mesh name="heating_plate_cover1" type="collision"/>
         </geometry>
       </collision>
+      <inertial>
+        <mass value="2.0"/>
+        <origin xyz="0 0 0.01" rpy="0 0 0"/>
+        <inertia ixx="0.005" ixy="0" ixz="0" iyy="0.005" iyz="0" izz="0.01"/>
+      </inertial>
     </link>
     <!-- ur feeder to heating plate cover 1 joint -->
     <joint name="${tf_prefix}ur10_heating_plate_cover1_joint" type="fixed">
@@ -281,8 +306,8 @@
         <geometry>
           <xacro:get_mesh name="heating_plate_cover2" type="visual"/>
         </geometry>
-        <material name="">
-          <color rgba="0.2 0.2 0.2 1.0"/>
+        <material name="${sec_mesh_files['heating_plate_cover2']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['heating_plate_cover2']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
@@ -291,6 +316,11 @@
           <xacro:get_mesh name="heating_plate_cover2" type="collision"/>
         </geometry>
       </collision>
+      <inertial>
+        <mass value="2.0"/>
+        <origin xyz="0 0 0.01" rpy="0 0 0"/>
+        <inertia ixx="0.005" ixy="0" ixz="0" iyy="0.005" iyz="0" izz="0.01"/>
+      </inertial>
     </link>
     <!-- ur feeder to heating plate cover 2 joint -->
     <joint name="${tf_prefix}ur10_heating_plate_cover2_joint" type="fixed">
@@ -306,8 +336,8 @@
         <geometry>
           <xacro:get_mesh name="heating_plate_cover3_1" type="visual"/>
         </geometry>
-        <material name="">
-          <color rgba="0.0 0.0 0.0 1.0"/>
+        <material name="${sec_mesh_files['heating_plate_cover3_1']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['heating_plate_cover3_1']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
@@ -316,6 +346,11 @@
           <xacro:get_mesh name="heating_plate_cover3_1" type="collision"/>
         </geometry>
       </collision>
+      <inertial>
+        <mass value="1.5"/>
+        <origin xyz="0 0 0.01" rpy="0 0 0"/>
+        <inertia ixx="0.003" ixy="0" ixz="0" iyy="0.003" iyz="0" izz="0.006"/>
+      </inertial>
     </link>
     <!-- ur feeder to heating plate cover 3-1 joint -->
     <joint name="${tf_prefix}ur10_heating_plate_cover3_1_joint" type="fixed">
@@ -332,8 +367,8 @@
         <geometry>
           <xacro:get_mesh name="heating_plate_cover3_2" type="visual"/>
         </geometry>
-        <material name="">
-          <color rgba="0.0 0.0 0.0 1.0"/>
+        <material name="${sec_mesh_files['heating_plate_cover3_2']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['heating_plate_cover3_2']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
@@ -342,6 +377,11 @@
           <xacro:get_mesh name="heating_plate_cover3_2" type="collision"/>
         </geometry>
       </collision>
+      <inertial>
+        <mass value="1.5"/>
+        <origin xyz="0 0 0.01" rpy="0 0 0"/>
+        <inertia ixx="0.003" ixy="0" ixz="0" iyy="0.003" iyz="0" izz="0.006"/>
+      </inertial>
     </link>
     <!-- ur feeder to heating plate cover 3-2 joint -->
     <joint name="${tf_prefix}ur10_heating_plate_cover3_2_joint" type="fixed">
@@ -358,8 +398,8 @@
         <geometry>
           <xacro:get_mesh name="plate" type="visual"/>
         </geometry>
-        <material name="">
-          <color rgba="0.69 0.71 0.83 1.0"/>
+        <material name="${sec_mesh_files['plate']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['plate']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
@@ -368,6 +408,11 @@
           <xacro:get_mesh name="plate" type="collision"/>
         </geometry>
       </collision>
+      <inertial>
+        <mass value="15.0"/>
+        <origin xyz="0 0 0.05" rpy="0 0 0"/>
+        <inertia ixx="0.125" ixy="0" ixz="0" iyy="0.125" iyz="0" izz="0.25"/>
+      </inertial>
     </link>
 
     <!-- trolley1 to UR plate joint -->
@@ -378,7 +423,13 @@
     </joint>
 
     <!-- ur robot base link -->
-    <link name="${tf_prefix}base_link"/>
+    <link name="${tf_prefix}base_link">
+      <inertial>
+        <mass value="0.001"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+      </inertial>
+    </link>
     
 
     <!-- plate to base joint -->
@@ -692,7 +743,13 @@
     </joint>
 
     <!-- ft_frame link -->
-    <link name="${tf_prefix}ft_frame"/>
+    <link name="${tf_prefix}ft_frame">
+      <inertial>
+        <mass value="0.001"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+      </inertial>
+    </link>
 
     <!-- wrist_3_link to ft_frame joint -->
     <joint name="${tf_prefix}wrist_3_link-ft_frame" type="fixed">
@@ -702,7 +759,13 @@
     </joint>
 
     <!-- ROS-Industrial 'base' frame - base_link to UR 'Base' Coordinates transform -->
-    <link name="${tf_prefix}base"/>
+    <link name="${tf_prefix}base">
+      <inertial>
+        <mass value="0.001"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+      </inertial>
+    </link>
     <joint name="${tf_prefix}base_link-base_fixed_joint" type="fixed">
       <!-- Note the rotation over Z of pi radians - as base_link is REP-103
            aligned (i.e., has X+ forward, Y+ left and Z+ up), this is needed
@@ -715,7 +778,13 @@
     </joint>
 
     <!-- ROS-Industrial 'flange' frame - attachment point for EEF models -->
-    <link name="${tf_prefix}flange" />
+    <link name="${tf_prefix}flange">
+      <inertial>
+        <mass value="0.001"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+      </inertial>
+    </link>
     <joint name="${tf_prefix}wrist_3-flange" type="fixed">
       <parent link="${tf_prefix}wrist_3_link" />
       <child link="${tf_prefix}flange" />
@@ -723,7 +792,13 @@
     </joint>
 
     <!-- ROS-Industrial 'tool0' frame - all-zeros tool frame -->
-    <link name="${tf_prefix}tool0"/>
+    <link name="${tf_prefix}tool0">
+      <inertial>
+        <mass value="0.001"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+      </inertial>
+    </link>
     <joint name="${tf_prefix}flange-tool0" type="fixed">
       <!-- default toolframe - X+ left, Y+ up, Z+ front -->
       <origin xyz="0 0 0" rpy="${pi/2.0} 0 ${pi/2.0}"/>

@@ -13,8 +13,8 @@
         <geometry>
           <xacro:get_mesh name="toolchanger_trolley" type="visual"/>
         </geometry>
-        <material name="">
-          <color rgba="0.89 0.91 0.93 1.0"/>
+        <material name="${sec_mesh_files['toolchanger_trolley']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['toolchanger_trolley']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
@@ -44,8 +44,8 @@
         <geometry>
           <xacro:get_mesh name="tool_changer" type="visual"/>
         </geometry>
-        <material name="">
-          <color rgba="0.6 0.5 0.05 1.0"/>
+        <material name="${sec_mesh_files['tool_changer']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['tool_changer']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
