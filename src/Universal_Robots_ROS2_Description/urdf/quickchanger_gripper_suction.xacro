@@ -18,8 +18,8 @@
         <geometry>
           <xacro:get_mesh name="quickchanger" type="visual"/>
         </geometry>
-        <material name="Grey">
-          <color rgba="0.6 0.6 0.6 1.0"/>
+        <material name="${sec_mesh_files['quickchanger']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['quickchanger']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
@@ -46,8 +46,8 @@
         <geometry>
           <xacro:get_mesh name="suction_master" type="visual"/>
         </geometry>
-        <material name="DarkGrey">
-          <color rgba="0.3 0.3 0.3 1.0"/>
+        <material name="${sec_mesh_files['suction_master']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['suction_master']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
@@ -74,8 +74,8 @@
         <geometry>
           <xacro:get_mesh name="suction" type="visual"/>
         </geometry>
-        <material name="DarkGray">
-          <color rgba="0.3 0.3 0.3 1.0"/>
+        <material name="${sec_mesh_files['suction']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['suction']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
@@ -102,8 +102,8 @@
         <geometry>
           <xacro:get_mesh name="gripper" type="visual"/>
         </geometry>
-        <material name="Black">
-          <color rgba="0.1 0.1 0.1 1.0"/>
+        <material name="${sec_mesh_files['gripper']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['gripper']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
@@ -133,8 +133,8 @@
         <geometry>
           <xacro:get_mesh name="tooltip1" type="visual"/>
         </geometry>
-        <material name="Silver">
-          <color rgba="0.8 0.8 0.8 1.0"/>
+        <material name="${sec_mesh_files['tooltip1']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['tooltip1']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
@@ -147,13 +147,15 @@
 
     <!-- tooltip1_joint -->
 
-    <joint name="tooltip1_joint" type="fixed">
+    <joint name="tooltip1_joint" type="prismatic">
       <parent link="gripper_link"/>
       <child link="tooltip1_link"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <axis xyz="1 0 0"/>
       <limit lower="-1.0" upper="0.041" effort="50" velocity="10"/>
+      <dynamics damping="0.1" friction="0.1"/>
     </joint>
+
 
     <!-- tooltip2 -->
     <link name="tooltip2_link">
@@ -167,8 +169,8 @@
         <geometry>
           <xacro:get_mesh name="tooltip2" type="visual"/>
         </geometry>
-        <material name="Silver">
-          <color rgba="0.8 0.8 0.8 1.0"/>
+        <material name="${sec_mesh_files['tooltip2']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['tooltip2']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
@@ -179,12 +181,13 @@
       </collision>
     </link>
 
-    <joint name="tooltip2_joint" type="fixed">
+    <joint name="tooltip2_joint" type="prismatic">
       <parent link="gripper_link"/>
       <child link="tooltip2_link"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <axis xyz="1 0 0"/>
       <limit lower="-1.0" upper="0.041" effort="50" velocity="10"/>
+      <dynamics damping="0.1" friction="0.1"/>
     </joint>
 
 

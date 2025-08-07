@@ -26,7 +26,7 @@
       </inertial>
     </link>
 
-    <joint name="${namespace}axis_joint" type="fixed">
+    <joint name="${namespace}axis_joint" type="prismatic">
       <parent link="${parent}"/>
       <child link="${namespace}base_link"/>
       <origin rpy="0 0 0" xyz="-0.277 0 0.084"/>

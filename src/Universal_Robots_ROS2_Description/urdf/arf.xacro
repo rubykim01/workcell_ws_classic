@@ -124,7 +124,7 @@
     </link>
 
     <!-- ** arf_axis_1_joint ** arf slider base to slider joint -->
-    <joint name="arf_axis_1_joint" type="fixed">
+    <joint name="arf_axis_1_joint" type="prismatic">
       <parent link="arf_slider_base_link" />
       <child link="arf_slider_link" />
       <origin xyz="-0.1068 0 0.04" rpy="0 0 0"/>
@@ -173,7 +173,7 @@
     </link> 
 
     <!-- ** arf_axis_2_joint **arf slider dummy to slider jig joint -->
-    <joint name="arf_axis_2_joint" type="fixed">
+    <joint name="arf_axis_2_joint" type="prismatic">
       <parent link="arf_slider_dummy_link" />
       <child link="arf_slider_jig_link" />
       <origin xyz="0 0.4185 0.107" rpy="0 0 0"/>
@@ -223,7 +223,7 @@
     </link>
 
     <!-- arf slider jig to front aircyl joint ****** PRISMATIC ****** -->
-    <joint name="arf_gripper_joint_1" type="fixed">
+    <joint name="arf_gripper_joint_1" type="prismatic">
       <parent link="arf_aircyl_dummy_link" />
       <child link="arf_front_aircyl_link" />
       <origin xyz="0.226 0.0 0.065" rpy="0 0 0"/>
@@ -256,7 +256,7 @@
     </link>
 
     <!-- arf slider jig to front aircyl joint ****** PRISMATIC ****** -->
-    <joint name="arf_gripper_joint_2" type="fixed">
+    <joint name="arf_gripper_joint_2" type="prismatic">
       <parent link="arf_aircyl_dummy_link" />
       <child link="arf_back_aircyl_link" />
       <origin xyz="-0.226 0.0 0.065" rpy="0 0 0"/>

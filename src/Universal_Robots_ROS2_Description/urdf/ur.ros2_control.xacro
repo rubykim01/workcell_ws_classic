@@ -127,6 +127,126 @@
         <state_interface name="effort"/>
       </joint>
 
+      <!-- UR Robot Gripper Tooltips -->
+      <joint name="${tf_prefix}tooltip1_joint">
+        <command_interface name="position"/>
+        <command_interface name="velocity"/>
+        <state_interface name="position">
+          <!-- initial position for the FakeSystem and simulation -->
+          <param name="initial_value">${initial_positions['tooltip1_joint']}</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+        <state_interface name="effort"/>
+      </joint>
+      <joint name="${tf_prefix}tooltip2_joint">
+        <command_interface name="position"/>
+        <command_interface name="velocity"/>
+        <state_interface name="position">
+          <!-- initial position for the FakeSystem and simulation -->
+          <param name="initial_value">${initial_positions['tooltip2_joint']}</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+        <state_interface name="effort"/>
+      </joint>
+
+      <!-- ARF Axis Joints -->
+      <joint name="${tf_prefix}arf_axis_1_joint">
+        <command_interface name="position"/>
+        <command_interface name="velocity"/>
+        <state_interface name="position">
+          <!-- initial position for the FakeSystem and simulation -->
+          <param name="initial_value">${initial_positions['arf_axis_1_joint']}</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+        <state_interface name="effort"/>
+      </joint>
+      <joint name="${tf_prefix}arf_axis_2_joint">
+        <command_interface name="position"/>
+        <command_interface name="velocity"/>
+        <state_interface name="position">
+          <!-- initial position for the FakeSystem and simulation -->
+          <param name="initial_value">${initial_positions['arf_axis_2_joint']}</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+        <state_interface name="effort"/>
+      </joint>
+
+      <!-- ARF Gripper Joints -->
+      <joint name="arf_gripper_joint_1">
+        <command_interface name="position"/>
+        <command_interface name="velocity"/>
+        <state_interface name="position">
+          <!-- initial position for the FakeSystem and simulation -->
+          <param name="initial_value">${initial_positions['arf_gripper_joint_1']}</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+        <state_interface name="effort"/>
+      </joint>
+      <joint name="arf_gripper_joint_2">
+        <command_interface name="position"/>
+        <command_interface name="velocity"/>
+        <state_interface name="position">
+          <!-- initial position for the FakeSystem and simulation -->
+          <param name="initial_value">${initial_positions['arf_gripper_joint_2']}</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+        <state_interface name="effort"/>
+      </joint>
+
+      <!-- Denso Robot Joints -->
+      <joint name="denso_joint_1">
+        <command_interface name="position"/>
+        <command_interface name="velocity"/>
+        <state_interface name="position">
+          <!-- initial position for the FakeSystem and simulation -->
+          <param name="initial_value">${initial_positions['denso_joint_1']}</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+        <state_interface name="effort"/>
+      </joint>
+      <joint name="denso_joint_2">
+        <command_interface name="position"/>
+        <command_interface name="velocity"/>
+        <state_interface name="position">
+          <!-- initial position for the FakeSystem and simulation -->
+          <param name="initial_value">${initial_positions['denso_joint_2']}</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+        <state_interface name="effort"/>
+      </joint>
+      <joint name="denso_joint_3">
+        <command_interface name="position"/>
+        <command_interface name="velocity"/>
+        <state_interface name="position">
+          <!-- initial position for the FakeSystem and simulation -->
+          <param name="initial_value">${initial_positions['denso_joint_3']}</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+        <state_interface name="effort"/>
+      </joint>
+      <joint name="denso_joint_4">
+        <command_interface name="position"/>
+        <command_interface name="velocity"/>
+        <state_interface name="position">
+          <!-- initial position for the FakeSystem and simulation -->
+          <param name="initial_value">${initial_positions['denso_joint_4']}</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+        <state_interface name="effort"/>
+      </joint>
+
+      <!-- Denso Axis Joint -->
+      <joint name="denso_axis_joint">
+        <command_interface name="position"/>
+        <command_interface name="velocity"/>
+        <state_interface name="position">
+          <!-- initial position for the FakeSystem and simulation -->
+          <param name="initial_value">${initial_positions['denso_axis_joint']}</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+        <state_interface name="effort"/>
+      </joint>
+
       <xacro:unless value="${sim_gazebo or sim_ignition}">
         <sensor name="${tf_prefix}tcp_fts_sensor">
           <state_interface name="force.x"/>

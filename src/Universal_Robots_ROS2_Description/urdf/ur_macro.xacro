@@ -56,6 +56,7 @@
   <xacro:macro name="ur_robot" params="
     name
     tf_prefix
+    prefix
     parent
     *origin
     joint_limits_parameters_file
@@ -143,7 +144,7 @@
     </xacro:if>
 
     <!-- Add URDF transmission elements (for ros_control) -->
-    <!--<xacro:ur_arm_transmission prefix="${prefix}" hw_interface="${transmission_hw_interface}" />-->
+    <xacro:ur_arm_transmission prefix="${prefix}" hw_interface="${transmission_hw_interface}" />
     <!-- Placeholder for ros2_control transmission which don't yet exist -->
 
     <!-- links and joints - main serial chain -->
