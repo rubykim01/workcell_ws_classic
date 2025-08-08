@@ -1,0 +1,42 @@
+# Visualisation
+
+mesh_files:
+  gripper:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/quickchanger_grippers/converted_gripper.stl
+      material:
+        name: "Black"
+        color: "0.89 0.91 0.93 1.0"
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/quickchanger_grippers/converted_gripper.stl
+
+  tooltip1:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/quickchanger_grippers/converted_tooltip1.stl
+      material:
+        name: "Silver"
+        color: "0.6 0.5 0.05 1.0"
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/quickchanger_grippers/converted_tooltip1.stl
+      
+  tooltip2:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/quickchanger_grippers/converted_tooltip2.stl
+      material:
+        name: "Silver"
+        color: "0.6 0.5 0.05 1.0"
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/quickchanger_grippers/converted_tooltip2.stl
+

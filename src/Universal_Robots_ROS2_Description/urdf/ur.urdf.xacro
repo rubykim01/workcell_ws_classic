@@ -8,6 +8,8 @@
    <xacro:include filename="$(find ur_description)/urdf/vision.xacro"/>
    <!-- import toolchanger macro -->
    <xacro:include filename="$(find ur_description)/urdf/toolchanger.xacro"/>
+   <!-- import quickchanger_grippers macro -->
+   <xacro:include filename="$(find ur_description)/urdf/quickchanger_grippers.xacro"/>
    <!-- import arf macro -->
    <xacro:include filename="$(find ur_description)/urdf/arf.xacro"/>
    <!-- import denso macro -->
@@ -147,6 +149,8 @@
      >
      <origin xyz="0 0 0" rpy="0 0 0" />          <!-- position robot in the world -->
    </xacro:ur_robot>
+     <!-- attach gripper -->
+   <xacro:quickchanger_grippers parent="$(arg tf_prefix)wrist_3_link"/>
 
    <xacro:if value="$(arg sim_gazebo)">
     <!-- Gazebo plugins -->
