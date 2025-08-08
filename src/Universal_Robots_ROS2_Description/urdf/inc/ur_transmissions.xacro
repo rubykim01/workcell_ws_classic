@@ -68,27 +68,6 @@
       </actuator>
     </transmission>
 
-    <!-- UR Robot Gripper Tooltips -->
-
-    <transmission name="tooltip1_trans">
-      <type>transmission_interface/SimpleTransmission</type>
-      <joint name="tooltip1_joint">
-        <hardwareInterface>${hw_interface}</hardwareInterface>
-      </joint>
-      <actuator name="tooltip1_motor">
-        <mechanicalReduction>1</mechanicalReduction>
-      </actuator>
-    </transmission>
-
-    <transmission name="tooltip2_trans">
-      <type>transmission_interface/SimpleTransmission</type>
-      <joint name="tooltip2_joint">
-        <hardwareInterface>${hw_interface}</hardwareInterface>
-      </joint>
-      <actuator name="tooltip2_motor">
-        <mechanicalReduction>1</mechanicalReduction>
-      </actuator>
-    </transmission>
 
     <!-- ARF Axis Joints -->
 

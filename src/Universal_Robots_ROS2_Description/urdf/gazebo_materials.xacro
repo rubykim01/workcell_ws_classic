@@ -41,30 +41,6 @@
     <material>Gazebo/Grey</material>
   </gazebo>
 
-  <!-- Quickchanger and Gripper Components -->
-  <gazebo reference="quickchanger_link">
-    <material>Gazebo/Grey</material>
-  </gazebo>
-
-  <gazebo reference="suction_master_link">
-    <material>Gazebo/Grey</material>
-  </gazebo>
-
-  <gazebo reference="suction_link">
-    <material>Gazebo/DarkGrey</material>
-  </gazebo>
-
-  <gazebo reference="gripper_link">
-    <material>Gazebo/Black</material>
-  </gazebo>
-
-  <gazebo reference="tooltip1_link">
-    <material>Gazebo/LightGrey</material>
-  </gazebo>
-
-  <gazebo reference="tooltip2_link">
-    <material>Gazebo/LightGrey</material>
-  </gazebo>
 
   <!-- Vision Components -->
   <gazebo reference="vision_trolley_link">

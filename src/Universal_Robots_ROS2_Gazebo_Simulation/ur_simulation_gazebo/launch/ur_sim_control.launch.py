@@ -164,14 +164,6 @@ def launch_setup(context, *args, **kwargs):
         condition=UnlessCondition(start_joint_controller),
     )
 
-    # Gripper
-    tooltip_controller_spawner = Node(
-    package="controller_manager",
-    executable="spawner",
-    arguments=["tooltip_trajectory_controller", "-c", "/controller_manager"],
-    output="screen"
-)
-
     # Denso Robot Controller
     denso_joint_trajectory_controller_spawner = Node(
         package="controller_manager",
@@ -230,7 +222,6 @@ def launch_setup(context, *args, **kwargs):
         delay_rviz_after_joint_state_broadcaster_spawner,
         initial_joint_controller_spawner_stopped,
         initial_joint_controller_spawner_started,
-        tooltip_controller_spawner,
         denso_joint_trajectory_controller_spawner,
         arf_axis_controller_spawner,
         arf_gripper_controller_spawner,
