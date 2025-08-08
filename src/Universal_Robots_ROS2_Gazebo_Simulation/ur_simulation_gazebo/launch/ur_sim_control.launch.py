@@ -196,6 +196,13 @@ def launch_setup(context, *args, **kwargs):
         output="screen"
     )
 
+    # Vacuum Gripper Controller
+    suction_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["suction_trajectory_controller", "-c", "/controller_manager"],
+        output="screen"
+    )
     # Denso Axis Controller 
     denso_axis_controller_spawner = Node(
         package="controller_manager",
@@ -235,6 +242,7 @@ def launch_setup(context, *args, **kwargs):
         arf_axis_controller_spawner,
         arf_gripper_controller_spawner,
         denso_axis_controller_spawner,
+        suction_controller_spawner,
         gazebo,
         gazebo_spawn_robot,
     ]

@@ -93,10 +93,13 @@
     </link>
 
     <!-- suction_joint -->
-    <joint name="suction_joint" type="fixed">
+    <joint name="suction_joint" type="revolute">
       <parent link="suction_master_link"/>
       <child link="suction_link"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+      <limit effort="50" velocity="50" lower="0" upper="0"/>
+      <dynamics damping="0.0" friction="10"/>
     </joint>
 
     <!-- gripper_link -->

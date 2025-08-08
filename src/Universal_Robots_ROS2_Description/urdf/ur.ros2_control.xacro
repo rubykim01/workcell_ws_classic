@@ -147,6 +147,18 @@
         <state_interface name="effort"/>
       </joint>
 
+      <!-- Vacuum Gripper Joint -->
+      <joint name="${tf_prefix}suction_joint">
+        <command_interface name="position"/>
+        <state_interface name="position">
+          <!-- initial position for the FakeSystem and simulation -->
+          <param name="initial_value">${initial_positions['suction_joint']}</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+        <state_interface name="effort"/>
+      </joint>
+      
+
       <!-- ARF Axis Joints -->
       <joint name="${tf_prefix}arf_axis_1_joint">
         <command_interface name="position"/>
