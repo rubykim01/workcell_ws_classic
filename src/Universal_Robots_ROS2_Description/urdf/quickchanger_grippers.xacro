@@ -6,6 +6,99 @@
   <xacro:property name="sec_mesh_files" value="${quickchanger_grippers_visual_params['mesh_files']}" scope="parent"/>
   <xacro:property name="force_abs_paths" value="true" scope="parent"/>
 
+    <!-- quickchanger_link -->
+    <link name="quickchanger_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="quickchanger" type="visual"/>
+        </geometry>
+        <material name="${sec_mesh_files['quickchanger']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['quickchanger']['visual']['material']['color']}"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="quickchanger" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="2.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="1e-5" ixy="0" ixz="0" iyy="1e-5" iyz="0" izz="1e-5"/>
+      </inertial>
+    </link>
+
+    <!-- quickchanger_joint -->
+    <joint name="quickchanger_joint" type="fixed">
+      <parent link="${parent}"/>
+      <child link="quickchanger_link"/>
+      <origin xyz="0 0 0" rpy="0 0 -1.57"/>
+    </joint>
+
+    <!-- suction_master_link -->
+    <link name="suction_master_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="suction_master" type="visual"/>
+        </geometry>
+        <material name="${sec_mesh_files['suction_master']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['suction_master']['visual']['material']['color']}"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="suction_master" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="1.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="1e-5" ixy="0" ixz="0" iyy="1e-5" iyz="0" izz="1e-5"/>
+      </inertial>
+    </link>
+
+    <!-- suction_master_joint -->
+    <joint name="suction_master_joint" type="fixed">
+      <parent link="quickchanger_link"/>
+      <child link="suction_master_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- suction_link -->
+    <link name="suction_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="suction" type="visual"/>
+        </geometry>
+        <material name="${sec_mesh_files['suction']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['suction']['visual']['material']['color']}"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="suction" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="1.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="1e-5" ixy="0" ixz="0" iyy="1e-5" iyz="0" izz="1e-5"/>
+      </inertial>
+    </link>
+
+    <!-- suction_joint -->
+    <joint name="suction_joint" type="fixed">
+      <parent link="suction_master_link"/>
+      <child link="suction_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
     <!-- gripper_link -->
     <link name="gripper_link">
       <visual>
@@ -32,7 +125,7 @@
 
     <!-- gripper_joint -->
     <joint name="gripper_joint" type="fixed">
-      <parent link="${parent}"/>
+      <parent link="quickchanger_link"/>
       <child link="gripper_link"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
     </joint>
