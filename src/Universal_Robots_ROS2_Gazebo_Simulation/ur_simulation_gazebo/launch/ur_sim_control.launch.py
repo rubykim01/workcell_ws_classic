@@ -218,6 +218,7 @@ def launch_setup(context, *args, **kwargs):
         ),
         launch_arguments={
             "gui": gazebo_gui,
+            "world": PathJoinSubstitution([FindPackageShare("ur_simulation_gazebo"), "worlds", "custom.world"]),
         }.items(),
     )
 
