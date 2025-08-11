@@ -4,7 +4,7 @@
   <!-- Gazebo material definitions for workcell components -->
   <!-- These ensure proper color rendering in Gazebo simulation -->
 
-  <!-- UR Workcell Components -->
+  <!-- UR Link Components -->
   <gazebo reference="ur10_trolley_link">
     <material>Gazebo/LightGrey</material>
   </gazebo>
@@ -41,7 +41,41 @@
     <material>Gazebo/Grey</material>
   </gazebo>
 
-  <!-- Quickchanger and Gripper Components -->
+  <!-- UR Joint Components-->
+  <gazebo reference="ur10_feeder_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="ur10_heating_plate_1_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="ur10_heating_plate_2_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="ur10_heating_plate_cover_1_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="ur10_heating_plate_cover_2_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="ur10_heating_plate_cover_3_1_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="ur10_heating_plate_cover_3_2_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="ur10_plate_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+  
+
+  <!-- Quickchanger and Gripper Link Components -->
   <gazebo reference="quickchanger_link">
     <material>Gazebo/Grey</material>
   </gazebo>
@@ -65,8 +99,22 @@
   <gazebo reference="tooltip2_link">
     <material>Gazebo/LightGrey</material>
   </gazebo>
+  
+  <!-- Quickchanger and Gripper Joint Components -->
+  <gazebo reference="quickchanger_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+  
+  <gazebo reference="suction_master_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
 
-  <!-- Vision Components -->
+  <gazebo reference="gripper_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+
+  <!-- Vision LinkComponents -->
   <gazebo reference="vision_trolley_link">
     <material>Gazebo/LightGrey</material>
   </gazebo>
@@ -79,7 +127,20 @@
     <material>Gazebo/Orange</material>
   </gazebo>
 
-  <!-- Toolchanger Components -->
+  <!-- Vision Joint Components -->
+  <gazebo reference="vision_trolley_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="vision_cam_jig_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="vision_feeder_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <!-- Toolchanger Link Components -->
   <gazebo reference="toolchanger_trolley_link">
     <material>Gazebo/LightGrey</material>
   </gazebo>
@@ -88,7 +149,12 @@
     <material>Gazebo/Yellow</material>
   </gazebo>
 
-  <!-- ARF Components -->
+  <!-- Toolchanger Joint Components -->
+  <gazebo reference="toolchanger_tool_changer_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <!-- ARF Link Components -->
   <gazebo reference="arf_trolley_link">
     <material>Gazebo/LightGrey</material>
   </gazebo>
@@ -117,13 +183,32 @@
     <material>Gazebo/Blue</material>
   </gazebo>
 
-  <!-- Denso Components -->
+  <!-- ARF Joint Components -->
+  <gazebo reference="arf_base_plate_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="arf_slider_base_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+
+  <!-- Denso Link Components -->
   <gazebo reference="denso_trolley_link">
     <material>Gazebo/LightGrey</material>
   </gazebo>
 
   <gazebo reference="denso_slider_jig_link">
     <material>Gazebo/Grey</material>
+  </gazebo>
+
+  <!-- Denso Joint Components -->
+  <gazebo reference="denso_trolley_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="denso_slider_jig_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
   </gazebo>
 
 </robot> 

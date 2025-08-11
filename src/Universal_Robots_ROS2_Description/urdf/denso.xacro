@@ -64,7 +64,7 @@
     </link>
 
     <!-- trolley to denso slider jig joint -->
-    <joint name="denso slider jig joint" type="fixed">
+    <joint name="denso_slider_jig_joint" type="fixed">
       <parent link="denso_trolley_link" />
       <child link="denso_slider_jig_link" />
       <origin xyz="0.025 -0.025 0.82" rpy="0 0 0"/>
