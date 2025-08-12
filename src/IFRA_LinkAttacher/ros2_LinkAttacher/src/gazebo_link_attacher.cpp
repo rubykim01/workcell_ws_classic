@@ -173,15 +173,15 @@ void GazeboLinkAttacherPrivate::Attach(
 
   } else {
 
-    // snap link 2 to link 1:
-    ignition::math::Pose3d link1Pose = link1->WorldPose();
-    link2->SetInertial(link1->GetInertial());
-    link2->SetWorldPose(link1Pose);
+    // // snap link 2 to link 1:
+    // ignition::math::Pose3d link1Pose = link1->WorldPose();
+    // link2->SetInertial(link1->GetInertial());
+    // link2->SetWorldPose(link1Pose);
 
     // Create a fixed joint between the two links:
     JointName = _req->model1_name + "_" + _req->link1_name + "_" + _req->model2_name + "_" + _req->link2_name + "_joint";
-    // gazebo::physics::JointPtr joint = model1->CreateJoint(JointName, "revolute", link1, link2);
-        gazebo::physics::JointPtr joint = model1->CreateJoint(JointName, "fixed", link1, link2);
+    //gazebo::physics::JointPtr joint = model1->CreateJoint(JointName, "revolute", link1, link2);
+    gazebo::physics::JointPtr joint = model1->CreateJoint(JointName, "fixed", link1, link2);
 
     joint->Attach(link1, link2);
     // joint->Load(link1, link2, ignition::math::Pose3d());
