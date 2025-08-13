@@ -20,6 +20,10 @@ HPC2_X=0.619
 HPC2_Y=0.150
 HPC2_Z=0.830
 
+# HPC2_X=3.0
+# HPC2_Y=0.0
+# HPC2_Z=0.0
+
 HPC31_X=0.369
 HPC31_Y=0.0155
 HPC31_Z=0.830
@@ -28,9 +32,6 @@ HPC32_X=0.369
 HPC32_Y=0.1955
 HPC32_Z=0.830
 
-# HPC32_X=3.0
-# HPC32_Y=0.0
-# HPC32_Z=0.0
 
 echo "Using fixed positions for each element:"
 echo "  heating_plate1: ($HP1_X, $HP1_Y, $HP1_Z)"
