@@ -90,16 +90,7 @@
   </actuator>
 </transmission>
 
-<!-- Vacuum Gripper Joint -->
-<transmission name="suction_trans">
-  <type>transmission_interface/SimpleTransmission</type>
-  <joint name="suction_joint">
-    <hardwareInterface>${hw_interface}</hardwareInterface>
-  </joint>
-  <actuator name="suction_motor">
-    <mechanicalReduction>1</mechanicalReduction>
-  </actuator>
-</transmission>
+
 
     <!-- ARF Axis Joints -->
 

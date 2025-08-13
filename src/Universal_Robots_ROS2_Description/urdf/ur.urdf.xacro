@@ -160,19 +160,6 @@
       <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
         <parameters>$(arg simulation_controllers)</parameters>
       </plugin>
-
-    <!-- Vacuum Gripper Plugin -->
-    <plugin name="vacuum_gripper" filename="libgazebo_ros_vacuum_gripper.so">
-      <ros>
-        <namespace>/demo</namespace>
-        <remapping>switch:=switch_demo</remapping>
-        <remapping>grasping:=grasping_demo</remapping>
-      </ros>
-      <link_name>suction_link</link_name>
-      <max_distance>0.5</max_distance>
-      <fixed>ground_plane</fixed>
-    </plugin>
-
     </gazebo>
   </xacro:if>
 

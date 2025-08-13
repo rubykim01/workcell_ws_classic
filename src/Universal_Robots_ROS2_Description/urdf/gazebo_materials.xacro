@@ -109,6 +109,10 @@
     <preserveFixedJoint>true</preserveFixedJoint>
   </gazebo>
 
+  <gazebo reference="suction_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
   <gazebo reference="gripper_joint">
     <preserveFixedJoint>true</preserveFixedJoint>
   </gazebo>

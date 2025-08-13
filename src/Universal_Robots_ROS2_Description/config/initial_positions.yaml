@@ -6,7 +6,6 @@ wrist_2_joint: 1.740479197
 wrist_3_joint: -0.009424778
 tooltip1_joint: 0.0
 tooltip2_joint: 0.0
-suction_joint: 0.0
 arf_axis_1_joint: 0.0
 arf_axis_2_joint: 0.0
 denso_joint_1: 0.0
