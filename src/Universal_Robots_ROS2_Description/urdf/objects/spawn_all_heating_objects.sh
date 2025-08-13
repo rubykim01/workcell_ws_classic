@@ -28,6 +28,10 @@ HPC32_X=0.369
 HPC32_Y=0.1955
 HPC32_Z=0.830
 
+# HPC32_X=3.0
+# HPC32_Y=0.0
+# HPC32_Z=0.0
+
 echo "Using fixed positions for each element:"
 echo "  heating_plate1: ($HP1_X, $HP1_Y, $HP1_Z)"
 echo "  heating_plate2: ($HP2_X, $HP2_Y, $HP2_Z)"
@@ -88,6 +92,7 @@ ros2 run gazebo_ros spawn_entity.py \
     -file "$OBJECTS_DIR/heating_plate_cover3-2.sdf" \
     -entity heating_plate_cover3-2 \
     -x $HPC32_X -y $HPC32_Y -z $HPC32_Z
+
 
 echo "All heating objects spawned successfully!"
 echo "Objects created:"

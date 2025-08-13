@@ -79,12 +79,6 @@
           <color rgba="${sec_mesh_files['suction']['visual']['material']['color']}"/>
         </material>
       </visual>
-      <collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <geometry>
-          <xacro:get_mesh name="suction" type="collision"/>
-        </geometry>
-      </collision>
       <inertial>
         <mass value="1.0"/>
         <origin xyz="0 0 0" rpy="0 0 0"/>
