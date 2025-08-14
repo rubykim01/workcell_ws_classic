@@ -46,6 +46,11 @@
 #include <linkattacher_msgs/srv/attach_link.hpp>        // INCLUDE ROS2 SERVICE.
 #include <linkattacher_msgs/srv/detach_link.hpp>        // INCLUDE ROS2 SERVICE.
 
+// Add ROS2 publisher includes
+#include <rclcpp/publisher.hpp>
+#include <std_msgs/msg/bool.hpp>
+#include <rclcpp/timer.hpp>
+
 // GLOBAL VARIABLE:
 std::vector<JointSTRUCT> GV_joints;
 JointSTRUCT GV_jointSTR;
@@ -75,6 +80,9 @@ public:
     linkattacher_msgs::srv::DetachLink::Request::SharedPtr _req,
     linkattacher_msgs::srv::DetachLink::Response::SharedPtr _res);
 
+  // Publish attachment state
+  void PublishAttachmentState();
+
   // World pointer from Gazebo.
   gazebo::physics::WorldPtr world_;
 
@@ -84,6 +92,12 @@ public:
   // ROS services to handle requests for attach/detach.
   rclcpp::Service<linkattacher_msgs::srv::AttachLink>::SharedPtr attach_link_service_;
   rclcpp::Service<linkattacher_msgs::srv::DetachLink>::SharedPtr detach_link_service_;
+
+  // ROS publisher for attachment state
+  rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr attachment_state_publisher_;
+
+  // Timer for periodic publishing
+  rclcpp::TimerBase::SharedPtr attachment_state_timer_;
 
   // getJoint function:
   bool getJoint(std::string M1, std::string L1, std::string M2, std::string L2, JointSTRUCT &joint);
@@ -119,6 +133,16 @@ void GazeboLinkAttacher::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr 
     "DETACHLINK", std::bind(
       &GazeboLinkAttacherPrivate::Detach, impl_.get(),
       std::placeholders::_1, std::placeholders::_2));
+
+  // ROS2 ATTACHMENT STATE PUBLISHER:
+  impl_->attachment_state_publisher_ =
+    impl_->ros_node_->create_publisher<std_msgs::msg::Bool>("attachment_state", 10);
+
+  // ROS2 TIMER for periodic publishing:
+  impl_->attachment_state_timer_ =
+    impl_->ros_node_->create_wall_timer(
+      std::chrono::milliseconds(100),  // Publish every 100ms
+      std::bind(&GazeboLinkAttacherPrivate::PublishAttachmentState, impl_.get()));
 
 }
 
@@ -208,6 +232,9 @@ void GazeboLinkAttacherPrivate::Attach(
 
     IsAttached = true;
 
+    // Publish the new attachment state immediately
+    this->PublishAttachmentState();
+
   }
 
 }
@@ -231,6 +258,9 @@ void GazeboLinkAttacherPrivate::Detach(
 
     IsAttached = false;
     
+    // Publish the new attachment state immediately
+    this->PublishAttachmentState();
+    
     return;
   } else {
     _res->success = false;
@@ -251,6 +281,13 @@ bool GazeboLinkAttacherPrivate::getJoint(std::string M1, std::string L1, std::st
     }
     return false;
   }
+
+void GazeboLinkAttacherPrivate::PublishAttachmentState()
+{
+  auto msg = std::make_unique<std_msgs::msg::Bool>();
+  msg->data = IsAttached;
+  attachment_state_publisher_->publish(*msg);
+}
 
 GZ_REGISTER_WORLD_PLUGIN(GazeboLinkAttacher)
 

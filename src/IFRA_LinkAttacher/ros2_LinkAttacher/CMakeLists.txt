@@ -39,6 +39,7 @@ find_package(gazebo_ros REQUIRED)
 find_package(gazebo_dev REQUIRED)
 find_package(gazebo_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
 
 find_package(linkattacher_msgs REQUIRED)
 
@@ -59,6 +60,7 @@ ament_target_dependencies(gazebo_link_attacher
   "gazebo_dev"
   "gazebo_msgs"
   "gazebo_ros"
+  "std_msgs"
   "linkattacher_msgs"
 )
 ament_export_libraries(gazebo_link_attacher)

@@ -19,6 +19,7 @@
   <depend>gazebo_dev</depend>
   <depend>gazebo_msgs</depend>
   <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
   
   <build_depend>linkattacher_msgs</build_depend>
 
