@@ -50,18 +50,14 @@
 #include <rclcpp/publisher.hpp>
 #include <std_msgs/msg/bool.hpp>
 #include <rclcpp/timer.hpp>
+#include <std_msgs/msg/int32.hpp>
 
 // GLOBAL VARIABLE:
 std::vector<JointSTRUCT> GV_joints;
 JointSTRUCT GV_jointSTR;
 
-// IsAttached variable:
-// Gazebo breaks if -> An attachment request is done between 2 links, and the joint attachment has already been created and not removed!
-// Therefore, we have added this variable to make sure the attachment is only requested when the previous attachment has already been removed.
-bool IsAttached = false;
-
-// JointName:
-std::string JointName = "None";
+// Multiple attachments enabled now
+// The GV_joints vector contains all active attachments
 
 namespace gazebo_ros
 {
@@ -94,7 +90,7 @@ public:
   rclcpp::Service<linkattacher_msgs::srv::DetachLink>::SharedPtr detach_link_service_;
 
   // ROS publisher for attachment state
-  rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr attachment_state_publisher_;
+  rclcpp::Publisher<std_msgs::msg::Int32>::SharedPtr attachment_state_publisher_;
 
   // Timer for periodic publishing
   rclcpp::TimerBase::SharedPtr attachment_state_timer_;
@@ -136,7 +132,7 @@ void GazeboLinkAttacher::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr 
 
   // ROS2 ATTACHMENT STATE PUBLISHER:
   impl_->attachment_state_publisher_ =
-    impl_->ros_node_->create_publisher<std_msgs::msg::Bool>("attachment_state", 10);
+    impl_->ros_node_->create_publisher<std_msgs::msg::Int32>("attachment_state", 10);
 
   // ROS2 TIMER for periodic publishing:
   impl_->attachment_state_timer_ =
@@ -190,52 +186,49 @@ void GazeboLinkAttacherPrivate::Attach(
     return;
   }
 
-  if (IsAttached == true){
-
+  // Check if these links are already attached
+  JointSTRUCT existing_joint;
+  if (this->getJoint(_req->model1_name, _req->link1_name, _req->model2_name, _req->link2_name, existing_joint)) {
     _res->success = false;
-    _res->message = "Both links have already been attached, aborting new attachment.";
-
-  } else {
-
-    // Create a fixed joint between the two links:
-    JointName = _req->model1_name + "_" + _req->link1_name + "_" + _req->model2_name + "_" + _req->link2_name + "_joint";
-    gazebo::physics::JointPtr joint = model1->CreateJoint(JointName, "fixed", link1, link2);
-    joint->Attach(link1, link2);
-    joint->Load(link1, link2, ignition::math::Pose3d());
-    joint->SetProvideFeedback(true);
-    
-    // Remove the axis and limits for fixed joint - they're not needed
-    // joint->SetAxis(0, ignition::math::Vector3d(1, 0, 0));
-    // joint->SetUpperLimit(0, 0);
-    // joint->SetLowerLimit(0, 0);
-    // joint->SetEffortLimit(0, 0);
-    // joint->SetDamping(1, 1.0);
-
-    joint->Init();
-    model1->Update();
-
-    GV_jointSTR.model1 = _req->model1_name;
-    GV_jointSTR.model2 = _req->model2_name;
-    GV_jointSTR.link1 = _req->link1_name;
-    GV_jointSTR.link2 = _req->link2_name;
-    GV_jointSTR.m1 = model1;
-    GV_jointSTR.m2 = model2;
-    GV_jointSTR.l1 = link1;
-    GV_jointSTR.l2 = link2;
-    GV_jointSTR.joint = joint;
-    
-    GV_joints.push_back(GV_jointSTR);
-
-    // Set the success and message in the response:
-    _res->success = true;
-    _res->message = "ATTACHED: {MODEL , LINK} -> {" + _req->model1_name + " , " + _req->link1_name + "} -- {" + _req->model2_name + " , " + _req->link2_name + "}.";
-
-    IsAttached = true;
-
-    // Publish the new attachment state immediately
-    this->PublishAttachmentState();
-
+    _res->message = "These links are already attached: {" + _req->model1_name + " , " + _req->link1_name + "} -- {" + _req->model2_name + " , " + _req->link2_name + "}.";
+    return;
   }
+
+  // Create a fixed joint between the two links:
+  std::string joint_name = _req->model1_name + "_" + _req->link1_name + "_" + _req->model2_name + "_" + _req->link2_name + "_joint";
+  gazebo::physics::JointPtr joint = model1->CreateJoint(joint_name, "fixed", link1, link2);
+  joint->Attach(link1, link2);
+  joint->Load(link1, link2, ignition::math::Pose3d());
+  joint->SetProvideFeedback(true);
+  
+  // Remove the axis and limits for fixed joint - they're not needed
+  // joint->SetAxis(0, ignition::math::Vector3d(1, 0, 0));
+  // joint->SetUpperLimit(0, 0);
+  // joint->SetLowerLimit(0, 0);
+  // joint->SetEffortLimit(0, 0);
+  // joint->SetDamping(1, 1.0);
+
+  joint->Init();
+  model1->Update();
+
+  GV_jointSTR.model1 = _req->model1_name;
+  GV_jointSTR.model2 = _req->model2_name;
+  GV_jointSTR.link1 = _req->link1_name;
+  GV_jointSTR.link2 = _req->link2_name;
+  GV_jointSTR.m1 = model1;
+  GV_jointSTR.m2 = model2;
+  GV_jointSTR.l1 = link1;
+  GV_jointSTR.l2 = link2;
+  GV_jointSTR.joint = joint;
+  
+  GV_joints.push_back(GV_jointSTR);
+
+  // Set the success and message in the response:
+  _res->success = true;
+  _res->message = "ATTACHED: {MODEL , LINK} -> {" + _req->model1_name + " , " + _req->link1_name + "} -- {" + _req->model2_name + " , " + _req->link2_name + "}.";
+
+  // Publish the new attachment state immediately
+  this->PublishAttachmentState();
 
 }
 
@@ -251,12 +244,19 @@ void GazeboLinkAttacherPrivate::Detach(
     _res->success = true;
     _res->message = "DETACHED: {MODEL , LINK} -> {" + _req->model1_name + " , " + _req->link1_name + "} -- {" + _req->model2_name + " , " + _req->link2_name + "}.";
     
-    // (+) Remove joint --> This fixes the following problem: If the object to be attached is removed and spawned again, 
-    // gazebo breaks when attaching it again, since the joint already existed. Joint must be REMOVED when detaching.
+    // Remove joint from the model
     gazebo::physics::ModelPtr model1 = world_->ModelByName(_req->model1_name);
-    model1->RemoveJoint(JointName);
+    if (model1) {
+      model1->RemoveJoint(j.joint->GetName());
+    }
 
-    IsAttached = false;
+    // Remove the joint from our tracking vector
+    for (auto it = GV_joints.begin(); it != GV_joints.end(); ++it) {
+      if (it->joint == j.joint) {
+        GV_joints.erase(it);
+        break;
+      }
+    }
     
     // Publish the new attachment state immediately
     this->PublishAttachmentState();
@@ -284,8 +284,8 @@ bool GazeboLinkAttacherPrivate::getJoint(std::string M1, std::string L1, std::st
 
 void GazeboLinkAttacherPrivate::PublishAttachmentState()
 {
-  auto msg = std::make_unique<std_msgs::msg::Bool>();
-  msg->data = IsAttached;
+  auto msg = std::make_unique<std_msgs::msg::Int32>();
+  msg->data = GV_joints.size();
   attachment_state_publisher_->publish(*msg);
 }
 
