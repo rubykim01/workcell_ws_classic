@@ -263,7 +263,7 @@ void DensoRobotHW::SpinNode(rclcpp::Node::SharedPtr & node, DensoRobotControl_Pt
 {
   RCLCPP_INFO(rclcpp::get_logger("DensoRobotHW"), "***** Starting DENSO robot control thread ...");
   std::thread denso_thread([node, drobo]() {
-      rclcpp::WallRate loop_rate(1000);
+      rclcpp::WallRate loop_rate(125); // Changed from 1000 to 125 Hz to match physics update rate
       while (rclcpp::ok()) {
         rclcpp::spin_some(node);
         drobo->Update();

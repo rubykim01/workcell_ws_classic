@@ -144,7 +144,7 @@ void DensoRobotCore::Start()
   m_quit = false;
   m_ctrl->StartService(m_node);
 
-  rclcpp::WallRate loop_rate(1000);
+  rclcpp::WallRate loop_rate(125); // Changed from 1000 to 125 Hz to match physics update rate
   while (!m_quit && rclcpp::ok()) {
     rclcpp::spin_some(m_node);
     m_ctrl->Update();
