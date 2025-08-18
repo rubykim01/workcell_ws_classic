@@ -10,31 +10,7 @@
   </gazebo>
 
   <gazebo reference="ur10_feeder_link">
-    <material>Gazebo/Grey</material>
-  </gazebo>
-
-  <gazebo reference="ur10_heating_plate_1_link">
     <material>Gazebo/LightGrey</material>
-  </gazebo>
-
-  <gazebo reference="ur10_heating_plate_2_link">
-    <material>Gazebo/LightGrey</material>
-  </gazebo>
-
-  <gazebo reference="ur10_heating_plate_cover_1_link">
-    <material>Gazebo/DarkGrey</material>
-  </gazebo>
-
-  <gazebo reference="ur10_heating_plate_cover_2_link">
-    <material>Gazebo/DarkGrey</material>
-  </gazebo>
-
-  <gazebo reference="ur10_heating_plate_cover_3_1_link">
-    <material>Gazebo/Black</material>
-  </gazebo>
-
-  <gazebo reference="ur10_heating_plate_cover_3_2_link">
-    <material>Gazebo/Black</material>
   </gazebo>
 
   <gazebo reference="ur10_plate_link">
@@ -85,7 +61,7 @@
   </gazebo>
 
   <gazebo reference="suction_link">
-    <material>Gazebo/DarkGrey</material>
+    <material>Gazebo/LightGrey</material>
   </gazebo>
 
   <gazebo reference="gripper_link">
@@ -124,7 +100,7 @@
   </gazebo>
 
   <gazebo reference="vision_cam_jig_link">
-    <material>Gazebo/Purple</material>
+    <material>Gazebo/Red</material>
   </gazebo>
 
   <gazebo reference="vision_feeder_link">
@@ -150,7 +126,7 @@
   </gazebo>
 
   <gazebo reference="tool_changer_link">
-    <material>Gazebo/Yellow</material>
+    <material>Gazebo/Blue</material>
   </gazebo>
 
   <!-- Toolchanger Joint Components -->
@@ -176,15 +152,15 @@
   </gazebo>
 
   <gazebo reference="arf_slider_jig_link">
-    <material>Gazebo/Blue</material>
+    <material>Gazebo/Yellow</material>
   </gazebo>
 
   <gazebo reference="arf_front_aircyl_link">
-    <material>Gazebo/Blue</material>
+    <material>Gazebo/Yellow</material>
   </gazebo>
 
   <gazebo reference="arf_back_aircyl_link">
-    <material>Gazebo/Blue</material>
+    <material>Gazebo/Yellow</material>
   </gazebo>
 
   <!-- ARF Joint Components -->
