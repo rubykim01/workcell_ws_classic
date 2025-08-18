@@ -35,6 +35,7 @@
 #include <gazebo/physics/Model.hh>
 #include <gazebo/physics/World.hh>
 #include <gazebo/physics/PhysicsEngine.hh>
+#include <gazebo/physics/Collision.hh>
 
 #include <gazebo_ros/node.hpp>
 #include <memory>
@@ -78,6 +79,12 @@ public:
 
   // Publish attachment state
   void PublishAttachmentState();
+
+  // Disable collisions for a model
+  void DisableCollisionsForModel(gazebo::physics::ModelPtr model);
+  
+  // Re-enable collisions for a model
+  void EnableCollisionsForModel(gazebo::physics::ModelPtr model);
 
   // World pointer from Gazebo.
   gazebo::physics::WorldPtr world_;
@@ -211,6 +218,9 @@ void GazeboLinkAttacherPrivate::Attach(
   joint->Init();
   model1->Update();
 
+  // Disable collisions for the attached model (model2) so it can pass through other objects
+  DisableCollisionsForModel(model2);
+
   GV_jointSTR.model1 = _req->model1_name;
   GV_jointSTR.model2 = _req->model2_name;
   GV_jointSTR.link1 = _req->link1_name;
@@ -258,6 +268,9 @@ void GazeboLinkAttacherPrivate::Detach(
       }
     }
     
+    // Re-enable collisions for the detached model so it behaves normally again
+    EnableCollisionsForModel(j.m2);
+    
     // Publish the new attachment state immediately
     this->PublishAttachmentState();
     
@@ -287,6 +300,44 @@ void GazeboLinkAttacherPrivate::PublishAttachmentState()
   auto msg = std::make_unique<std_msgs::msg::Int32>();
   msg->data = GV_joints.size();
   attachment_state_publisher_->publish(*msg);
+}
+
+void GazeboLinkAttacherPrivate::DisableCollisionsForModel(gazebo::physics::ModelPtr model)
+{
+  if (!model) {
+    return;
+  }
+
+  // Get all links in the model
+  auto links = model->GetLinks();
+  for (auto& link : links) {
+    if (link) {
+      // Disable collision checking at the link level
+      link->SetCollideMode("none");
+      
+      // Print confirmation that collision mode was set
+      std::cout << "Collision disabled for link: " << link->GetName() << " in model: " << model->GetName() << std::endl;
+    }
+  }
+}
+
+void GazeboLinkAttacherPrivate::EnableCollisionsForModel(gazebo::physics::ModelPtr model)
+{
+  if (!model) {
+    return;
+  }
+
+  // Get all links in the model
+  auto links = model->GetLinks();
+  for (auto& link : links) {
+    if (link) {
+      // Re-enable collision checking at the link level
+      link->SetCollideMode("all");
+      
+      // Print confirmation that collision mode was re-enabled
+      std::cout << "Collision re-enabled for link: " << link->GetName() << " in model: " << model->GetName() << std::endl;
+    }
+  }
 }
 
 GZ_REGISTER_WORLD_PLUGIN(GazeboLinkAttacher)
