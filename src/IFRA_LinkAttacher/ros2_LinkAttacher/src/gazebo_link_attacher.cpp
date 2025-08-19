@@ -80,11 +80,8 @@ public:
   // Publish attachment state
   void PublishAttachmentState();
 
-  // Disable collisions for a model
-  void DisableCollisionsForModel(gazebo::physics::ModelPtr model);
-  
-  // Re-enable collisions for a model
-  void EnableCollisionsForModel(gazebo::physics::ModelPtr model);
+  // Stop all motion and reset physics for a detached model
+  void StopModelMotion(gazebo::physics::ModelPtr model);
 
   // World pointer from Gazebo.
   gazebo::physics::WorldPtr world_;
@@ -218,8 +215,10 @@ void GazeboLinkAttacherPrivate::Attach(
   joint->Init();
   model1->Update();
 
-  // Disable collisions for the attached model (model2) so it can pass through other objects
-  DisableCollisionsForModel(model2);
+
+  // Stop any existing motion and reset physics before attaching
+  StopModelMotion(model2);
+
 
   GV_jointSTR.model1 = _req->model1_name;
   GV_jointSTR.model2 = _req->model2_name;
@@ -268,8 +267,9 @@ void GazeboLinkAttacherPrivate::Detach(
       }
     }
     
-    // Re-enable collisions for the detached model so it behaves normally again
-    EnableCollisionsForModel(j.m2);
+    
+    // Stop all motion and reset physics for the detached model
+    StopModelMotion(j.m2);
     
     // Publish the new attachment state immediately
     this->PublishAttachmentState();
@@ -302,7 +302,8 @@ void GazeboLinkAttacherPrivate::PublishAttachmentState()
   attachment_state_publisher_->publish(*msg);
 }
 
-void GazeboLinkAttacherPrivate::DisableCollisionsForModel(gazebo::physics::ModelPtr model)
+
+void GazeboLinkAttacherPrivate::StopModelMotion(gazebo::physics::ModelPtr model)
 {
   if (!model) {
     return;
@@ -312,30 +313,17 @@ void GazeboLinkAttacherPrivate::DisableCollisionsForModel(gazebo::physics::Model
   auto links = model->GetLinks();
   for (auto& link : links) {
     if (link) {
-      // Disable collision checking at the link level
-      link->SetCollideMode("none");
+      // Stop all motion for the link
+      link->SetLinearVel(ignition::math::Vector3d::Zero);
+      link->SetAngularVel(ignition::math::Vector3d::Zero);
       
-      // Print confirmation that collision mode was set
-      std::cout << "Collision disabled for link: " << link->GetName() << " in model: " << model->GetName() << std::endl;
-    }
-  }
-}
-
-void GazeboLinkAttacherPrivate::EnableCollisionsForModel(gazebo::physics::ModelPtr model)
-{
-  if (!model) {
-    return;
-  }
-
-  // Get all links in the model
-  auto links = model->GetLinks();
-  for (auto& link : links) {
-    if (link) {
-      // Re-enable collision checking at the link level
-      link->SetCollideMode("all");
+      // Reset physics properties for the link
+      link->SetLinearDamping(0.0);
+      link->SetAngularDamping(0.0);
+      link->SetGravityMode(false); // Ensure gravity is off
       
-      // Print confirmation that collision mode was re-enabled
-      std::cout << "Collision re-enabled for link: " << link->GetName() << " in model: " << model->GetName() << std::endl;
+      // Print confirmation that motion was stopped
+      std::cout << "Motion stopped and physics properties reset for link: " << link->GetName() << " in model: " << model->GetName() << std::endl;
     }
   }
 }

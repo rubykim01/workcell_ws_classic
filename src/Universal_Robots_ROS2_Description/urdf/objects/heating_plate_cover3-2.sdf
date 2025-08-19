@@ -2,6 +2,7 @@
 <sdf version="1.6">
   <model name="heating_plate_cover3-2">
     <link name="link">
+      <gravity>false</gravity>
       <visual name="visual">
         <geometry>
           <mesh>
@@ -16,15 +17,6 @@
           <emissive>0 0 0 1</emissive>
         </material>
       </visual>
-      
-      <collision name="collision">
-        <geometry>
-          <mesh>
-            <uri>file:///root/workcell_ws_classic/src/Universal_Robots_ROS2_Description/meshes/ur10_feeder/heating_plate_cover3-2.STL</uri>
-            <scale>1 1 1</scale>
-          </mesh>
-        </geometry>
-      </collision>
       
         <inertial>
           <mass>1.0</mass>
