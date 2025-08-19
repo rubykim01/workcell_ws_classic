@@ -210,20 +210,6 @@
       <origin xyz="0.525 0.025 0.82" rpy="0 0 0"/>
     </joint>
 
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
     <!-- UR plate link-->
     <link name="${tf_prefix}ur10_plate_link">
       <visual>
