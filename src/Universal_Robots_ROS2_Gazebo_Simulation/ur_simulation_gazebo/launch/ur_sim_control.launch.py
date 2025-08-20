@@ -225,6 +225,8 @@ def launch_setup(context, *args, **kwargs):
         output="screen",
     )
 
+
+
     nodes_to_start = [
         robot_state_publisher_node,
         joint_state_broadcaster_spawner,

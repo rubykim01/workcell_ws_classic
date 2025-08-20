@@ -14,8 +14,6 @@
     ">
 
     <ros2_control name="${namespace}${name}" type="system">
-	<!-- joint limits include -->
-	<xacro:include filename="$(find denso_robot_descriptions)/robots/${model}/urdf/denso_robot_joint_limits.xacro" />
       <hardware>
         <xacro:if value="${sim}">
       	  <plugin>gazebo_ros2_control/GazeboSystem</plugin>
@@ -40,7 +38,60 @@
         </xacro:unless>
       </hardware>
 
-      <xacro:denso_robot_control_limits namespace="${namespace}" />
+      <!-- Joint definitions for simulation -->
+      <xacro:if value="${sim}">
+        <!-- Denso robot arm joints -->
+        <joint name="${namespace}joint_1">
+          <command_interface name="position">
+            <param name="min">-2.268928</param>
+            <param name="max">2.268928</param>
+          </command_interface>
+          <state_interface name="position"/>
+          <state_interface name="velocity"/>
+        </joint>
+        
+        <joint name="${namespace}joint_2">
+          <command_interface name="position">
+            <param name="min">-2.617994</param>
+            <param name="max">2.617994</param>
+          </command_interface>
+          <state_interface name="position"/>
+          <state_interface name="velocity"/>
+        </joint>
+        
+        <joint name="${namespace}joint_3">
+          <command_interface name="position">
+            <param name="min">-0.100000</param>
+            <param name="max">0.220000</param>
+          </command_interface>
+          <state_interface name="position"/>
+          <state_interface name="velocity"/>
+        </joint>
+        
+        <joint name="${namespace}joint_4">
+          <command_interface name="position">
+            <param name="min">-6.283185</param>
+            <param name="max">6.283185</param>
+          </command_interface>
+          <state_interface name="position"/>
+          <state_interface name="velocity"/>
+        </joint>
+
+        <!-- Denso axis joint -->
+        <joint name="${namespace}axis_joint">
+          <command_interface name="position">
+            <param name="min">0.0</param>
+            <param name="max">0.5</param>
+          </command_interface>
+          <state_interface name="position"/>
+          <state_interface name="velocity"/>
+        </joint>
+      </xacro:if>
+
+      <!-- Joint limits for real hardware -->
+      <xacro:unless value="${sim}">
+        <xacro:denso_robot_control_limits namespace="${namespace}" />
+      </xacro:unless>
     </ros2_control>
   </xacro:macro>
 

@@ -71,7 +71,11 @@
     </joint>
 
     <!-- Add Denso robot connected to the slider jig -->
-    <xacro:denso_robot parent="denso_slider_jig_link" />
+    <xacro:denso_robot 
+      parent="denso_slider_jig_link"
+      sim="true"
+      namespace="denso_"
+      model="hsr065a1_n32" />
 
   </xacro:macro>
 </robot>
