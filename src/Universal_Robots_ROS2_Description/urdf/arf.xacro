@@ -127,9 +127,9 @@
     <joint name="arf_axis_1_joint" type="prismatic">
       <parent link="arf_slider_base_link" />
       <child link="arf_slider_link" />
-      <origin xyz="-0.2578 0 0.04" rpy="0 0 0"/>
-      <axis xyz="1 0 0"/>
-      <limit lower="-0.35" upper="0" effort="100" velocity="10" />
+      <origin xyz="-0.1068 0 0.04" rpy="0 0 0"/>
+      <axis xyz="-1 0 0"/>
+      <limit lower="0.0" upper="0.35" effort="100" velocity="10" />
     </joint>
 
   <!-- dummy link for slider and jig joints -->
