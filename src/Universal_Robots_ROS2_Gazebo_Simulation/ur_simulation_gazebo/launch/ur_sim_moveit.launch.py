@@ -163,7 +163,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "moveit_config_file",
-            default_value="ur.srdf.xacro",
+            default_value="ur_denso.srdf.xacro",
             description="MoveIt SRDF/XACRO description file with the robot.",
         )
     )
