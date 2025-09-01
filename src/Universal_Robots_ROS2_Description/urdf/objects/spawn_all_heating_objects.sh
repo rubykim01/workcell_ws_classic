@@ -21,12 +21,13 @@ HPC1_Y=0.150
 HPC1_Z=0.830
 
 HPC31_X=0.369
-HPC31_Y=0.0155
+HPC31_Y=0.1955
 HPC31_Z=0.830
 
 HPC32_X=0.369
-HPC32_Y=0.1955
+HPC32_Y=0.0155
 HPC32_Z=0.830
+
 
 
 echo "Using fixed positions for each element:"
