@@ -9,7 +9,7 @@
     <!-- quickchanger_link -->
     <link name="quickchanger_link">
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="0 0 0" rpy="0 0 -1.57"/>
         <geometry>
           <xacro:get_mesh name="quickchanger" type="visual"/>
         </geometry>
@@ -18,7 +18,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="0 0 0" rpy="0 0 -1.57"/>
         <geometry>
           <xacro:get_mesh name="quickchanger" type="collision"/>
         </geometry>
@@ -34,13 +34,13 @@
     <joint name="quickchanger_joint" type="fixed">
       <parent link="${parent}"/>
       <child link="quickchanger_link"/>
-      <origin xyz="0 0 0" rpy="0 0 -1.57"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
     </joint>
 
     <!-- suction_master_link -->
     <link name="suction_master_link">
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="0 0 0" rpy="0 0 -1.57"/>
         <geometry>
           <xacro:get_mesh name="suction_master" type="visual"/>
         </geometry>
@@ -49,7 +49,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="0 0 0" rpy="0 0 -1.57"/>
         <geometry>
           <xacro:get_mesh name="suction_master" type="collision"/>
         </geometry>
@@ -71,7 +71,7 @@
     <!-- suction_link -->
     <link name="suction_link">
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="0 0 0" rpy="0 0 -1.57"/>
         <geometry>
           <xacro:get_mesh name="suction" type="visual"/>
         </geometry>
@@ -96,7 +96,7 @@
     <!-- gripper_link -->
     <link name="gripper_link">
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="0 0 0" rpy="0 0 -1.57"/>
         <geometry>
           <xacro:get_mesh name="gripper" type="visual"/>
         </geometry>
@@ -127,7 +127,7 @@
     <!-- tooltip1_link -->
     <link name="tooltip1_link">
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="0 0 0" rpy="0 0 -1.57"/>
         <geometry>
           <xacro:get_mesh name="tooltip1" type="visual"/>
         </geometry>
@@ -154,14 +154,14 @@
       <parent link="gripper_link"/>
       <child link="tooltip1_link"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
-      <axis xyz="1 0 0"/>
+      <axis xyz="0 -1 0"/>
       <limit lower="-1.0" upper="0.041" effort="50" velocity="10"/>
     </joint>
 
     <!-- tooltip2 -->
     <link name="tooltip2_link">
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="0 0 0" rpy="0 0 -1.57"/>
         <geometry>
           <xacro:get_mesh name="tooltip2" type="visual"/>
         </geometry>
@@ -186,7 +186,7 @@
       <parent link="gripper_link"/>
       <child link="tooltip2_link"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
-      <axis xyz="1 0 0"/>
+      <axis xyz="0 -1 0"/>
       <limit lower="-1.0" upper="0.041" effort="50" velocity="10"/>
     </joint>
 
