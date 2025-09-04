@@ -10,7 +10,7 @@ arf_axis_1_joint: 0.0
 arf_axis_2_joint: 0.0
 denso_joint_1: 0.0
 denso_joint_2: 0.0
-denso_joint_3: 0.0
+denso_joint_3: 0.296
 denso_joint_4: 0.0 
 denso_axis_joint: 0.0
 arf_gripper_joint_1: 0.0

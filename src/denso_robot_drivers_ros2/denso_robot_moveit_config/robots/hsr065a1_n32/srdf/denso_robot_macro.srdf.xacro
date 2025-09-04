@@ -12,10 +12,7 @@
     <!--SUBGROUPS - Groups can also be formed by referencing to already defined group names-->
 
     <group name="${namespace}arm">
-		<joint name="${namespace}joint_1"/>
-		<joint name="${namespace}joint_2"/>
-		<joint name="${namespace}joint_3"/>
-		<joint name="${namespace}joint_4"/>
+		<chain base_link="${namespace}base_link" tip_link="${namespace}tool0" />
 	</group>
 
 
@@ -33,6 +30,10 @@
 	<disable_collisions link1="${namespace}J2" link2="${namespace}base_link" reason="Never"/>
 	<disable_collisions link1="${namespace}J3" link2="${namespace}J4" reason="Adjacent"/>
 	<disable_collisions link1="${namespace}J4" link2="${namespace}base_link" reason="Never"/>
+	<disable_collisions link1="${namespace}J4" link2="${namespace}flange" reason="Adjacent"/>
+	<disable_collisions link1="${namespace}flange" link2="${namespace}tool0" reason="Adjacent"/>
+	<disable_collisions link1="${namespace}J4" link2="${namespace}tool0" reason="Never"/>
+	<disable_collisions link1="${namespace}tool0" link2="${namespace}base_link" reason="Never"/>
 
   </xacro:macro>
 </robot>
