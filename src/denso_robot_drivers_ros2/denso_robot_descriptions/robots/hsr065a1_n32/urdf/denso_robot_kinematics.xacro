@@ -182,7 +182,7 @@
         <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
       </inertial>
     </link>
-    <joint name="${namespace}J4-flange" type="fixed">
+    <joint name="${namespace}joint_flange" type="fixed">
       <parent link="${namespace}J4" />
       <child link="${namespace}flange" />
       <origin xyz="0 0 0" rpy="0 0 0" />
@@ -196,11 +196,43 @@
         <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
       </inertial>
     </link>
-    <joint name="${namespace}flange-tool0" type="fixed">
+    <joint name="${namespace}joint_tool0" type="fixed">
       <!-- Denso toolframe - X+ front, Y+ right, Z+ up -->
       <origin xyz="0 0 0" rpy="3.141592 0 0"/>
       <parent link="${namespace}flange"/>
       <child link="${namespace}tool0"/>
+    </joint>
+
+
+         <!-- Screwdriver link attached after J4 -->
+    <link name="${namespace}screwdriver">
+      <visual>
+        <origin rpy="0 0 -1.57" xyz="0 0 0"/>
+        <geometry>
+          <mesh filename="file://$(find denso_robot_descriptions)/robots/${model}/meshes/stl/denso_screwdriver.STL" scale="1 1 1"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.7 0.7 0.7 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin rpy="0 0 -1.57" xyz="0 0 0"/>
+        <geometry>
+          <mesh filename="file://$(find denso_robot_descriptions)/robots/${model}/meshes/stl/denso_screwdriver.STL" scale="1 1 1"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="1.5"/>
+        <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 -0.3"/>
+        <inertia ixx="0.02" ixy="0" ixz="0" iyy="0.02" iyz="0" izz="0.01"/>
+      </inertial>
+    </link>
+
+    <!-- Joint connecting J4 to screwdriver -->
+    <joint name="${namespace}screwdriver_joint" type="fixed">
+      <parent link="${namespace}flange"/>
+      <child link="${namespace}screwdriver"/>
+      <origin rpy="0.0 0 0" xyz="0.0 0.0 0.0"/>
     </joint>
 
 
