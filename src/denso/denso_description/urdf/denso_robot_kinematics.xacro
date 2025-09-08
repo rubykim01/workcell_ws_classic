@@ -7,7 +7,7 @@
       <visual>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find denso_description)/robot/meshes/stl/denso_base_link.STL" scale="1 1 1"/>
+          <mesh filename="file://$(find denso_description)/meshes/denso_base_link.STL" scale="1 1 1"/>
         </geometry>
         <material name="">
           <color rgba="0.7 0.7 0.7 1.0"/>
@@ -16,7 +16,7 @@
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find denso_description)/robot/meshes/stl/denso_base_link.STL" scale="1 1 1"/>
+          <mesh filename="file://$(find denso_description)/meshes/denso_base_link.STL" scale="1 1 1"/>
         </geometry>
       </collision>
       <inertial>
@@ -54,7 +54,7 @@
       <visual>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find denso_description)/robot/meshes/stl/denso_link1.STL" scale="1 1 1"/>
+          <mesh filename="file://$(find denso_description)/meshes/denso_link1.STL" scale="1 1 1"/>
         </geometry>
         <material name="">
           <color rgba="0.7 0.7 0.7 1.0"/>
@@ -63,7 +63,7 @@
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find denso_description)/robot/meshes/stl/denso_link1.STL" scale="1 1 1"/>
+          <mesh filename="file://$(find denso_description)/meshes/denso_link1.STL" scale="1 1 1"/>
         </geometry>
       </collision>
       <inertial>
@@ -85,7 +85,7 @@
       <visual>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find denso_description)/robot/meshes/stl/denso_link2.STL" scale="1 1 1"/>
+          <mesh filename="file://$(find denso_description)/meshes/denso_link2.STL" scale="1 1 1"/>
         </geometry>
         <material name="">
           <color rgba="0.7 0.7 0.7 1.0"/>
@@ -94,7 +94,7 @@
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find denso_description)/robot/meshes/stl/denso_link2.STL" scale="1 1 1"/>
+          <mesh filename="file://$(find denso_description)/meshes/denso_link2.STL" scale="1 1 1"/>
         </geometry>
       </collision>
       <inertial>
@@ -116,7 +116,7 @@
       <visual>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find denso_description)/robot/meshes/stl/denso_link3.STL" scale="1 1 1"/>
+          <mesh filename="file://$(find denso_description)/meshes/denso_link3.STL" scale="1 1 1"/>
         </geometry>
         <material name="">
           <color rgba="0.7 0.7 0.7 1.0"/>
@@ -125,7 +125,7 @@
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find denso_description)/robot/meshes/stl/denso_link3.STL" scale="1 1 1"/>
+          <mesh filename="file://$(find denso_description)/meshes/denso_link3.STL" scale="1 1 1"/>
         </geometry>
       </collision>
       <inertial>
@@ -209,7 +209,7 @@
       <visual>
         <origin rpy="0 0 -1.57" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find denso_description)/robot/meshes/stl/denso_screwdriver.STL" scale="1 1 1"/>
+          <mesh filename="file://$(find denso_description)/meshes/denso_screwdriver.STL" scale="1 1 1"/>
         </geometry>
         <material name="">
           <color rgba="0.7 0.7 0.7 1.0"/>
@@ -218,7 +218,7 @@
       <collision>
         <origin rpy="0 0 -1.57" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find denso_description)/robot/meshes/stl/denso_screwdriver.STL" scale="1 1 1"/>
+          <mesh filename="file://$(find denso_description)/meshes/denso_screwdriver.STL" scale="1 1 1"/>
         </geometry>
       </collision>
       <inertial>

@@ -33,11 +33,11 @@
 
     <!-- Robot data required by the denso driver -->
 
-    <xacro:include filename="$(find denso_description)/robot/urdf/denso_robot_transmissions.xacro" />
+    <xacro:include filename="$(find denso_description)/urdf/denso_robot_transmissions.xacro" />
     <!-- robot kinematics include -->
-    <xacro:include filename="$(find denso_description)/robot/urdf/denso_robot_kinematics.xacro" />
+    <xacro:include filename="$(find denso_description)/urdf/denso_robot_kinematics.xacro" />
     <!-- ros2 control include -->
-    <xacro:include filename="$(find denso_description)/robot/urdf/denso_robot.ros2_control.xacro" />
+    <xacro:include filename="$(find denso_description)/urdf/denso_robot.ros2_control.xacro" />
     <!-- ros2 control instance -->
     <xacro:denso_robot_ros2_control
       name="denso" 

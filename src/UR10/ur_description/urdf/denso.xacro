@@ -3,7 +3,7 @@
 
   <!-- Include Denso robot descriptions -->
   <xacro:macro name="denso" params="parent">
-  <xacro:include filename="$(find denso_description)/robot/urdf/denso_robot_macro.xacro" />
+  <xacro:include filename="$(find denso_description)/urdf/denso_robot_macro.xacro" />
   <xacro:property name="denso_visual_params" value="${xacro.load_yaml('$(find ur_description)/config/denso_visual_parameters.yaml')}"/>
   <xacro:property name="sec_mesh_files" value="${denso_visual_params['mesh_files']}" scope="parent"/>
   <xacro:property name="force_abs_paths" value="true" scope="parent"/>
