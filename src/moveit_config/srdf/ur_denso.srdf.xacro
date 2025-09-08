@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="$(arg name)">
+
+  <!-- robot name parameter -->
+  <xacro:arg name="name" default="ur"/>
+  <!-- parameters -->
+  <xacro:arg name="prefix" default="" />
+  <!-- denso parameters -->
+  <xacro:arg name="denso_model" default="hsr065a1_n32" />
+  <xacro:arg name="denso_namespace" default="denso_" />
+
+  <!-- Include UR SRDF macro -->
+  <xacro:include filename="$(find moveit_config)/srdf/ur_macro.srdf.xacro"/>
+  
+  <!-- Include Denso SRDF macro -->
+  <xacro:include filename="$(find moveit_config)/srdf/denso_robot_macro.srdf.xacro"/>
+
+  <!-- Create UR planning group -->
+  <xacro:ur_srdf name="$(arg name)" prefix="$(arg prefix)"/>
+  
+  <!-- Create Denso planning group -->
+  <xacro:denso_robot_srdf name="$(arg denso_model)" namespace="$(arg denso_namespace)"/>
+
+  <!-- Add virtual joint for Denso base to world connection -->
+  <virtual_joint name="denso_fixed_base" type="fixed" parent_frame="world" child_link="denso_trolley_link" />
+
+</robot> 
