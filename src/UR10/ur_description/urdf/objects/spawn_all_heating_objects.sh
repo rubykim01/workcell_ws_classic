@@ -41,7 +41,7 @@ echo "  heating_plate_cover3-2: ($HPC32_X, $HPC32_Y, $HPC32_Z)"
 echo "Spawning all heating plates and covers"
 
 # Get the current workspace directory
-OBJECTS_DIR="/root/workcell_ws_classic/src/Universal_Robots_ROS2_Description/urdf/objects"
+OBJECTS_DIR="/root/workcell_ws_classic/src/UR10/ur_description/urdf/objects"
 
 echo "Objects directory: $OBJECTS_DIR"
 

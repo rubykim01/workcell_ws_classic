@@ -51,7 +51,7 @@ def launch_setup(context, *args, **kwargs):
 
     ur_control_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            [FindPackageShare("ur_simulation_gazebo"), "/launch", "/ur_sim_control.launch.py"]
+            [FindPackageShare("ur_simulation"), "/launch", "/ur_sim_control.launch.py"]
         ),
         launch_arguments={
             "ur_type": ur_type,
@@ -67,7 +67,7 @@ def launch_setup(context, *args, **kwargs):
 
     ur_moveit_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            [FindPackageShare("ur_moveit_config"), "/launch", "/ur_moveit.launch.py"]
+            [FindPackageShare("ur_moveit"), "/launch", "/ur_moveit.launch.py"]
         ),
         launch_arguments={
             "ur_type": ur_type,
@@ -125,7 +125,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "runtime_config_package",
-            default_value="ur_simulation_gazebo",
+            default_value="ur_simulation",
             description='Package with the controller\'s configuration in "config" folder. \
         Usually the argument is not set, it enables use of a custom setup.',
         )
@@ -155,7 +155,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "moveit_config_package",
-            default_value="ur_moveit_config",
+            default_value="ur_moveit",
             description="MoveIt config package with robot SRDF/XACRO files. Usually the argument \
         is not set, it enables use of a custom moveit config.",
         )

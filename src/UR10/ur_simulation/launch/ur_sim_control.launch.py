@@ -212,7 +212,7 @@ def launch_setup(context, *args, **kwargs):
         ),
         launch_arguments={
             "gui": gazebo_gui,
-            "world": PathJoinSubstitution([FindPackageShare("ur_simulation_gazebo"), "worlds", "custom.world"]),
+            "world": PathJoinSubstitution([FindPackageShare("ur_simulation"), "worlds", "custom.world"]),
         }.items(),
     )
 
@@ -294,7 +294,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "runtime_config_package",
-            default_value="ur_simulation_gazebo",
+            default_value="ur_simulation",
             description='Package with the controller\'s configuration in "config" folder. \
         Usually the argument is not set, it enables use of a custom setup.',
         )

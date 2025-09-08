@@ -10,7 +10,7 @@
   <xacro:arg name="denso_namespace" default="denso_" />
 
   <!-- Include UR SRDF macro -->
-  <xacro:include filename="$(find ur_moveit_config)/srdf/ur_macro.srdf.xacro"/>
+  <xacro:include filename="$(find ur_moveit)/srdf/ur_macro.srdf.xacro"/>
   
   <!-- Include Denso SRDF macro -->
   <xacro:include filename="$(find denso_robot_moveit_config)/robots/$(arg denso_model)/srdf/denso_robot_macro.srdf.xacro"/>
