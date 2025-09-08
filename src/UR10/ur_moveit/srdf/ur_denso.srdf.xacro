@@ -13,7 +13,7 @@
   <xacro:include filename="$(find ur_moveit)/srdf/ur_macro.srdf.xacro"/>
   
   <!-- Include Denso SRDF macro -->
-  <xacro:include filename="$(find denso_robot_moveit_config)/robots/$(arg denso_model)/srdf/denso_robot_macro.srdf.xacro"/>
+  <xacro:include filename="$(find denso_moveit)/robot/srdf/denso_robot_macro.srdf.xacro"/>
 
   <!-- Create UR planning group -->
   <xacro:ur_srdf name="$(arg name)" prefix="$(arg prefix)"/>

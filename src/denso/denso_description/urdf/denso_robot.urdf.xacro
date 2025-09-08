@@ -1,9 +1,7 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://wiki.ros.org/xacro" name="$(arg model)">
-   <!-- robot name parameter -->
-   <xacro:arg name="model" default="denso_robot"/>
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="denso_robot">
    <!-- import main macro -->
-   <xacro:include filename="$(find denso_robot_descriptions)/robots/$(arg model)/urdf/denso_robot_macro.xacro"/>
+   <xacro:include filename="$(find denso_description)/robot/urdf/denso_robot_macro.xacro"/>
 
    <!-- parameters -->
    <xacro:arg name="namespace" default="" />
@@ -18,7 +16,6 @@
 
    <!-- arm -->
    <xacro:denso_robot
-     model="$(arg model)"
      namespace="$(arg namespace)"
      transmission_hw_interface="$(arg transmission_hw_interface)"
      sim="$(arg sim)"

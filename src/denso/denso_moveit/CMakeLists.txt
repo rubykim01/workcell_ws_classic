@@ -1,12 +1,9 @@
 cmake_minimum_required(VERSION 3.8)
-project(denso_robot_descriptions)
+project(denso_moveit)
 
 find_package(ament_cmake REQUIRED)
 
-install(
-  DIRECTORY urdf robots
+install(DIRECTORY config rviz srdf robot
   DESTINATION share/${PROJECT_NAME})
-
-ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
 
 ament_package()
