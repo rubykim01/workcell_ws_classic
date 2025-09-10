@@ -270,6 +270,7 @@ void GazeboLinkAttacherPrivate::Detach(
     
     // Stop all motion and reset physics for the detached model
     StopModelMotion(j.m2);
+    StopModelMotion(j.m1);
     
     // Publish the new attachment state immediately
     this->PublishAttachmentState();
