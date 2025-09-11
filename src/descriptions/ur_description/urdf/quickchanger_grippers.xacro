@@ -17,12 +17,6 @@
           <color rgba="${sec_mesh_files['quickchanger']['visual']['material']['color']}"/>
         </material>
       </visual>
-      <collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <geometry>
-          <xacro:get_mesh name="quickchanger" type="collision"/>
-        </geometry>
-      </collision>
       <inertial>
         <mass value="2.0"/>
         <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -49,12 +43,6 @@
           <color rgba="${sec_mesh_files['suction_master']['visual']['material']['color']}"/>
         </material>
       </visual>
-      <collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <geometry>
-          <xacro:get_mesh name="suction_master" type="collision"/>
-        </geometry>
-      </collision>
       <inertial>
         <mass value="1.0"/>
         <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -105,12 +93,6 @@
           <color rgba="${sec_mesh_files['gripper']['visual']['material']['color']}"/>
         </material>
       </visual>
-      <collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <geometry>
-          <xacro:get_mesh name="gripper" type="collision"/>
-        </geometry>
-      </collision>
       <inertial>
         <mass value="1.0"/>
         <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -136,12 +118,6 @@
           <color rgba="${sec_mesh_files['tooltip1']['visual']['material']['color']}"/>
         </material>
       </visual>
-      <collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <geometry>
-          <xacro:get_mesh name="tooltip1" type="collision"/>
-        </geometry>
-      </collision>
       <inertial>
         <mass value="0.5"/>
         <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -170,12 +146,6 @@
           <color rgba="${sec_mesh_files['tooltip2']['visual']['material']['color']}"/>
         </material>
       </visual>
-      <collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <geometry>
-          <xacro:get_mesh name="tooltip2" type="collision"/>
-        </geometry>
-      </collision>
       <inertial>
         <mass value="0.5"/>
         <origin xyz="0 0 0" rpy="0 0 0"/>
