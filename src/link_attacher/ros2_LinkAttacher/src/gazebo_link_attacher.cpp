@@ -1,334 +1,459 @@
-/*
-# ===================================== COPYRIGHT ===================================== #
-#                                                                                       #
-#  IFRA (Intelligent Flexible Robotics and Assembly) Group, CRANFIELD UNIVERSITY        #
-#  Created on behalf of the IFRA Group at Cranfield University, United Kingdom          #
-#  E-mail: IFRA@cranfield.ac.uk                                                         #
-#                                                                                       #
-#  Licensed under the Apache-2.0 License.                                               #
-#  You may not use this file except in compliance with the License.                     #
-#  You may obtain a copy of the License at: http://www.apache.org/licenses/LICENSE-2.0  #
-#                                                                                       #
-#  Unless required by applicable law or agreed to in writing, software distributed      #
-#  under the License is distributed on an "as-is" basis, without warranties or          #
-#  conditions of any kind, either express or implied. See the License for the specific  #
-#  language governing permissions and limitations under the License.                    #
-#                                                                                       #
-#  IFRA Group - Cranfield University                                                    #
-#  AUTHORS: Mikel Bueno Viso - Mikel.Bueno-Viso@cranfield.ac.uk                         #
-#           Dr. Seemal Asif  - s.asif@cranfield.ac.uk                                   #
-#           Prof. Phil Webb  - p.f.webb@cranfield.ac.uk                                 #
-#                                                                                       #
-#  Date: May, 2023.                                                                     #
-#                                                                                       #
-# ===================================== COPYRIGHT ===================================== #
-
-# ======= CITE OUR WORK ======= #
-# You can cite our work with the following statement:
-# IFRA-Cranfield (2023) IFRA Gazebo-ROS2 Link Attacher. URL: https://github.com/IFRA-Cranfield/IFRA_LinkAttacher.
-*/
-
 #include <gazebo/common/Plugin.hh>
-#include <gazebo/physics/Entity.hh>
-#include <gazebo/physics/Light.hh>
-#include <gazebo/physics/Link.hh>
-#include <gazebo/physics/Model.hh>
+#include <gazebo/common/Events.hh>
 #include <gazebo/physics/World.hh>
-#include <gazebo/physics/PhysicsEngine.hh>
-#include <gazebo/physics/Collision.hh>
+#include <gazebo/physics/Model.hh>
+#include <gazebo/physics/Link.hh>
+#include <gazebo/physics/Joint.hh>
+#include <ignition/math/Vector3.hh>
+#include <ignition/math/Pose3.hh>
 
 #include <gazebo_ros/node.hpp>
+
 #include <memory>
+#include <vector>
+#include <deque>
+#include <mutex>
+#include <future>
+#include <algorithm>
+#include <tuple>
+#include <iostream>
+#include <unordered_set>
 
 #include "gazebo_ros/conversions/builtin_interfaces.hpp"
 #include "gazebo_ros/conversions/geometry_msgs.hpp"
 
-#include "ros2_linkattacher/gazebo_link_attacher.hpp"   // INCLUDE HADER FILE.
-#include <linkattacher_msgs/srv/attach_link.hpp>        // INCLUDE ROS2 SERVICE.
-#include <linkattacher_msgs/srv/detach_link.hpp>        // INCLUDE ROS2 SERVICE.
+#include "ros2_linkattacher/gazebo_link_attacher.hpp"   // your header with JointSTRUCT
+#include <linkattacher_msgs/srv/attach_link.hpp>
+#include <linkattacher_msgs/srv/detach_link.hpp>
 
-// Add ROS2 publisher includes
 #include <rclcpp/publisher.hpp>
-#include <std_msgs/msg/bool.hpp>
 #include <rclcpp/timer.hpp>
 #include <std_msgs/msg/int32.hpp>
 
-// GLOBAL VARIABLE:
+// ======================================================================================
+// Global list of active attachments (protected by a mutex)
 std::vector<JointSTRUCT> GV_joints;
-JointSTRUCT GV_jointSTR;
-
-// Multiple attachments enabled now
-// The GV_joints vector contains all active attachments
+static std::mutex GV_mtx;
 
 namespace gazebo_ros
 {
 
+// ======================================================================================
+// Command: services enqueue; update thread executes
+struct Cmd {
+  enum Type { ATTACH, DETACH } type;
+  // inputs
+  std::string m1, l1, m2, l2, joint_name;
+  // sync
+  std::shared_ptr<std::promise<void>> done;
+};
+
 class GazeboLinkAttacherPrivate
 {
 public:
+  // ROS service handlers (enqueue; optionally wait bounded time)
+  void Attach(linkattacher_msgs::srv::AttachLink::Request::SharedPtr _req,
+              linkattacher_msgs::srv::AttachLink::Response::SharedPtr _res);
 
-  // ATTACH (ROS2 service):
-  void Attach(
-    linkattacher_msgs::srv::AttachLink::Request::SharedPtr _req,
-    linkattacher_msgs::srv::AttachLink::Response::SharedPtr _res);
+  void Detach(linkattacher_msgs::srv::DetachLink::Request::SharedPtr _req,
+              linkattacher_msgs::srv::DetachLink::Response::SharedPtr _res);
 
-  // DETACH (ROS2 service):
-  void Detach(
-    linkattacher_msgs::srv::DetachLink::Request::SharedPtr _req,
-    linkattacher_msgs::srv::DetachLink::Response::SharedPtr _res);
+  // Update-thread queue processor
+  void ProcessQueue();
 
-  // Publish attachment state
+  // State publisher
   void PublishAttachmentState();
 
-  // Stop all motion and reset physics for a detached model
-  void StopModelMotion(gazebo::physics::ModelPtr model);
+  // Lookup (order-agnostic)
+  bool getJointEither(const std::string& M1, const std::string& L1,
+                      const std::string& M2, const std::string& L2,
+                      JointSTRUCT &joint);
 
-  // World pointer from Gazebo.
+  // == Actual work (runs on update thread) ==
+  void doAttach(Cmd& cmd);
+  void doDetach(Cmd& cmd);
+
+  // Heuristic: identify UR robot models so we never freeze/damp them
+  static bool isRobotModel(const gazebo::physics::ModelPtr& m) {
+    if (!m) return false;
+    const std::string n = m->GetName();
+    // adjust as needed for your model names
+    if (n.rfind("ur", 0) == 0) return true;          // "ur10", "ur10e", "ur5", ...
+    if (n.find("ur10") != std::string::npos) return true;
+    if (n.find("ur5")  != std::string::npos) return true;
+    if (n.find("ur3")  != std::string::npos) return true;
+    return false;
+  }
+
+  // ===== Freeze / Unfreeze ============================================================
+  // Freeze non-robot links to keep them perfectly still.
+  // Freeze = zero vels, gravity off, kinematic true. Unfreeze restores.
+  struct LinkKey {
+    std::string model;
+    std::string link;
+    bool operator==(const LinkKey& o) const { return model==o.model && link==o.link; }
+  };
+  struct LinkKeyHash {
+    std::size_t operator()(const LinkKey& k) const {
+      return std::hash<std::string>()(k.model) ^ (std::hash<std::string>()(k.link) << 1);
+    }
+  };
+
+  void freezeLink(const gazebo::physics::ModelPtr& m, const gazebo::physics::LinkPtr& L);
+  void unfreezeLink(const gazebo::physics::ModelPtr& m, const gazebo::physics::LinkPtr& L);
+  bool isFrozen(const std::string& model, const std::string& link) const;
+
+  std::unordered_set<LinkKey, LinkKeyHash> frozen_;
+  mutable std::mutex frozen_mtx_;
+
+  // Scoped, light stabilization during ops (temporary damping only)
+  struct ScopedStabilize {
+    std::vector<std::pair<gazebo::physics::LinkPtr,
+      std::tuple<bool,double,double>>> saved;
+    explicit ScopedStabilize(const std::vector<gazebo::physics::LinkPtr>& links){
+      saved.reserve(links.size());
+      for (auto &L : links) if (L) {
+        saved.push_back({L, {L->GetGravityMode(), L->GetLinearDamping(), L->GetAngularDamping()}});
+        L->SetLinearVel(ignition::math::Vector3d::Zero);
+        L->SetAngularVel(ignition::math::Vector3d::Zero);
+        // temporarily calm contacts; we do NOT change gravity/kinematic here
+        L->SetLinearDamping(3.0);
+        L->SetAngularDamping(3.0);
+      }
+    }
+    ~ScopedStabilize(){
+      for (auto &s : saved) {
+        auto L=s.first; auto [g,ld,ad]=s.second;
+        if (!L) continue;
+        L->SetLinearDamping(ld);
+        L->SetAngularDamping(ad);
+      }
+    }
+  };
+
+  // World + ROS
   gazebo::physics::WorldPtr world_;
-
-  /// ROS node for communication, managed by gazebo_ros.
   gazebo_ros::Node::SharedPtr ros_node_;
 
-  // ROS services to handle requests for attach/detach.
+  // Services & publisher
   rclcpp::Service<linkattacher_msgs::srv::AttachLink>::SharedPtr attach_link_service_;
   rclcpp::Service<linkattacher_msgs::srv::DetachLink>::SharedPtr detach_link_service_;
-
-  // ROS publisher for attachment state
   rclcpp::Publisher<std_msgs::msg::Int32>::SharedPtr attachment_state_publisher_;
-
-  // Timer for periodic publishing
   rclcpp::TimerBase::SharedPtr attachment_state_timer_;
 
-  // getJoint function:
-  bool getJoint(std::string M1, std::string L1, std::string M2, std::string L2, JointSTRUCT &joint);
-
+  // Update-thread queue
+  std::mutex q_mtx_;
+  std::deque<Cmd> queue_;
+  gazebo::event::ConnectionPtr update_conn_;
 };
 
-GazeboLinkAttacher::GazeboLinkAttacher()
-: impl_(std::make_unique<GazeboLinkAttacherPrivate>())
-{
-}
+// ======================================================================================
+// Plugin shell
 
-GazeboLinkAttacher::~GazeboLinkAttacher()
-{
-}
+GazeboLinkAttacher::GazeboLinkAttacher()
+: impl_(std::make_unique<GazeboLinkAttacherPrivate>()) {}
+
+GazeboLinkAttacher::~GazeboLinkAttacher() = default;
 
 void GazeboLinkAttacher::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf)
 {
-  
-  // Gazebo WORLD:
   impl_->world_ = _world;
-
-  // ROS2 NODE:
   impl_->ros_node_ = gazebo_ros::Node::Get(_sdf);
 
-  // ROS2 SERVICE SERVERS:
+  // Services
   impl_->attach_link_service_ =
     impl_->ros_node_->create_service<linkattacher_msgs::srv::AttachLink>(
-    "ATTACHLINK", std::bind(
-      &GazeboLinkAttacherPrivate::Attach, impl_.get(),
-      std::placeholders::_1, std::placeholders::_2));
+      "ATTACHLINK",
+      std::bind(&GazeboLinkAttacherPrivate::Attach, impl_.get(),
+                std::placeholders::_1, std::placeholders::_2));
+
   impl_->detach_link_service_ =
     impl_->ros_node_->create_service<linkattacher_msgs::srv::DetachLink>(
-    "DETACHLINK", std::bind(
-      &GazeboLinkAttacherPrivate::Detach, impl_.get(),
-      std::placeholders::_1, std::placeholders::_2));
+      "DETACHLINK",
+      std::bind(&GazeboLinkAttacherPrivate::Detach, impl_.get(),
+                std::placeholders::_1, std::placeholders::_2));
 
-  // ROS2 ATTACHMENT STATE PUBLISHER:
+  // Publisher: count of active joints
   impl_->attachment_state_publisher_ =
     impl_->ros_node_->create_publisher<std_msgs::msg::Int32>("attachment_state", 10);
 
-  // ROS2 TIMER for periodic publishing:
+  // Timer (100 ms)
   impl_->attachment_state_timer_ =
     impl_->ros_node_->create_wall_timer(
-      std::chrono::milliseconds(100),  // Publish every 100ms
+      std::chrono::milliseconds(100),
       std::bind(&GazeboLinkAttacherPrivate::PublishAttachmentState, impl_.get()));
 
+  // Process queued commands on the Gazebo update thread
+  impl_->update_conn_ = gazebo::event::Events::ConnectWorldUpdateBegin(
+    std::bind(&GazeboLinkAttacherPrivate::ProcessQueue, impl_.get()));
 }
+
+// ======================================================================================
+// Helpers
+
+bool GazeboLinkAttacherPrivate::getJointEither(const std::string& M1, const std::string& L1,
+                                               const std::string& M2, const std::string& L2,
+                                               JointSTRUCT &joint)
+{
+  std::lock_guard<std::mutex> lk(GV_mtx);
+  for (auto &j : GV_joints) {
+    bool f = (j.model1==M1 && j.link1==L1 && j.model2==M2 && j.link2==L2);
+    bool r = (j.model1==M2 && j.link1==L2 && j.model2==M1 && j.link2==L1);
+    if (f || r) { joint = j; return true; }
+  }
+  return false;
+}
+
+void GazeboLinkAttacherPrivate::PublishAttachmentState()
+{
+  std_msgs::msg::Int32 msg;
+  {
+    std::lock_guard<std::mutex> lk(GV_mtx);
+    msg.data = static_cast<int32_t>(GV_joints.size());
+  }
+  attachment_state_publisher_->publish(msg);
+}
+
+// Freeze/unfreeze implementation
+void GazeboLinkAttacherPrivate::freezeLink(const gazebo::physics::ModelPtr& m,
+                                           const gazebo::physics::LinkPtr& L)
+{
+  if (!m || !L) return;
+  if (isRobotModel(m)) return; // never freeze robot links
+
+  // Mark frozen by name
+  {
+    std::lock_guard<std::mutex> lk(frozen_mtx_);
+    frozen_.insert({m->GetName(), L->GetName()});
+  }
+
+  // Apply freeze
+  L->SetLinearVel(ignition::math::Vector3d::Zero);
+  L->SetAngularVel(ignition::math::Vector3d::Zero);
+  L->SetGravityMode(false);
+  // Kinematic: non-dynamic but keeps collisions; stays exactly where it is
+  L->SetKinematic(true);
+}
+
+void GazeboLinkAttacherPrivate::unfreezeLink(const gazebo::physics::ModelPtr& m,
+                                             const gazebo::physics::LinkPtr& L)
+{
+  if (!m || !L) return;
+  if (isRobotModel(m)) return;
+
+  {
+    std::lock_guard<std::mutex> lk(frozen_mtx_);
+    auto it = frozen_.find({m->GetName(), L->GetName()});
+    if (it == frozen_.end()) return; // not frozen
+    frozen_.erase(it);
+  }
+
+  // Restore normal dynamics
+  L->SetKinematic(false);
+  L->SetGravityMode(true);
+}
+
+bool GazeboLinkAttacherPrivate::isFrozen(const std::string& model, const std::string& link) const
+{
+  std::lock_guard<std::mutex> lk(frozen_mtx_);
+  return frozen_.count({model, link}) > 0;
+}
+
+// ======================================================================================
+// Service callbacks (enqueue work, then wait bounded time)
 
 void GazeboLinkAttacherPrivate::Attach(
   linkattacher_msgs::srv::AttachLink::Request::SharedPtr _req,
   linkattacher_msgs::srv::AttachLink::Response::SharedPtr _res)
 {
+  auto p = std::make_shared<std::promise<void>>();
+  Cmd cmd;
+  cmd.type = Cmd::ATTACH;
+  cmd.m1 = _req->model1_name; cmd.l1 = _req->link1_name;
+  cmd.m2 = _req->model2_name; cmd.l2 = _req->link2_name;
+  cmd.joint_name = cmd.m1 + "_" + cmd.l1 + "_" + cmd.m2 + "_" + cmd.l2 + "_joint";
+  cmd.done = p;
 
-  // CHECK if -> Joint already exists in GV_joints:
-  /* THIS IS NO LONGER NEEDED, SINCE THE JOINT IS REMOVED AFTER DETACHING!
+  {
+    std::lock_guard<std::mutex> lk(q_mtx_);
+    queue_.push_back(std::move(cmd));
+  }
+
+  auto fut = p->get_future();
+  if (fut.wait_for(std::chrono::milliseconds(1500)) != std::future_status::ready) {
+    _res->success = false;
+    _res->message = "Attach queued; processing timeout (will complete asynchronously).";
+    return;
+  }
+
+  // Verify: pair should now exist
   JointSTRUCT j;
-  if (this->getJoint(_req->model1_name, _req->link1_name, _req->model2_name, _req->link2_name, j)){
-    j.joint->Attach(j.l1, j.l2);
-    _res->success = true;
-    _res->message = "ATTACHED: {MODEL , LINK} -> {" + _req->model1_name + " , " + _req->link1_name + "} -- {" + _req->model2_name + " , " + _req->link2_name + "}.";
-    return;
-  }
-  */
-
-  // Get the first link:
-  gazebo::physics::ModelPtr model1 = world_->ModelByName(_req->model1_name);
-  if (!model1) {
-    _res->success = false;
-    _res->message = "Failed to find model with name: " + _req->model1_name;
-    return;
-  }
-  gazebo::physics::LinkPtr link1 = model1->GetLink(_req->link1_name);
-  if (!link1) {
-    _res->success = false;
-    _res->message = "Failed to find link with name: " + _req->link1_name;
-    return;
-  }
-
-  // Get the second link:
-  gazebo::physics::ModelPtr model2 = world_->ModelByName(_req->model2_name);
-  if (!model2) {
-    _res->success = false;
-    _res->message = "Failed to find model with name: " + _req->model2_name;
-    return;
-  }
-  gazebo::physics::LinkPtr link2 = model2->GetLink(_req->link2_name);
-  if (!link2) {
-    _res->success = false;
-    _res->message = "Failed to find link with name: " + _req->link2_name;
-    return;
-  }
-
-  // Check if these links are already attached
-  JointSTRUCT existing_joint;
-  if (this->getJoint(_req->model1_name, _req->link1_name, _req->model2_name, _req->link2_name, existing_joint)) {
-    _res->success = false;
-    _res->message = "These links are already attached: {" + _req->model1_name + " , " + _req->link1_name + "} -- {" + _req->model2_name + " , " + _req->link2_name + "}.";
-    return;
-  }
-
-  // Create a fixed joint between the two links:
-  std::string joint_name = _req->model1_name + "_" + _req->link1_name + "_" + _req->model2_name + "_" + _req->link2_name + "_joint";
-  gazebo::physics::JointPtr joint = model1->CreateJoint(joint_name, "fixed", link1, link2);
-  joint->Attach(link1, link2);
-  joint->Load(link1, link2, ignition::math::Pose3d());
-  joint->SetProvideFeedback(true);
-  
-  // Remove the axis and limits for fixed joint - they're not needed
-  // joint->SetAxis(0, ignition::math::Vector3d(1, 0, 0));
-  // joint->SetUpperLimit(0, 0);
-  // joint->SetLowerLimit(0, 0);
-  // joint->SetEffortLimit(0, 0);
-  // joint->SetDamping(1, 1.0);
-
-  joint->Init();
-  model1->Update();
-
-
-  // Stop any existing motion and reset physics before attaching
-  StopModelMotion(model2);
-
-
-  GV_jointSTR.model1 = _req->model1_name;
-  GV_jointSTR.model2 = _req->model2_name;
-  GV_jointSTR.link1 = _req->link1_name;
-  GV_jointSTR.link2 = _req->link2_name;
-  GV_jointSTR.m1 = model1;
-  GV_jointSTR.m2 = model2;
-  GV_jointSTR.l1 = link1;
-  GV_jointSTR.l2 = link2;
-  GV_jointSTR.joint = joint;
-  
-  GV_joints.push_back(GV_jointSTR);
-
-  // Set the success and message in the response:
-  _res->success = true;
-  _res->message = "ATTACHED: {MODEL , LINK} -> {" + _req->model1_name + " , " + _req->link1_name + "} -- {" + _req->model2_name + " , " + _req->link2_name + "}.";
-
-  // Publish the new attachment state immediately
-  this->PublishAttachmentState();
-
+  bool ok = getJointEither(_req->model1_name, _req->link1_name, _req->model2_name, _req->link2_name, j);
+  _res->success = ok;
+  _res->message = ok ?
+    ("ATTACHED: {" + _req->model1_name + " , " + _req->link1_name +
+     "} -- {" + _req->model2_name + " , " + _req->link2_name + "}.")
+    : "Attach failed (see Gazebo log).";
 }
 
 void GazeboLinkAttacherPrivate::Detach(
   linkattacher_msgs::srv::DetachLink::Request::SharedPtr _req,
   linkattacher_msgs::srv::DetachLink::Response::SharedPtr _res)
 {
+  auto p = std::make_shared<std::promise<void>>();
+  Cmd cmd;
+  cmd.type = Cmd::DETACH;
+  cmd.m1 = _req->model1_name; cmd.l1 = _req->link1_name;
+  cmd.m2 = _req->model2_name; cmd.l2 = _req->link2_name;
+  cmd.done = p;
 
-  // CHECK if -> Joint already exists in GV_joints:
-  JointSTRUCT j;
-  if (this->getJoint(_req->model1_name, _req->link1_name, _req->model2_name, _req->link2_name, j)){
-    j.joint->Detach();
-    _res->success = true;
-    _res->message = "DETACHED: {MODEL , LINK} -> {" + _req->model1_name + " , " + _req->link1_name + "} -- {" + _req->model2_name + " , " + _req->link2_name + "}.";
-    
-    // Remove joint from the model
-    gazebo::physics::ModelPtr model1 = world_->ModelByName(_req->model1_name);
-    if (model1) {
-      model1->RemoveJoint(j.joint->GetName());
-    }
-
-    // Remove the joint from our tracking vector
-    for (auto it = GV_joints.begin(); it != GV_joints.end(); ++it) {
-      if (it->joint == j.joint) {
-        GV_joints.erase(it);
-        break;
-      }
-    }
-    
-    
-    // Stop all motion and reset physics for the detached model
-    StopModelMotion(j.m2);
-    StopModelMotion(j.m1);
-    
-    // Publish the new attachment state immediately
-    this->PublishAttachmentState();
-    
-    return;
-  } else {
-    _res->success = false;
-    _res->message = "DETACHED -- ERROR (Joint does not exist!): {MODEL , LINK} -> {" + _req->model1_name + " , " + _req->link1_name + "} -- {" + _req->model2_name + " , " + _req->link2_name + "}.";
-  }
-
-}
-
-bool GazeboLinkAttacherPrivate::getJoint(std::string M1, std::string L1, std::string M2, std::string L2, JointSTRUCT &joint)
   {
-    JointSTRUCT j;
-    for(std::vector<JointSTRUCT>::iterator it = GV_joints.begin(); it != GV_joints.end(); ++it){
-      j = *it;
-      if ((j.model1.compare(M1) == 0) && (j.model2.compare(M2) == 0) && (j.link1.compare(L1) == 0) && (j.link2.compare(L2) == 0)){
-        joint = j;
-        return true;
-      }
-    }
-    return false;
+    std::lock_guard<std::mutex> lk(q_mtx_);
+    queue_.push_back(std::move(cmd));
   }
 
-void GazeboLinkAttacherPrivate::PublishAttachmentState()
-{
-  auto msg = std::make_unique<std_msgs::msg::Int32>();
-  msg->data = GV_joints.size();
-  attachment_state_publisher_->publish(*msg);
-}
-
-
-void GazeboLinkAttacherPrivate::StopModelMotion(gazebo::physics::ModelPtr model)
-{
-  if (!model) {
+  auto fut = p->get_future();
+  if (fut.wait_for(std::chrono::milliseconds(1500)) != std::future_status::ready) {
+    _res->success = false;
+    _res->message = "Detach queued; processing timeout (will complete asynchronously).";
     return;
   }
 
-  // Get all links in the model
-  auto links = model->GetLinks();
-  for (auto& link : links) {
-    if (link) {
-      // Stop all motion for the link
-      link->SetLinearVel(ignition::math::Vector3d::Zero);
-      link->SetAngularVel(ignition::math::Vector3d::Zero);
-      
-      // Reset physics properties for the link
-      link->SetLinearDamping(0.0);
-      link->SetAngularDamping(0.0);
-      link->SetGravityMode(false); // Ensure gravity is off
-      
-      // Print confirmation that motion was stopped
-      std::cout << "Motion stopped and physics properties reset for link: " << link->GetName() << " in model: " << model->GetName() << std::endl;
+  // Idempotent: if it doesn't exist anymore, we're done
+  JointSTRUCT j;
+  bool stillThere = getJointEither(_req->model1_name, _req->link1_name, _req->model2_name, _req->link2_name, j);
+  _res->success = !stillThere;
+  _res->message = stillThere ? "Detach failed (see Gazebo log)." : "DETACHED (or already detached).";
+}
+
+// ======================================================================================
+// Update-thread queue processor
+
+void GazeboLinkAttacherPrivate::ProcessQueue()
+{
+  for (;;) {
+    Cmd cmd;
+    {
+      std::lock_guard<std::mutex> lk(q_mtx_);
+      if (queue_.empty()) break;
+      cmd = std::move(queue_.front());
+      queue_.pop_front();
     }
+
+    if (cmd.type == Cmd::ATTACH)      doAttach(cmd);
+    else /* DETACH */                  doDetach(cmd);
+
+    if (cmd.done) cmd.done->set_value();
   }
 }
+
+// ======================================================================================
+// Actual attach/detach (runs on update thread ONLY)
+
+void GazeboLinkAttacherPrivate::doAttach(Cmd& cmd)
+{
+  auto m1 = world_->ModelByName(cmd.m1);
+  auto m2 = world_->ModelByName(cmd.m2);
+  if (!m1 || !m2) { std::cerr << "[LinkAttacher] Model not found\n"; return; }
+
+  auto l1 = m1->GetLink(cmd.l1);
+  auto l2 = m2->GetLink(cmd.l2);
+  if (!l1 || !l2) { std::cerr << "[LinkAttacher] Link not found\n"; return; }
+
+  // Unfreeze links if they were frozen earlier
+  if (isFrozen(cmd.m1, cmd.l1)) unfreezeLink(m1, l1);
+  if (isFrozen(cmd.m2, cmd.l2)) unfreezeLink(m2, l2);
+
+  // Prevent duplicate pair only (multi-attach allowed across different pairs)
+  {
+    std::lock_guard<std::mutex> lk(GV_mtx);
+    for (auto &j: GV_joints) {
+      if ((j.l1==l1 && j.l2==l2) || (j.l1==l2 && j.l2==l1)) {
+        std::cerr << "[LinkAttacher] Pair already attached\n";
+        return;
+      }
+    }
+  }
+
+  // Light stabilization during op (temporary damping only)
+  std::vector<gazebo::physics::LinkPtr> to_stabilize;
+  if (!isRobotModel(m1)) to_stabilize.push_back(l1);
+  if (!isRobotModel(m2)) to_stabilize.push_back(l2);
+  ScopedStabilize S(to_stabilize);
+
+  auto joint = m1->CreateJoint(cmd.joint_name, "fixed", l1, l2);
+  if (!joint) { std::cerr << "[LinkAttacher] CreateJoint failed\n"; return; }
+
+  joint->Attach(l1, l2);
+  joint->Load(l1, l2, ignition::math::Pose3d());  // identity pose
+  joint->SetProvideFeedback(true);
+  joint->Init();
+
+  JointSTRUCT rec;
+  rec.model1 = cmd.m1; rec.m1 = m1; rec.link1 = cmd.l1; rec.l1 = l1;
+  rec.model2 = cmd.m2; rec.m2 = m2; rec.link2 = cmd.l2; rec.l2 = l2;
+  rec.joint  = joint;
+
+  {
+    std::lock_guard<std::mutex> lk(GV_mtx);
+    GV_joints.push_back(rec);
+  }
+  PublishAttachmentState();
+
+  // New: For object↔object assemblies, keep them parked (frozen) after attach
+  if (!isRobotModel(m1) && !isRobotModel(m2)) {
+    freezeLink(m1, l1);
+    freezeLink(m2, l2);
+  }
+}
+
+void GazeboLinkAttacherPrivate::doDetach(Cmd& cmd)
+{
+  JointSTRUCT j;
+  {
+    std::lock_guard<std::mutex> lk(GV_mtx);
+    auto it = std::find_if(GV_joints.begin(), GV_joints.end(), [&](const JointSTRUCT& e){
+      bool f = (e.model1==cmd.m1 && e.link1==cmd.l1 && e.model2==cmd.m2 && e.link2==cmd.l2);
+      bool r = (e.model1==cmd.m2 && e.link1==cmd.l2 && e.model2==cmd.m1 && e.link2==cmd.l1);
+      return f || r;
+    });
+    if (it == GV_joints.end()) {
+      // Already detached — ok
+      return;
+    }
+    j = *it;
+  }
+
+  auto m1 = j.m1, m2 = j.m2;
+  auto l1 = j.l1, l2 = j.l2;
+
+  // Light stabilization during joint removal
+  std::vector<gazebo::physics::LinkPtr> to_stabilize;
+  if (!isRobotModel(m1)) to_stabilize.push_back(l1);
+  if (!isRobotModel(m2)) to_stabilize.push_back(l2);
+  ScopedStabilize S(to_stabilize);
+
+  if (j.joint) j.joint->Detach();
+  // Try remove from both models (joint was created on m1, but be safe)
+  if (m1) m1->RemoveJoint(j.joint ? j.joint->GetName() : "");
+  if (m2) m2->RemoveJoint(j.joint ? j.joint->GetName() : "");
+
+  {
+    std::lock_guard<std::mutex> lk(GV_mtx);
+    GV_joints.erase(std::remove_if(GV_joints.begin(), GV_joints.end(),
+                    [&](const JointSTRUCT& e){ return e.joint == j.joint; }),
+                    GV_joints.end());
+  }
+  PublishAttachmentState();
+
+  // Persistently freeze the now-detached non-robot links so they don't move at all
+  if (!isRobotModel(m1)) freezeLink(m1, l1);
+  if (!isRobotModel(m2)) freezeLink(m2, l2);
+}
+
+// ======================================================================================
+// Register plugin
 
 GZ_REGISTER_WORLD_PLUGIN(GazeboLinkAttacher)
 
-}  // namespace gazebo_ros
+} // namespace gazebo_ros
