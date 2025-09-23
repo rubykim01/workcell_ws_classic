@@ -63,6 +63,15 @@ workcell_ws_classic/
 - MoveIt2
 - Universal Robots ROS 2 packages
 - Denso robot packages
+- Link attacher packages
+- ros-humble-pick-ik (for inverse kinematics)
+
+## Installation
+
+Install required ROS packages:
+
+```bash
+sudo apt install ros-humble-pick-ik
+```
 
 *This workspace provides a complete simulation environment for industrial workcell operations with multiple robot types, inverse kinematics, and advanced motion planning capabilities.*
-EOF
