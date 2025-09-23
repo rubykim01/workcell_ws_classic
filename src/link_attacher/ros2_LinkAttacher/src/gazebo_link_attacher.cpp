@@ -73,37 +73,40 @@ public:
   void doAttach(Cmd& cmd);
   void doDetach(Cmd& cmd);
 
+  // Helper functions 
+  struct ModelLinkPair {
+    gazebo::physics::ModelPtr model;
+    gazebo::physics::LinkPtr link;
+    bool isRobot;
+  };
+  
+  std::pair<ModelLinkPair, ModelLinkPair> getModelLinkPair(const std::string& m1_name, const std::string& l1_name,
+                                                          const std::string& m2_name, const std::string& l2_name);
+  
+  std::vector<gazebo::physics::LinkPtr> getNonRobotLinks(const ModelLinkPair& pair1, const ModelLinkPair& pair2);
+  
+  bool isJointAlreadyAttached(const gazebo::physics::LinkPtr& l1, const gazebo::physics::LinkPtr& l2);
+  
+  // Find joint by model/link names (order-agnostic)
+  std::vector<JointSTRUCT>::iterator findJoint(const std::string& m1, const std::string& l1,
+                                              const std::string& m2, const std::string& l2);
+
   // Heuristic: identify UR robot models so we never freeze/damp them
   static bool isRobotModel(const gazebo::physics::ModelPtr& m) {
     if (!m) return false;
     const std::string n = m->GetName();
-    // adjust as needed for your model names
-    if (n.rfind("ur", 0) == 0) return true;          // "ur10", "ur10e", "ur5", ...
-    if (n.find("ur10") != std::string::npos) return true;
-    if (n.find("ur5")  != std::string::npos) return true;
-    if (n.find("ur3")  != std::string::npos) return true;
-    return false;
+    // Check if name starts with "ur" 
+    return n.rfind("ur", 0) == 0;
   }
 
   // ===== Freeze / Unfreeze ============================================================
   // Freeze non-robot links to keep them perfectly still.
   // Freeze = zero vels, gravity off, kinematic true. Unfreeze restores.
-  struct LinkKey {
-    std::string model;
-    std::string link;
-    bool operator==(const LinkKey& o) const { return model==o.model && link==o.link; }
-  };
-  struct LinkKeyHash {
-    std::size_t operator()(const LinkKey& k) const {
-      return std::hash<std::string>()(k.model) ^ (std::hash<std::string>()(k.link) << 1);
-    }
-  };
-
   void freezeLink(const gazebo::physics::ModelPtr& m, const gazebo::physics::LinkPtr& L);
   void unfreezeLink(const gazebo::physics::ModelPtr& m, const gazebo::physics::LinkPtr& L);
   bool isFrozen(const std::string& model, const std::string& link) const;
 
-  std::unordered_set<LinkKey, LinkKeyHash> frozen_;
+  std::unordered_set<std::string> frozen_;  // "model_name::link_name"
   mutable std::mutex frozen_mtx_;
 
   // Scoped, light stabilization during ops (temporary damping only)
@@ -196,10 +199,10 @@ bool GazeboLinkAttacherPrivate::getJointEither(const std::string& M1, const std:
                                                JointSTRUCT &joint)
 {
   std::lock_guard<std::mutex> lk(GV_mtx);
-  for (auto &j : GV_joints) {
-    bool f = (j.model1==M1 && j.link1==L1 && j.model2==M2 && j.link2==L2);
-    bool r = (j.model1==M2 && j.link1==L2 && j.model2==M1 && j.link2==L1);
-    if (f || r) { joint = j; return true; }
+  auto it = findJoint(M1, L1, M2, L2);
+  if (it != GV_joints.end()) {
+    joint = *it;
+    return true;
   }
   return false;
 }
@@ -221,10 +224,10 @@ void GazeboLinkAttacherPrivate::freezeLink(const gazebo::physics::ModelPtr& m,
   if (!m || !L) return;
   if (isRobotModel(m)) return; // never freeze robot links
 
-  // Mark frozen by name
+  std::string key = m->GetName() + "::" + L->GetName();
   {
     std::lock_guard<std::mutex> lk(frozen_mtx_);
-    frozen_.insert({m->GetName(), L->GetName()});
+    frozen_.insert(key);
   }
 
   // Apply freeze
@@ -241,11 +244,11 @@ void GazeboLinkAttacherPrivate::unfreezeLink(const gazebo::physics::ModelPtr& m,
   if (!m || !L) return;
   if (isRobotModel(m)) return;
 
+  std::string key = m->GetName() + "::" + L->GetName();
   {
     std::lock_guard<std::mutex> lk(frozen_mtx_);
-    auto it = frozen_.find({m->GetName(), L->GetName()});
-    if (it == frozen_.end()) return; // not frozen
-    frozen_.erase(it);
+    if (frozen_.find(key) == frozen_.end()) return; // not frozen
+    frozen_.erase(key);
   }
 
   // Restore normal dynamics
@@ -255,8 +258,63 @@ void GazeboLinkAttacherPrivate::unfreezeLink(const gazebo::physics::ModelPtr& m,
 
 bool GazeboLinkAttacherPrivate::isFrozen(const std::string& model, const std::string& link) const
 {
+  std::string key = model + "::" + link;
   std::lock_guard<std::mutex> lk(frozen_mtx_);
-  return frozen_.count({model, link}) > 0;
+  return frozen_.count(key) > 0;
+}
+
+// Helper function implementations
+std::pair<GazeboLinkAttacherPrivate::ModelLinkPair, GazeboLinkAttacherPrivate::ModelLinkPair> 
+GazeboLinkAttacherPrivate::getModelLinkPair(const std::string& m1_name, const std::string& l1_name,
+                                           const std::string& m2_name, const std::string& l2_name)
+{
+  auto m1 = world_->ModelByName(m1_name);
+  auto m2 = world_->ModelByName(m2_name);
+  if (!m1 || !m2) {
+    throw std::runtime_error("Model not found");
+  }
+
+  auto l1 = m1->GetLink(l1_name);
+  auto l2 = m2->GetLink(l2_name);
+  if (!l1 || !l2) {
+    throw std::runtime_error("Link not found");
+  }
+
+  ModelLinkPair pair1{m1, l1, isRobotModel(m1)};
+  ModelLinkPair pair2{m2, l2, isRobotModel(m2)};
+  
+  return {pair1, pair2};
+}
+
+std::vector<gazebo::physics::LinkPtr> 
+GazeboLinkAttacherPrivate::getNonRobotLinks(const ModelLinkPair& pair1, const ModelLinkPair& pair2)
+{
+  std::vector<gazebo::physics::LinkPtr> links;
+  if (!pair1.isRobot) links.push_back(pair1.link);
+  if (!pair2.isRobot) links.push_back(pair2.link);
+  return links;
+}
+
+bool GazeboLinkAttacherPrivate::isJointAlreadyAttached(const gazebo::physics::LinkPtr& l1, const gazebo::physics::LinkPtr& l2)
+{
+  std::lock_guard<std::mutex> lk(GV_mtx);
+  for (auto &j: GV_joints) {
+    if ((j.l1==l1 && j.l2==l2) || (j.l1==l2 && j.l2==l1)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+std::vector<JointSTRUCT>::iterator 
+GazeboLinkAttacherPrivate::findJoint(const std::string& m1, const std::string& l1,
+                                    const std::string& m2, const std::string& l2)
+{
+  return std::find_if(GV_joints.begin(), GV_joints.end(), [&](const JointSTRUCT& e){
+    bool f = (e.model1==m1 && e.link1==l1 && e.model2==m2 && e.link2==l2);
+    bool r = (e.model1==m2 && e.link1==l2 && e.model2==m1 && e.link2==l1);
+    return f || r;
+  });
 }
 
 // ======================================================================================
@@ -352,58 +410,49 @@ void GazeboLinkAttacherPrivate::ProcessQueue()
 
 void GazeboLinkAttacherPrivate::doAttach(Cmd& cmd)
 {
-  auto m1 = world_->ModelByName(cmd.m1);
-  auto m2 = world_->ModelByName(cmd.m2);
-  if (!m1 || !m2) { std::cerr << "[LinkAttacher] Model not found\n"; return; }
+  try {
+    auto [pair1, pair2] = getModelLinkPair(cmd.m1, cmd.l1, cmd.m2, cmd.l2);
+    
+    // Unfreeze links if they were frozen earlier
+    if (isFrozen(cmd.m1, cmd.l1)) unfreezeLink(pair1.model, pair1.link);
+    if (isFrozen(cmd.m2, cmd.l2)) unfreezeLink(pair2.model, pair2.link);
 
-  auto l1 = m1->GetLink(cmd.l1);
-  auto l2 = m2->GetLink(cmd.l2);
-  if (!l1 || !l2) { std::cerr << "[LinkAttacher] Link not found\n"; return; }
-
-  // Unfreeze links if they were frozen earlier
-  if (isFrozen(cmd.m1, cmd.l1)) unfreezeLink(m1, l1);
-  if (isFrozen(cmd.m2, cmd.l2)) unfreezeLink(m2, l2);
-
-  // Prevent duplicate pair only (multi-attach allowed across different pairs)
-  {
-    std::lock_guard<std::mutex> lk(GV_mtx);
-    for (auto &j: GV_joints) {
-      if ((j.l1==l1 && j.l2==l2) || (j.l1==l2 && j.l2==l1)) {
-        std::cerr << "[LinkAttacher] Pair already attached\n";
-        return;
-      }
+    // Prevent duplicate pair only (multi-attach allowed across different pairs)
+    if (isJointAlreadyAttached(pair1.link, pair2.link)) {
+      std::cerr << "[LinkAttacher] Pair already attached\n";
+      return;
     }
-  }
 
-  // Light stabilization during op (temporary damping only)
-  std::vector<gazebo::physics::LinkPtr> to_stabilize;
-  if (!isRobotModel(m1)) to_stabilize.push_back(l1);
-  if (!isRobotModel(m2)) to_stabilize.push_back(l2);
-  ScopedStabilize S(to_stabilize);
+    // Light stabilization during op (temporary damping only)
+    auto to_stabilize = getNonRobotLinks(pair1, pair2);
+    ScopedStabilize S(to_stabilize);
 
-  auto joint = m1->CreateJoint(cmd.joint_name, "fixed", l1, l2);
-  if (!joint) { std::cerr << "[LinkAttacher] CreateJoint failed\n"; return; }
+    auto joint = pair1.model->CreateJoint(cmd.joint_name, "fixed", pair1.link, pair2.link);
+    if (!joint) { std::cerr << "[LinkAttacher] CreateJoint failed\n"; return; }
 
-  joint->Attach(l1, l2);
-  joint->Load(l1, l2, ignition::math::Pose3d());  // identity pose
-  joint->SetProvideFeedback(true);
-  joint->Init();
+    joint->Attach(pair1.link, pair2.link);
+    joint->Load(pair1.link, pair2.link, ignition::math::Pose3d());  // identity pose
+    joint->SetProvideFeedback(true);
+    joint->Init();
 
-  JointSTRUCT rec;
-  rec.model1 = cmd.m1; rec.m1 = m1; rec.link1 = cmd.l1; rec.l1 = l1;
-  rec.model2 = cmd.m2; rec.m2 = m2; rec.link2 = cmd.l2; rec.l2 = l2;
-  rec.joint  = joint;
+    JointSTRUCT rec;
+    rec.model1 = cmd.m1; rec.m1 = pair1.model; rec.link1 = cmd.l1; rec.l1 = pair1.link;
+    rec.model2 = cmd.m2; rec.m2 = pair2.model; rec.link2 = cmd.l2; rec.l2 = pair2.link;
+    rec.joint  = joint;
 
-  {
-    std::lock_guard<std::mutex> lk(GV_mtx);
-    GV_joints.push_back(rec);
-  }
-  PublishAttachmentState();
+    {
+      std::lock_guard<std::mutex> lk(GV_mtx);
+      GV_joints.push_back(rec);
+    }
+    PublishAttachmentState();
 
-  // New: For object↔object assemblies, keep them parked (frozen) after attach
-  if (!isRobotModel(m1) && !isRobotModel(m2)) {
-    freezeLink(m1, l1);
-    freezeLink(m2, l2);
+    // For object↔object assemblies, keep them parked (frozen) after attach
+    if (!pair1.isRobot && !pair2.isRobot) {
+      freezeLink(pair1.model, pair1.link);
+      freezeLink(pair2.model, pair2.link);
+    }
+  } catch (const std::runtime_error& e) {
+    std::cerr << "[LinkAttacher] " << e.what() << "\n";
   }
 }
 
@@ -412,11 +461,7 @@ void GazeboLinkAttacherPrivate::doDetach(Cmd& cmd)
   JointSTRUCT j;
   {
     std::lock_guard<std::mutex> lk(GV_mtx);
-    auto it = std::find_if(GV_joints.begin(), GV_joints.end(), [&](const JointSTRUCT& e){
-      bool f = (e.model1==cmd.m1 && e.link1==cmd.l1 && e.model2==cmd.m2 && e.link2==cmd.l2);
-      bool r = (e.model1==cmd.m2 && e.link1==cmd.l2 && e.model2==cmd.m1 && e.link2==cmd.l1);
-      return f || r;
-    });
+    auto it = findJoint(cmd.m1, cmd.l1, cmd.m2, cmd.l2);
     if (it == GV_joints.end()) {
       // Already detached — ok
       return;
@@ -424,19 +469,16 @@ void GazeboLinkAttacherPrivate::doDetach(Cmd& cmd)
     j = *it;
   }
 
-  auto m1 = j.m1, m2 = j.m2;
-  auto l1 = j.l1, l2 = j.l2;
-
   // Light stabilization during joint removal
   std::vector<gazebo::physics::LinkPtr> to_stabilize;
-  if (!isRobotModel(m1)) to_stabilize.push_back(l1);
-  if (!isRobotModel(m2)) to_stabilize.push_back(l2);
+  if (!isRobotModel(j.m1)) to_stabilize.push_back(j.l1);
+  if (!isRobotModel(j.m2)) to_stabilize.push_back(j.l2);
   ScopedStabilize S(to_stabilize);
 
   if (j.joint) j.joint->Detach();
   // Try remove from both models (joint was created on m1, but be safe)
-  if (m1) m1->RemoveJoint(j.joint ? j.joint->GetName() : "");
-  if (m2) m2->RemoveJoint(j.joint ? j.joint->GetName() : "");
+  if (j.m1) j.m1->RemoveJoint(j.joint ? j.joint->GetName() : "");
+  if (j.m2) j.m2->RemoveJoint(j.joint ? j.joint->GetName() : "");
 
   {
     std::lock_guard<std::mutex> lk(GV_mtx);
@@ -447,8 +489,8 @@ void GazeboLinkAttacherPrivate::doDetach(Cmd& cmd)
   PublishAttachmentState();
 
   // Persistently freeze the now-detached non-robot links so they don't move at all
-  if (!isRobotModel(m1)) freezeLink(m1, l1);
-  if (!isRobotModel(m2)) freezeLink(m2, l2);
+  if (!isRobotModel(j.m1)) freezeLink(j.m1, j.l1);
+  if (!isRobotModel(j.m2)) freezeLink(j.m2, j.l2);
 }
 
 // ======================================================================================
