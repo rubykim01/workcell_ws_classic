@@ -12,9 +12,9 @@ workcell_ws_classic/
 │   ├── link_attacher/        # Link attachment utilities
 │   ├── moveit_config/        # Inverse kinematics & motion planning
 │   └── simulation/           # Gazebo simulation
-├── build/                    # Build artifacts
-├── install/                  # Installed packages
-└── log/                      # Build logs
+├── env/
+│   └── setup_env.bash        # Environment setup script
+└── docker-compose.yml        # Docker Compose configuration
 ```
 
 ## Clone and Setup
@@ -56,17 +56,9 @@ workcell_ws_classic/
    
 ## Run the workspace in Docker
    ```bash
-   xhost +local:root
+   xhost +local:root     # allow X11
+   docker compose run workcell_simuation
 
-   docker run -it --gpus all --privileged \
-     -e DISPLAY=$DISPLAY \
-     -e QT_X11_NO_MITSHM=1 \
-     -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
-     -v "$PWD":/root/workcell_ws_classic \
-     --hostname $(hostname) \
-     --network host \
-     --name {container_name} \               # replace {container_name} with Desired name for your Docker container
-     ghcr.io/gkim0127/workcell_simulation:250924 bash
    ```
 
 **Inside the continer**:
