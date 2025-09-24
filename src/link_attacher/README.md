@@ -35,7 +35,7 @@
   <br />
   <strong>Modifications made:</strong>
   <br />
-  - Enhanced multi-link attachment capabilities for complex assembly operations
+  - Implemented multi-link attachment capabilities for complex assembly operations
   <br />
   - Improved physics stabilization to prevent object floating in Gazebo
 </p>
@@ -43,8 +43,6 @@
 <br />
 
 ## USAGE
-
-The plugin offers the link attachment/detachment feature though 2 different ROS2 Services, which can be called by executing the following commands:
 
 ```sh
 # To ATTACH an OBJECT to a ROBOT's END-EFFECTOR:
