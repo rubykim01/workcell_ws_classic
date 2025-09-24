@@ -17,6 +17,68 @@ workcell_ws_classic/
 └── log/                      # Build logs
 ```
 
+## Clone and Setup
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/gkim0127/workcell_ws_classic.git
+   cd workcell_ws_classic
+   ```
+
+2. **Pull the pre-built Docker image**:
+   ```bash
+   docker pull ghcr.io/gkim0127/workcell_simulation:250924
+   ```
+3. **Setup env**:
+   ```bash
+   xhost +local:root
+   ```
+   ```bash
+   sudo nano ~/.bashrc
+   ```
+   copy and paste:
+   ```bash
+   # Auto-load workcell env only when you're inside the repo
+   _workcell_try_source() {
+     local d="$PWD"
+     while [ "$d" != "/" ]; do
+       if [ -f "$d/env/setup_env.bash" ]; then
+         # avoid double-loading per shell
+         if [ -z "$_WORKCELL_ENV_SOURCED" ]; then
+           source "$d/env/setup_env.bash"
+           export _WORKCELL_ENV_SOURCED=1
+         fi
+         return 0
+       fi
+       d="$(dirname "$d")"
+     done
+     return 1
+   }
+   PROMPT_COMMAND="_workcell_try_source; $PROMPT_COMMAND"
+
+   ```
+   
+## Run the workspace in Docker
+   ```bash
+   docker run -it --gpus all --privileged \
+     -e DISPLAY=$DISPLAY \
+     -e QT_X11_NO_MITSHM=1 \
+     -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
+     -v "$PWD":/root/workcell_ws_classic \
+     --hostname $(hostname) \
+     --network host \
+     --name {container_name} \
+     ghcr.io/gkim0127/workcell_simulation:250924 bash
+   ```
+
+   **Replace the following variables:**
+   - `{/path/to/your/workcell_ws}`: Path to your local workcell workspace directory
+   - `{container_name}`: Desired name for your Docker container
+
+**Inside the continer**:
+   ```bash
+   echo 'source /root/workcell_ws_classic/env/setup_env.bash' >> ~/.bashrc
+   ```
+
 
 ## Usage
 
