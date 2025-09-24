@@ -30,9 +30,6 @@ workcell_ws_classic/
    ```
 3. **Setup env**:
    ```bash
-   xhost +local:root
-   ```
-   ```bash
    sudo nano ~/.bashrc
    ```
    copy and paste:
@@ -59,6 +56,8 @@ workcell_ws_classic/
    
 ## Run the workspace in Docker
    ```bash
+   xhost +local:root
+
    docker run -it --gpus all --privileged \
      -e DISPLAY=$DISPLAY \
      -e QT_X11_NO_MITSHM=1 \
@@ -66,13 +65,9 @@ workcell_ws_classic/
      -v "$PWD":/root/workcell_ws_classic \
      --hostname $(hostname) \
      --network host \
-     --name {container_name} \
+     --name {container_name} \               # replace {container_name} with Desired name for your Docker container
      ghcr.io/gkim0127/workcell_simulation:250924 bash
    ```
-
-   **Replace the following variables:**
-   - `{/path/to/your/workcell_ws}`: Path to your local workcell workspace directory
-   - `{container_name}`: Desired name for your Docker container
 
 **Inside the continer**:
    ```bash
@@ -86,8 +81,6 @@ workcell_ws_classic/
 
    ```bash
    colcon build --symlink-install
-   ```
-   ```bash
    source install/setup.bash
    ```
 
@@ -127,13 +120,5 @@ workcell_ws_classic/
 - Denso robot packages
 - Link attacher packages
 - ros-humble-pick-ik (for inverse kinematics)
-
-## Installation
-
-Install required ROS packages:
-
-```bash
-sudo apt install ros-humble-pick-ik
-```
 
 *This workspace provides a complete simulation environment for industrial workcell operations with multiple robot types, inverse kinematics, and advanced motion planning capabilities.*
