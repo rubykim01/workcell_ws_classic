@@ -26,7 +26,7 @@ workcell_ws_classic/
 
 2. **Pull the pre-built Docker image**:
    ```bash
-   docker pull ghcr.io/gkim0127/workcell_simulation:250924
+   docker pull ghcr.io/gkim0127/workcell_image:251010
    ```
 3. **Setup env**:
    ```bash
