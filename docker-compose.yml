@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   workcell_simuation:
     image: ghcr.io/gkim0127/workcell_image:251010
