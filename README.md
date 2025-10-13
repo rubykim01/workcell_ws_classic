@@ -13,7 +13,8 @@ workcell_ws_classic/
 │   ├── moveit_config/        # Inverse kinematics & motion planning
 │   └── simulation/           # Gazebo simulation
 ├── env/
-│   └── setup_env.bash        # Environment setup script
+│   ├── env_host.bash          # Environment setup script - Host
+│   └── env_docker.bash        # Docker
 └── docker-compose.yml        # Docker Compose configuration
 ```
 
@@ -28,42 +29,21 @@ workcell_ws_classic/
    ```bash
    docker pull ghcr.io/gkim0127/workcell_image:251010
    ```
-3. **Setup env**:
+3. **Setup env - Host**:
    ```bash
-   sudo nano ~/.bashrc
-   ```
-   copy and paste:
-   ```bash
-   # Auto-load workcell env only when you're inside the repo
-   _workcell_try_source() {
-     local d="$PWD"
-     while [ "$d" != "/" ]; do
-       if [ -f "$d/env/setup_env.bash" ]; then
-         # avoid double-loading per shell
-         if [ -z "$_WORKCELL_ENV_SOURCED" ]; then
-           source "$d/env/setup_env.bash"
-           export _WORKCELL_ENV_SOURCED=1
-         fi
-         return 0
-       fi
-       d="$(dirname "$d")"
-     done
-     return 1
-   }
-   PROMPT_COMMAND="_workcell_try_source; $PROMPT_COMMAND"
-
+   source env/env_host.bash
    ```
    
 ## Run the workspace in Docker
+1. **Run Docker Container**:
    ```bash
    xhost +local:root     # allow X11
    docker compose run workcell_simuation
-
    ```
 
-**Inside the continer**:
+2. **Setup env - Docker**:
    ```bash
-   echo 'source /root/workcell_ws_classic/env/setup_env.bash' >> ~/.bashrc
+   source env/env_docker.bash
    ```
 
 
