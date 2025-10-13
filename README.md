@@ -13,7 +13,8 @@ workcell_ws_classic/
 │   ├── moveit_config/        # Inverse kinematics & motion planning
 │   └── simulation/           # Gazebo simulation
 ├── env/
-│   └── setup_env.bash        # Environment setup script
+│   ├── env_host.bash          # Environment setup script - Host
+│   └── env_docker.bash        # Docker
 └── docker-compose.yml        # Docker Compose configuration
 ```
 
