@@ -1,24 +1,18 @@
+version: "3.9"
+
 services:
-  workcell_simulation:
-    image: ghcr.io/gkim0127/workcell_simulation:250924
-    container_name: workcell_simulation
+  workcell_simuation:
+    image: ghcr.io/gkim0127/workcell_image:251010
+    container_name: workcell
     hostname: ${HOSTNAME}
-    privileged: true
     network_mode: host
+    privileged: true
+    runtime: nvidia
     environment:
-      - DISPLAY=${DISPLAY}
-      - QT_X11_NO_MITSHM=1
+      DISPLAY: ${DISPLAY}
+      QT_X11_NO_MITSHM: 1
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:ro
-      - ./:/root/workcell_ws_classic        # = -v "$PWD":/root/workcell_ws_classic
-    # GPU (Compose v2; if it doesn't work on your host, comment and use device_requests below)
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - capabilities: [gpu]
-    # device_requests:
-    #   - capabilities: ["gpu"]             # alternative GPU syntax for some setups
-    stdin_open: true                        # -it
-    tty: true                               # -it
-    command: ["bash"]                       # start an interactive shell
+      - .:/root/workcell_ws_classic
+    working_dir: /root/workcell_ws_classic
+    entrypoint: ["/bin/bash"]
