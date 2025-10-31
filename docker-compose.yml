@@ -1,6 +1,6 @@
 services:
   workcell_simuation:
-    image: ghcr.io/gkim0127/workcell_image:251010
+    image: ghcr.io/rubykim01/workcell_image:251010
     container_name: workcell
     hostname: ${HOSTNAME}
     network_mode: host
