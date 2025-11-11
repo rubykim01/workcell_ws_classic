@@ -8,6 +8,10 @@
   <xacro:property name="sec_mesh_files" value="${denso_visual_params['mesh_files']}" scope="parent"/>
   <xacro:property name="force_abs_paths" value="true" scope="parent"/>
   
+  <!-- Load trolley positions configuration -->
+  <xacro:property name="trolley_positions" value="${xacro.load_yaml('$(find ur_description)/config/trolley_positions.yaml')}"/>
+  <xacro:property name="denso_pos" value="${trolley_positions['trolley_positions']['denso']}"/>
+  
 <!-- denso trolley link -->
     <link name="denso_trolley_link">
       <visual>
@@ -36,7 +40,7 @@
    <joint name="denso_trolley_joint" type="fixed">
       <parent link="${parent}" />
       <child link="denso_trolley_link" />
-      <origin xyz="-0.8049 0.805 0" rpy="0 0 0"/>
+      <origin xyz="${denso_pos['x']} ${denso_pos['y']} ${denso_pos['z']}" rpy="${denso_pos['roll']} ${denso_pos['pitch']} ${denso_pos['yaw']}"/>
     </joint>
 
 <!-- denso slider jig link -->

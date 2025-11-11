@@ -5,6 +5,10 @@
   <xacro:property name="toolchanger_visual_params" value="${xacro.load_yaml('$(find ur_description)/config/toolchanger_visual_parameters.yaml')}"/>
   <xacro:property name="sec_mesh_files" value="${toolchanger_visual_params['mesh_files']}" scope="parent"/>
   <xacro:property name="force_abs_paths" value="true" scope="parent"/>
+  
+  <!-- Load trolley positions configuration -->
+  <xacro:property name="trolley_positions" value="${xacro.load_yaml('$(find ur_description)/config/trolley_positions.yaml')}"/>
+  <xacro:property name="toolchanger_pos" value="${trolley_positions['trolley_positions']['toolchanger']}"/>
 
 <!-- toolchanger trolley link -->
     <link name="toolchanger_trolley_link">
@@ -34,7 +38,7 @@
    <joint name="toolchanger_trolley_joint" type="fixed">
       <parent link="${parent}" />
       <child link="toolchanger_trolley_link" />
-      <origin xyz="-0.8049 0 0" rpy="0 0 0"/>
+      <origin xyz="${toolchanger_pos['x']} ${toolchanger_pos['y']} ${toolchanger_pos['z']}" rpy="${toolchanger_pos['roll']} ${toolchanger_pos['pitch']} ${toolchanger_pos['yaw']}"/>
     </joint>
 
 <!-- toolchanger tool stand link -->

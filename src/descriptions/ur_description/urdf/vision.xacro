@@ -5,6 +5,10 @@
     <xacro:property name="vision_visual_params" value="${xacro.load_yaml('$(find ur_description)/config/vision_visual_parameters.yaml')}"/>
     <xacro:property name="sec_mesh_files" value="${vision_visual_params['mesh_files']}" scope="parent"/>
     <xacro:property name="force_abs_paths" value="true" scope="parent"/>
+    
+    <!-- Load trolley positions configuration -->
+    <xacro:property name="trolley_positions" value="${xacro.load_yaml('$(find ur_description)/config/trolley_positions.yaml')}"/>
+    <xacro:property name="vision_pos" value="${trolley_positions['trolley_positions']['vision']}"/>
 
 
     <!-- vision trolley link -->
@@ -35,7 +39,7 @@
    <joint name="vision_trolley_joint" type="fixed">
       <parent link="${parent}" />
       <child link="vision_trolley_link" />
-      <origin xyz="0 1.605 0" rpy="0 0 0"/>
+      <origin xyz="${vision_pos['x']} ${vision_pos['y']} ${vision_pos['z']}" rpy="${vision_pos['roll']} ${vision_pos['pitch']} ${vision_pos['yaw']}"/>
     </joint>
 
     <!-- vision cam jig link -->

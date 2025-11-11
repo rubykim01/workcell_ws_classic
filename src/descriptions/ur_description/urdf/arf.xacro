@@ -5,6 +5,10 @@
   <xacro:property name="arf_visual_params" value="${xacro.load_yaml('$(find ur_description)/config/arf_visual_parameters.yaml')}"/>
   <xacro:property name="sec_mesh_files" value="${arf_visual_params['mesh_files']}" scope="parent"/>
   <xacro:property name="force_abs_paths" value="true" scope="parent"/>
+  
+  <!-- Load trolley positions configuration -->
+  <xacro:property name="trolley_positions" value="${xacro.load_yaml('$(find ur_description)/config/trolley_positions.yaml')}"/>
+  <xacro:property name="arf_pos" value="${trolley_positions['trolley_positions']['arf']}"/>
 
 <!-- arf trolley link -->
     <link name="arf_trolley_link">
@@ -34,7 +38,7 @@
    <joint name="arf_trolley_joint" type="fixed">
       <parent link="${parent}" />
       <child link="arf_trolley_link" />
-      <origin xyz="0 0.805 0" rpy="0 0 0"/>
+      <origin xyz="${arf_pos['x']} ${arf_pos['y']} ${arf_pos['z']}" rpy="${arf_pos['roll']} ${arf_pos['pitch']} ${arf_pos['yaw']}"/>
     </joint>
 
 <!-- arf base plate link -->
