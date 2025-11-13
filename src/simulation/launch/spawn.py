@@ -1,0 +1,113 @@
+from PyQt5.QtWidgets import (
+    QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, 
+    QComboBox, QMessageBox, QLabel, QGridLayout
+)
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import Qt
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Configure Spawn Positions")
+        
+        # Set window size 
+        #self.resize(400, 500)
+        self.setMinimumSize(500, 500)
+
+        # Create central widget 
+        window = QWidget()
+        self.setCentralWidget(window)
+
+        # Main layout
+        main_layout = QVBoxLayout()
+
+        # Trolley options for dropdowns
+        self.trolley_options = ["-", "toolchanger", "denso", "ur", "arf", "vision"]
+        
+        # Create 3x3 grid layout
+        grid_layout = QGridLayout()
+        grid_layout.setSpacing(15)
+        
+        # Store comboboxes by position number
+        self.position_comboboxes = {}
+        
+        # Create 9 boxes (3x3 grid) for positions 1-9
+        position = 1
+        for row in range(3):
+            for col in range(3):
+                # Create container widget for each position
+                position_widget = QWidget()
+                # Add border to create lines between boxes
+                position_widget.setStyleSheet("border: 2px solid #cccccc;")
+                position_layout = QVBoxLayout()
+                position_layout.setSpacing(3)
+                position_layout.setContentsMargins(5, 5, 5, 5)
+                
+                # Position number label
+                position_label = QLabel(f"Position {position}")
+                position_label.setAlignment(Qt.AlignCenter)
+                position_label.setStyleSheet("font-weight: bold; font-size: 12px; border: none; background: transparent;")
+                position_layout.addWidget(position_label)
+                
+                # Dropdown for trolley selection
+                combobox = QComboBox()
+                combobox.addItems(self.trolley_options)
+                combobox.setCurrentText("-")  # Default to "-"
+                self.position_comboboxes[position] = combobox
+                position_layout.addWidget(combobox)
+                
+                position_widget.setLayout(position_layout)
+                grid_layout.addWidget(position_widget, row, col)
+                
+                position += 1
+
+        main_layout.addLayout(grid_layout)
+
+        # Configure button
+        configure_button = QPushButton("Configure")
+        configure_button.clicked.connect(self.configure_button_clicked)
+        main_layout.addWidget(configure_button)
+        
+        window.setLayout(main_layout)
+        self.show()
+
+
+    # configure button clicked
+    def configure_button_clicked(self):
+        # Collect trolleys assigned to each position
+        configured_positions = []
+        for position, combobox in sorted(self.position_comboboxes.items()):
+            selected_trolley = combobox.currentText()
+            if selected_trolley != "-":
+                configured_positions.append(f"Position {position}: {selected_trolley.capitalize()}")
+        
+        # Create message
+        if configured_positions:
+            message = "\n".join(configured_positions)
+            if len(configured_positions) <= 4:
+                message += "\n\nNeed to configure other positions as well"
+                QMessageBox.warning(self, "Not Configured", message)
+            else:
+                QMessageBox.information(self, "Configured", "All positions configured" + "\n\n" + message)
+        else:
+            message = "No trolleys assigned to any position"
+            QMessageBox.warning(self, "Not Configured", message)
+
+        
+        # Print to console
+        print("Configuration Summary:")
+        if configured_positions:
+            for config in configured_positions:
+                print(f"  - {config}")
+        else:
+            print("  - No trolleys assigned")
+
+
+if __name__ == "__main__":
+    app = QApplication([])
+    window = MainWindow()
+    window.show()
+    app.exec_()
+
+    
