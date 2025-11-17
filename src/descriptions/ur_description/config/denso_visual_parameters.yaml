@@ -5,14 +5,14 @@ mesh_files:
     visual:
       mesh:
         package: ur_description
-        path: meshes/ur10/collision/trolley1.STL
+        path: meshes/denso/Assy_Fixing_Cartbase.STL
       material:
         name: "LightGrey_denso_trolley"
         color: "0.89 0.91 0.93 1.0"
     collision:
-      mesh:
-        package: ur_description
-        path: meshes/ur10/collision/trolley1.STL
+      box:
+        size: "0.8 0.8 0.86"
+        origin: "0 0 0.43"
 
   denso_slider_jig:
     visual:

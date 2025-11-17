@@ -2,35 +2,35 @@ trolley_positions:
   ur:
     x: 0.0
     y: 0.0
-    z: 0.0
+    z: 0.86
     roll: 0.0
     pitch: 0.0
     yaw: 0.0
   arf:
     x: 0.0
     y: 0.800
-    z: 0.0
+    z: 0.86
     roll: 0.0
     pitch: 0.0
     yaw: 0.0
   vision:
     x: 0.0
     y: 1.600
-    z: 0.0
+    z: 0.86
     roll: 0.0
     pitch: 0.0
     yaw: 0.0
   toolchanger:
     x: -0.800
     y: 0.0
-    z: 0.0
+    z: 0.86
     roll: 0.0
     pitch: 0.0
     yaw: 0.0
   denso:
     x: -0.800
     y: 0.800
-    z: 0.0
+    z: 0.86
     roll: 0.0
     pitch: 0.0
     yaw: 0.0

@@ -22,9 +22,9 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="${sec_mesh_files['toolchanger_trolley']['collision']['box']['origin']}" rpy="0 0 0"/>
         <geometry>
-          <xacro:get_mesh name="toolchanger_trolley" type="collision"/>
+          <box size="${sec_mesh_files['toolchanger_trolley']['collision']['box']['size']}"/>
         </geometry>
       </collision>
       <inertial>
@@ -69,7 +69,7 @@
   <joint name="toolchanger_tool_changer_joint" type="fixed">
       <parent link="toolchanger_trolley_link" />
       <child link="tool_changer_link" />
-      <origin xyz="0.2 0.15 0.82" rpy="0 0 0"/>
+      <origin xyz="0.2 0.15 0.0" rpy="0 0 0"/>
     </joint>
 
 

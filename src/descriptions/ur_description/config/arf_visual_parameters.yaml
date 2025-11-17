@@ -5,89 +5,76 @@ mesh_files:
     visual:
       mesh:
         package: ur_description
-        path: meshes/ur10/collision/trolley1.STL
+        path: meshes/arf/Assy_Docking_Cartbase_ARF.STL
       material:
         name: "LightGrey_arf_trolley"
         color: "0.89 0.91 0.93 1.0"
     collision:
-      mesh:
-        package: ur_description
-        path: meshes/ur10/collision/trolley1.STL
+      box:
+        size: "0.8 0.8 0.86"
+        origin: "0 0 0.43"
 
-  arf_base_plate:
+  arf_x_axis:
     visual:
       mesh:
         package: ur_description
-        path: meshes/arf/ARF_Base_Plate.STL
+        path: meshes/arf/ARF_X-Axis.STL
       material:
         name: "Grey_arf_base_plate"
         color: "0.4 0.42 0.45 1.0"
     collision:
       mesh:
         package: ur_description
-        path: meshes/arf/ARF_Base_Plate.STL
+        path: meshes/arf/ARF_X-Axis.STL
 
-  arf_slider_base:
+  arf_y_axis:
     visual:
       mesh:
         package: ur_description
-        path: meshes/arf/ARF_Slider_Base.STL
+        path: meshes/arf/ARF_Y-Axis.STL
       material:
         name: "Grey_arf_slider_base"
         color: "0.4 0.42 0.45 1.0"
     collision:
       mesh:
         package: ur_description
-        path: meshes/arf/ARF_Slider_Base.STL
-
-  arf_slider:
-    visual:
-      mesh:
-        package: ur_description
-        path: meshes/arf/ARF_Slider.STL
-      material:
-        name: "Green_arf_slider"
-        color: "0.33 0.42 0.18 1.0"
-    collision:
-      mesh:
-        package: ur_description
-        path: meshes/arf/ARF_Slider.STL
+        path: meshes/arf/ARF_Y-Axis.STL
   
-  arf_slider_jig:
+  arf_jig:
     visual:
       mesh:
         package: ur_description
-        path: meshes/arf/ARF_Slider_Jig.STL
+        path: meshes/arf/ARF_Jig.STL
       material:
         name: "Blue_arf_slider_jig"
         color: "0.33 0.61 0.72 1.0"
     collision:
       mesh:
         package: ur_description
-        path: meshes/arf/ARF_Slider_Jig.STL
+        path: meshes/arf/ARF_Jig.STL
   
   arf_front_aircyl:
     visual:
       mesh:
         package: ur_description
-        path: meshes/arf/ARF_AirCyl.STL
+        path: meshes/arf/ARF_Air_Cyl_02.STL
       material:
         name: "Blue_arf_front_aircyl"
         color: "0.23 0.51 0.62 1.0"
     collision:
       mesh:
         package: ur_description
-        path: meshes/arf/ARF_AirCyl.STL
+        path: meshes/arf/ARF_Air_Cyl_02.STL
 
   arf_back_aircyl:
     visual:
       mesh:
         package: ur_description
-        path: meshes/arf/ARF_AirCyl.STL
+        path: meshes/arf/ARF_Air_Cyl_01.STL
       material:
         name: "Blue_arf_back_aircyl"
         color: "0.23 0.51 0.62 1.0"
     collision:
       mesh:
         package: ur_description
-        path: meshes/arf/ARF_AirCyl.STL
+        path: meshes/arf/ARF_Air_Cyl_01.STL

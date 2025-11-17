@@ -139,20 +139,16 @@
     <material>Gazebo/LightGrey</material>
   </gazebo>
 
-  <gazebo reference="arf_base_plate_link">
-    <material>Gazebo/DarkGrey</material>
-  </gazebo>
-
-  <gazebo reference="arf_slider_base_link">
+  <gazebo reference="arf_x_axis_link">
     <material>Gazebo/Grey</material>
   </gazebo>
 
-  <gazebo reference="arf_slider_link">
-    <material>Gazebo/Green</material>
+  <gazebo reference="arf_y_axis_link">
+    <material>Gazebo/Grey</material>
   </gazebo>
 
-  <gazebo reference="arf_slider_jig_link">
-    <material>Gazebo/Yellow</material>
+  <gazebo reference="arf_jig_link">
+    <material>Gazebo/Green</material>
   </gazebo>
 
   <gazebo reference="arf_front_aircyl_link">
@@ -164,11 +160,11 @@
   </gazebo>
 
   <!-- ARF Joint Components -->
-  <gazebo reference="arf_base_plate_joint">
+  <gazebo reference="arf_x_axis_joint">
     <preserveFixedJoint>true</preserveFixedJoint>
   </gazebo>
 
-  <gazebo reference="arf_slider_base_joint">
+  <gazebo reference="arf_y_axis_joint">
     <preserveFixedJoint>true</preserveFixedJoint>
   </gazebo>
 

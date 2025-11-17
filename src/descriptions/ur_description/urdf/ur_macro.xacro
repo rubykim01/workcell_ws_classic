@@ -160,9 +160,9 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="${sec_mesh_files['trolley']['collision']['box']['origin']}" rpy="0 0 0"/>
         <geometry>
-          <xacro:get_mesh name="trolley" type="collision"/>
+          <box size="${sec_mesh_files['trolley']['collision']['box']['size']}"/>
         </geometry>
       </collision>
       <inertial>
@@ -207,7 +207,7 @@
     <joint name="${tf_prefix}ur10_feeder_joint" type="fixed">
       <parent link="${tf_prefix}ur10_trolley_link" />
       <child link="${tf_prefix}ur10_feeder_link" />
-      <origin xyz="0.525 0.025 0.82" rpy="0 0 0"/>
+      <origin xyz="0.525 0.025 0.0" rpy="0 0 0"/>
     </joint>
 
     <!-- UR plate link-->
@@ -238,7 +238,7 @@
     <joint name="${tf_prefix}ur10_plate_joint" type="fixed">
       <parent link="${tf_prefix}ur10_trolley_link" />
       <child link="${tf_prefix}ur10_plate_link" />
-      <origin xyz="0 0 0.835" rpy="0 0 0"/>
+      <origin xyz="0 0 0.015" rpy="0 0 0"/>
     </joint>
 
     <!-- ur robot base link -->

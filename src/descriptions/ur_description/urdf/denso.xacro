@@ -24,9 +24,9 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="${sec_mesh_files['denso_trolley']['collision']['box']['origin']}" rpy="0 0 0"/>
         <geometry>
-          <xacro:get_mesh name="denso_trolley" type="collision"/>
+          <box size="${sec_mesh_files['denso_trolley']['collision']['box']['size']}"/>
         </geometry>
       </collision>
       <inertial>
@@ -71,7 +71,7 @@
     <joint name="denso_slider_jig_joint" type="fixed">
       <parent link="denso_trolley_link" />
       <child link="denso_slider_jig_link" />
-      <origin xyz="0.025 -0.025 0.82" rpy="0 0 0"/>
+      <origin xyz="0.025 -0.025 0.0" rpy="0 0 0"/>
     </joint>
 
     <!-- Add Denso robot connected to the slider jig -->
