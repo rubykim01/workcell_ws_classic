@@ -13,8 +13,8 @@ class MainWindow(QMainWindow):
         
         # Set window size 
         #self.resize(400, 500)
-        self.setMinimumSize(500, 500)
-
+        self.setMinimumSize(700, 600)
+        self.setStyleSheet("background-color: #ffffff;")
         # Create central widget 
         window = QWidget()
         self.setCentralWidget(window)
@@ -38,20 +38,22 @@ class MainWindow(QMainWindow):
             for col in range(3):
                 # Create container widget for each position
                 position_widget = QWidget()
+                position_widget.setFixedSize(180, 150)
                 # Add border to create lines between boxes
-                position_widget.setStyleSheet("border: 2px solid #cccccc;")
+                position_widget.setStyleSheet("border: 10px solid #cccccc; background-color: #f0f0f0; padding: 5px;")
                 position_layout = QVBoxLayout()
-                position_layout.setSpacing(3)
-                position_layout.setContentsMargins(5, 5, 5, 5)
+                position_layout.setSpacing(5)
+                position_layout.setContentsMargins(1,1,1,1)
                 
                 # Position number label
                 position_label = QLabel(f"Position {position}")
                 position_label.setAlignment(Qt.AlignCenter)
-                position_label.setStyleSheet("font-weight: bold; font-size: 12px; border: none; background: transparent;")
+                position_label.setStyleSheet("font-weight: bold; font-size: 18px; border: none; background: transparent; color: #000000;")
                 position_layout.addWidget(position_label)
                 
                 # Dropdown for trolley selection
                 combobox = QComboBox()
+                combobox.setStyleSheet("border: 8px solid #cccccc; background-color: #f0f0f0; font-size: 18px;")
                 combobox.addItems(self.trolley_options)
                 combobox.setCurrentText("-")  # Default to "-"
                 self.position_comboboxes[position] = combobox
@@ -67,6 +69,7 @@ class MainWindow(QMainWindow):
         # Configure button
         configure_button = QPushButton("Configure")
         configure_button.clicked.connect(self.configure_button_clicked)
+        configure_button.setStyleSheet("font-size: 18px; padding: 10px; background-color: #cccccc; color: black; border: none; border-radius: 5px;")
         main_layout.addWidget(configure_button)
         
         window.setLayout(main_layout)
