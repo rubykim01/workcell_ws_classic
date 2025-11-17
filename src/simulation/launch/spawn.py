@@ -56,6 +56,9 @@ class MainWindow(QMainWindow):
                 combobox.setStyleSheet("border: 8px solid #cccccc; background-color: #f0f0f0; font-size: 18px;")
                 combobox.addItems(self.trolley_options)
                 combobox.setCurrentText("-")  # Default to "-"
+                
+                # Connect signal to prevent duplicate selections
+                combobox.currentIndexChanged.connect(lambda idx, pos=position: self.on_combobox_changed(pos))
                 self.position_comboboxes[position] = combobox
                 position_layout.addWidget(combobox)
                 
@@ -75,6 +78,23 @@ class MainWindow(QMainWindow):
         window.setLayout(main_layout)
         self.show()
 
+    def on_combobox_changed(self, changed_position):
+        """Update all comboboxes to prevent duplicate selections"""
+        
+        # Get all selected trolleys ((excluding "-"))
+        selected = {cb.currentText() for cb in self.position_comboboxes.values() if cb.currentText() != "-"}
+        
+        # Update each combobox
+        for combobox in self.position_comboboxes.values():
+            current = combobox.currentText()
+            combobox.blockSignals(True)
+            combobox.clear()
+            
+            # add only not selected trolleys and "-"
+            options = ["-"] + [opt for opt in self.trolley_options[1:] if opt not in selected or opt == current]
+            combobox.addItems(options)
+            combobox.setCurrentText(current if current in options else "-")
+            combobox.blockSignals(False)
 
     # configure button clicked
     def configure_button_clicked(self):
