@@ -200,6 +200,18 @@
     <material>Gazebo/Grey</material>
   </gazebo>
 
+  <gazebo reference="supply_arm_base_link">
+    <material>Gazebo/LightGrey</material>
+  </gazebo>
+
+  <gazebo reference="supply_arm_slider_link">
+    <material>Gazebo/Yellow</material>
+  </gazebo>
+
+  <gazebo reference="supply_arm_plate_link">
+    <material>Gazebo/Green</material>
+  </gazebo>
+
   <!-- Supply Joint Components -->
   <gazebo reference="supply_base_joint">
     <preserveFixedJoint>true</preserveFixedJoint>
@@ -210,6 +222,22 @@
   </gazebo>
 
   <gazebo reference="supply_y_axis_plate_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="supply_y_axis_plate_supply_arm_base_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="supply_arm_base_supply_arm_slider_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="supply_arm_slider_supply_arm_plate_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="supply_arm_plate_supply_arm_joint">
     <preserveFixedJoint>true</preserveFixedJoint>
   </gazebo>
 
