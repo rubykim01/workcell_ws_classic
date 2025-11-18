@@ -187,4 +187,30 @@
     <preserveFixedJoint>true</preserveFixedJoint>
   </gazebo>
 
+  <!-- Supply Link Components -->
+  <gazebo reference="supply_base_link">
+    <material>Gazebo/LightGrey</material>
+  </gazebo>
+
+  <gazebo reference="supply_x_axis_mobile_base_link">
+    <material>Gazebo/Grey</material>
+  </gazebo>
+
+  <gazebo reference="supply_y_axis_plate_link">
+    <material>Gazebo/Grey</material>
+  </gazebo>
+
+  <!-- Supply Joint Components -->
+  <gazebo reference="supply_base_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="supply_x_axis_mobile_base_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="supply_y_axis_plate_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
 </robot> 

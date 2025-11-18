@@ -1,0 +1,192 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+
+  <xacro:macro name="supply" params="parent">
+  <xacro:property name="supply_visual_params" value="${xacro.load_yaml('$(find ur_description)/config/supply_visual_parameters.yaml')}"/>
+  <xacro:property name="sec_mesh_files" value="${supply_visual_params['mesh_files']}" scope="parent"/>
+  <xacro:property name="force_abs_paths" value="true" scope="parent"/>
+
+
+  <!-- Load trolley positions configuration -->
+  <xacro:property name="trolley_positions" value="${xacro.load_yaml('$(find ur_description)/config/trolley_positions.yaml')}"/>
+  <xacro:property name="supply_pos" value="${trolley_positions['trolley_positions']['supply']}"/>
+
+<!-- supply base link -->
+    <link name="supply_base_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="supply_base" type="visual"/>
+        </geometry>
+        <material name="${sec_mesh_files['supply_base']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['supply_base']['visual']['material']['color']}"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="supply_base" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="5.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
+      </inertial>
+    </link>
+
+    <!-- world to supply base joint -->
+   <joint name="supply_base_joint" type="fixed">
+      <parent link="${parent}" />
+      <child link="supply_base_link" />
+      <origin xyz="${supply_pos['x']} ${supply_pos['y']} ${supply_pos['z']}" rpy="${supply_pos['roll']} ${supply_pos['pitch']} ${supply_pos['yaw']}"/>
+    </joint>
+
+<!-- supply y axis plate link -->
+    <link name="supply_y_axis_plate_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="supply_y_axis_plate" type="visual"/>
+        </geometry>
+        <material name="${sec_mesh_files['supply_y_axis_plate']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['supply_y_axis_plate']['visual']['material']['color']}"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="supply_y_axis_plate" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="3.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.05" ixy="0" ixz="0" iyy="0.05" iyz="0" izz="0.05"/>
+      </inertial>
+    </link>
+
+    <!-- supply x axis mobile base to supply y axis plate joint (needs to be prismatic) **********-->
+    <joint name="supply_x_axis_mobile_base_supply_y_axis_plate_joint" type="fixed">
+      <parent link="supply_base_link" />
+      <child link="supply_y_axis_plate_link" />
+      <origin xyz="0.0 -0.98 0.0" rpy="0 0 0"/>
+    </joint>
+
+<!-- supply x axis mobile base link -->
+    <link name="supply_x_axis_mobile_base_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="supply_x_axis_mobile_base" type="visual"/>
+        </geometry>
+        <material name="${sec_mesh_files['supply_x_axis_mobile_base']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['supply_x_axis_mobile_base']['visual']['material']['color']}"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="supply_x_axis_mobile_base" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="3.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.05" ixy="0" ixz="0" iyy="0.05" iyz="0" izz="0.05"/>
+      </inertial>
+    </link>
+
+      <!-- supply base to supply x axis mobile base joint (needs to be prismatic) **********--> 
+  <joint name="supply_base_x_axis_mobile_base_joint" type="fixed">
+      <parent link="supply_base_link" />
+      <child link="supply_x_axis_mobile_base_link" />
+      <origin xyz="0.0 0.0 0.01" rpy="0 0 0"/>
+    </joint>
+
+<!-- supply arm base link -->
+    <link name="supply_arm_base_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="supply_arm_base" type="visual"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="supply_arm_base" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="3.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.05" ixy="0" ixz="0" iyy="0.05" iyz="0" izz="0.05"/>
+      </inertial>
+    </link>
+
+    <!-- supply y axis plate to supply arm base joint (needs to be prismatic??) **********-->
+    <joint name="supply_y_axis_plate_supply_arm_base_joint" type="fixed">
+      <parent link="supply_x_axis_mobile_base_link" />
+      <child link="supply_arm_base_link" />
+      <origin xyz="0.0 0.0 0.2566" rpy="0 0 0"/>
+    </joint>
+
+<!-- supply arm slider link -->
+    <link name="supply_arm_slider_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="supply_arm_slider" type="visual"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="supply_arm_slider" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="3.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.05" ixy="0" ixz="0" iyy="0.05" iyz="0" izz="0.05"/>
+      </inertial>
+    </link>
+
+    <!-- supply arm base to supply arm slider joint (needs to be prismatic??) **********-->
+    <joint name="supply_arm_base_supply_arm_slider_joint" type="fixed">
+      <parent link="supply_arm_base_link" />
+      <child link="supply_arm_slider_link" />
+      <origin xyz="0.0 0.0 0.0215" rpy="0 0 0"/>
+    </joint>
+
+<!-- supply arm plate link -->
+    <link name="supply_arm_plate_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="supply_arm_plate" type="visual"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="supply_arm_plate" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="3.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.05" ixy="0" ixz="0" iyy="0.05" iyz="0" izz="0.05"/>
+      </inertial>
+    </link>
+    <!-- supply arm slider to supply arm plate joint (needs to be prismatic??) **********-->
+    <joint name="supply_arm_slider_supply_arm_plate_joint" type="fixed">
+      <parent link="supply_arm_slider_link" />
+      <child link="supply_arm_plate_link" />
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+    </joint>
+    
+  </xacro:macro>
+</robot>
+

@@ -2,7 +2,7 @@
 <robot xmlns:xacro="http://wiki.ros.org/xacro">
 
   <xacro:macro name="quickchanger_grippers" params="parent">
-  <xacro:property name="quickchanger_grippers_visual_params" value="${xacro.load_yaml('$(find ur_description)/config/quickchanger_grippers.yaml')}"/>
+  <xacro:property name="quickchanger_grippers_visual_params" value="${xacro.load_yaml('$(find ur_description)/config/quickchanger_grippers_visual_parameters.yaml')}"/>
   <xacro:property name="sec_mesh_files" value="${quickchanger_grippers_visual_params['mesh_files']}" scope="parent"/>
   <xacro:property name="force_abs_paths" value="true" scope="parent"/>
 

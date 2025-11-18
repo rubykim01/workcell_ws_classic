@@ -1,0 +1,80 @@
+# Visualisation
+
+mesh_files:
+  quickchanger:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/quickchanger_grippers/converted_quickchanger.stl
+      material:
+        name: "Grey_quickchanger"
+        color: "0.6 0.6 0.6 1.0"
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/quickchanger_grippers/converted_quickchanger.stl
+  #Suction
+  suction_master:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/quickchanger_grippers/converted_suction_master.stl
+      material:
+        name: "DarkGrey_suction_master"
+        color: "0.3 0.3 0.3 1.0"
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/quickchanger_grippers/converted_suction_master.stl
+  suction:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/quickchanger_grippers/converted_suction.stl
+      material:
+        name: "DarkGrey_suction"
+        color: "0.3 0.3 0.3 1.0"
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/quickchanger_grippers/converted_suction.stl
+
+  gripper:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/quickchanger_grippers/converted_gripper.stl
+      material:
+        name: "Black_gripper"
+        color: "0.1 0.1 0.1 1.0"
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/quickchanger_grippers/converted_gripper.stl
+
+  tooltip1:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/quickchanger_grippers/converted_tooltip1.stl
+      material:
+        name: "Silver_tooltip1"
+        color: "0.8 0.8 0.8 1.0"
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/quickchanger_grippers/converted_tooltip1.stl
+      
+  tooltip2:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/quickchanger_grippers/converted_tooltip2.stl
+      material:
+        name: "Silver_tooltip2"
+        color: "0.8 0.8 0.8 1.0"
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/quickchanger_grippers/converted_tooltip2.stl
+
