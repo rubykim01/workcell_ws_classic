@@ -6,27 +6,27 @@
 # Fixed positions for each element 
 HP1_X=0.5601
 HP1_Y=-0.1129
-HP1_Z=0.830
+HP1_Z=0.870
 
 HP2_X=0.5601
 HP2_Y=-0.2271
-HP2_Z=0.830
+HP2_Z=0.870
 
 HPC1_X=0.619
 HPC1_Y=0.150
-HPC1_Z=0.830
+HPC1_Z=0.870
 
 HPC2_X=0.491
 HPC2_Y=0.150
-HPC2_Z=0.830
+HPC2_Z=0.870
 
 HPC31_X=0.369
 HPC31_Y=0.1955
-HPC31_Z=0.830
+HPC31_Z=0.870
 
 HPC32_X=0.369
 HPC32_Y=0.0155
-HPC32_Z=0.830
+HPC32_Z=0.870
 
 
 echo "Using fixed positions for each element:"

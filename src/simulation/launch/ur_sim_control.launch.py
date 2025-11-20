@@ -204,6 +204,20 @@ def launch_setup(context, *args, **kwargs):
         arguments=["denso_axis_trajectory_controller", "-c", "/controller_manager"],
         output="screen"
     )
+    #Supply x-axis mobile base Controller
+    supply_x_axis_mobile_base_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["supply_x_axis_mobile_base_trajectory_controller", "-c", "/controller_manager"],
+        output="screen"
+    )
+    #Supply y-axis plate Controller
+    supply_y_axis_plate_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["supply_y_axis_plate_trajectory_controller", "-c", "/controller_manager"],
+        output="screen"
+    )
 
     # Gazebo nodes
     gazebo = IncludeLaunchDescription(
@@ -239,6 +253,8 @@ def launch_setup(context, *args, **kwargs):
         arf_axis_controller_spawner,
         arf_gripper_controller_spawner,
         denso_axis_controller_spawner,
+        supply_x_axis_mobile_base_controller_spawner,
+        supply_y_axis_plate_controller_spawner,
         gazebo,
         gazebo_spawn_robot,
     ]

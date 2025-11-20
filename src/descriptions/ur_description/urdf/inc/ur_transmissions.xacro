@@ -149,6 +149,21 @@
     </transmission>
 
 
+    <!-- Supply Joints -->
+
+    <transmission name="supply_y_axis_plate_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="supply_y_axis_plate_joint">
+        <hardwareInterface>${hw_interface}</hardwareInterface>
+      </joint>
+    </transmission>
+
+    <transmission name="supply_x_axis_mobile_base_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="supply_x_axis_mobile_base_joint">
+        <hardwareInterface>${hw_interface}</hardwareInterface>
+      </joint>
+    </transmission>
   </xacro:macro>
 
 </robot>

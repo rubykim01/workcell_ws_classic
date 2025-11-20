@@ -67,10 +67,12 @@
     </link>
 
     <!-- supply x axis mobile base to supply y axis plate joint (needs to be prismatic) **********-->
-    <joint name="supply_x_axis_mobile_base_supply_y_axis_plate_joint" type="fixed">
+    <joint name="supply_y_axis_plate_joint" type="prismatic">
       <parent link="supply_base_link" />
       <child link="supply_y_axis_plate_link" />
       <origin xyz="0.0 -0.98 0.0" rpy="0 0 0"/>
+      <axis xyz="-1 0 0"/>
+      <limit lower="-0.98" upper="0.98" effort="100" velocity="10" />
     </joint>
 
 <!-- supply x axis mobile base link -->
@@ -98,10 +100,12 @@
     </link>
 
       <!-- supply base to supply x axis mobile base joint (needs to be prismatic) **********--> 
-  <joint name="supply_base_x_axis_mobile_base_joint" type="fixed">
+  <joint name="supply_x_axis_mobile_base_joint" type="prismatic">
       <parent link="supply_base_link" />
       <child link="supply_x_axis_mobile_base_link" />
       <origin xyz="0.0 0.0 0.01" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+      <limit lower="-0.98" upper="0.98" effort="100" velocity="10" />
     </joint>
 
 <!-- supply arm base link -->
@@ -126,7 +130,7 @@
     </link>
 
     <!-- supply y axis plate to supply arm base joint (needs to be prismatic??) **********-->
-    <joint name="supply_y_axis_plate_supply_arm_base_joint" type="fixed">
+    <joint name="supply_arm_base_joint" type="fixed">
       <parent link="supply_x_axis_mobile_base_link" />
       <child link="supply_arm_base_link" />
       <origin xyz="0.0 0.0 0.2566" rpy="0 0 0"/>
@@ -154,7 +158,7 @@
     </link>
 
     <!-- supply arm base to supply arm slider joint (needs to be prismatic??) **********-->
-    <joint name="supply_arm_base_supply_arm_slider_joint" type="fixed">
+    <joint name="supply_arm_slider_joint" type="fixed">
       <parent link="supply_arm_base_link" />
       <child link="supply_arm_slider_link" />
       <origin xyz="0.0 0.0 0.0215" rpy="0 0 0"/>
@@ -181,7 +185,7 @@
       </inertial>
     </link>
     <!-- supply arm slider to supply arm plate joint (needs to be prismatic?? & need z offset) **********-->
-    <joint name="supply_arm_slider_supply_arm_plate_joint" type="fixed">
+    <joint name="supply_arm_plate_joint" type="fixed">
       <parent link="supply_arm_slider_link" />
       <child link="supply_arm_plate_link" />
       <origin xyz="0.0 0.0 0.01" rpy="0 0 0"/>
