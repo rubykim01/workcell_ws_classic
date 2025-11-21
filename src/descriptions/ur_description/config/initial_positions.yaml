@@ -17,3 +17,6 @@ arf_gripper_joint_1: -0.0744
 arf_gripper_joint_2: 0.0744
 supply_y_axis_plate_joint: 0.0
 supply_x_axis_mobile_base_joint: 0.0
+supply_arm_base_joint: 0.0
+supply_arm_slider_joint: 0.0
+supply_arm_plate_joint: 0.0

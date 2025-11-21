@@ -219,6 +219,30 @@ def launch_setup(context, *args, **kwargs):
         output="screen"
     )
 
+    #Supply arm base Controller
+    supply_arm_base_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["supply_arm_base_trajectory_controller", "-c", "/controller_manager"],
+        output="screen"
+    )
+
+    #Supply arm slider Controller
+    supply_arm_slider_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["supply_arm_slider_trajectory_controller", "-c", "/controller_manager"],
+        output="screen"
+    )
+
+    #Supply arm plate Controller
+    supply_arm_plate_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["supply_arm_plate_trajectory_controller", "-c", "/controller_manager"],
+        output="screen"
+    )
+
     # Gazebo nodes
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -255,6 +279,9 @@ def launch_setup(context, *args, **kwargs):
         denso_axis_controller_spawner,
         supply_x_axis_mobile_base_controller_spawner,
         supply_y_axis_plate_controller_spawner,
+        supply_arm_base_controller_spawner,
+        supply_arm_slider_controller_spawner,
+        supply_arm_plate_controller_spawner,
         gazebo,
         gazebo_spawn_robot,
     ]

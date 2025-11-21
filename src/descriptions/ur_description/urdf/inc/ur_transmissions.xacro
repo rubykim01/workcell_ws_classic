@@ -164,6 +164,27 @@
         <hardwareInterface>${hw_interface}</hardwareInterface>
       </joint>
     </transmission>
+
+    <transmission name="supply_arm_base_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="supply_arm_base_joint">
+        <hardwareInterface>${hw_interface}</hardwareInterface>
+      </joint>
+    </transmission>
+    
+    <transmission name="supply_arm_slider_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="supply_arm_slider_joint">
+        <hardwareInterface>${hw_interface}</hardwareInterface>
+      </joint>
+    </transmission>
+    
+    <transmission name="supply_arm_plate_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="supply_arm_plate_joint">
+        <hardwareInterface>${hw_interface}</hardwareInterface>
+      </joint>
+    </transmission>
   </xacro:macro>
 
 </robot>
