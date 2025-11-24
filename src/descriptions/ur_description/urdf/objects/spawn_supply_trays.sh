@@ -17,9 +17,7 @@ OFFSET_H3_Z=0.324
 OFFSET_H4_Z=0.214
 OFFSET_H5_Z=0.104
 
-# Cover offsets from tray origin (in meters, converted from mm)
-# Cover_02 (First Level): (0, -31.5, 0) mm = (0, -0.0315, 0) m
-# Cover_01 (Second Level): (0, -31.5, 18) mm = (0, -0.0315, 0.018) m
+# objects offsets from tray origin 
 COVER_OFFSET_X=0.0
 COVER_OFFSET_Y=-0.0315
 COVER_1ST_LEVEL_Z=0.0
@@ -28,6 +26,13 @@ PLATE_OFFSET_X=0.0
 PLATE_OFFSET_Y=-0.0335
 PLATE_1ST_LEVEL_Z=0.0
 PLATE_2ND_LEVEL_Z=0.0055
+COVER3_OFFSET_X_1=-0.1
+COVER3_OFFSET_X_2=0.0
+COVER3_OFFSET_X_3=0.1
+COVER3_OFFSET_Y_1=-0.074
+COVER3_OFFSET_Y_2=0.006
+COVER3_OFFSET_Z=-0.003
+
 
 # Calculate world positions (base position + offset)
 TRAY_H1_X=$(awk "BEGIN {print $SUPPLY_BASE_X + $OFFSET_X}")
@@ -50,17 +55,6 @@ TRAY_H5_X=$(awk "BEGIN {print $SUPPLY_BASE_X + $OFFSET_X}")
 TRAY_H5_Y=$(awk "BEGIN {print $SUPPLY_BASE_Y + $OFFSET_Y}")
 TRAY_H5_Z=$(awk "BEGIN {print $SUPPLY_BASE_Z + $OFFSET_H5_Z}")
 
-
-echo "Spawning mobile trays on supply base"
-echo "Supply base position: ($SUPPLY_BASE_X, $SUPPLY_BASE_Y, $SUPPLY_BASE_Z)"
-echo ""
-echo "Tray positions (world coordinates):"
-echo "  Mobile Tray_H1: ($TRAY_H1_X, $TRAY_H1_Y, $TRAY_H1_Z)"
-echo "  Mobile Tray_H2: ($TRAY_H2_X, $TRAY_H2_Y, $TRAY_H2_Z)"
-echo "  Mobile Tray_H3: ($TRAY_H3_X, $TRAY_H3_Y, $TRAY_H3_Z)"
-echo "  Mobile Tray_H4: ($TRAY_H4_X, $TRAY_H4_Y, $TRAY_H4_Z)"
-echo "  Mobile Tray_H5: ($TRAY_H5_X, $TRAY_H5_Y, $TRAY_H5_Z)"
-echo ""
 
 # Get the current workspace directory
 OBJECTS_DIR="/root/workcell_ws_classic/src/descriptions/ur_description/urdf/objects"
@@ -147,6 +141,36 @@ Plate_T5_X_2ND=$(awk "BEGIN {print $TRAY_H5_X + $PLATE_OFFSET_X}")
 Plate_T5_Y_2ND=$(awk "BEGIN {print $TRAY_H5_Y + $PLATE_OFFSET_Y}")
 Plate_T5_Z_2ND=$(awk "BEGIN {print $TRAY_H5_Z + $PLATE_2ND_LEVEL_Z}")
 
+# Calculate cover3 positions for Tray 3
+# 1: (-100, -74, -3) mm
+COVER3_T3_X_1=$(awk "BEGIN {print $TRAY_H3_X + $COVER3_OFFSET_X_1}")
+COVER3_T3_Y_1=$(awk "BEGIN {print $TRAY_H3_Y + $COVER3_OFFSET_Y_1}")
+COVER3_T3_Z_1=$(awk "BEGIN {print $TRAY_H3_Z + $COVER3_OFFSET_Z}")
+
+# 2: (-100, 6, -3) mm
+COVER3_T3_X_2=$(awk "BEGIN {print $TRAY_H3_X + $COVER3_OFFSET_X_1}")
+COVER3_T3_Y_2=$(awk "BEGIN {print $TRAY_H3_Y + $COVER3_OFFSET_Y_2}")
+COVER3_T3_Z_2=$(awk "BEGIN {print $TRAY_H3_Z + $COVER3_OFFSET_Z}")
+
+# 3: (0, -74, -3) mm
+COVER3_T3_X_3=$(awk "BEGIN {print $TRAY_H3_X + $COVER3_OFFSET_X_2}")
+COVER3_T3_Y_3=$(awk "BEGIN {print $TRAY_H3_Y + $COVER3_OFFSET_Y_1}")
+COVER3_T3_Z_3=$(awk "BEGIN {print $TRAY_H3_Z + $COVER3_OFFSET_Z}")
+
+# 4: (0, 6, -3) mm
+COVER3_T3_X_4=$(awk "BEGIN {print $TRAY_H3_X + $COVER3_OFFSET_X_2}")
+COVER3_T3_Y_4=$(awk "BEGIN {print $TRAY_H3_Y + $COVER3_OFFSET_Y_2}")
+COVER3_T3_Z_4=$(awk "BEGIN {print $TRAY_H3_Z + $COVER3_OFFSET_Z}")
+
+# 5: (100, -74, -3) mm
+COVER3_T3_X_5=$(awk "BEGIN {print $TRAY_H3_X + $COVER3_OFFSET_X_3}")
+COVER3_T3_Y_5=$(awk "BEGIN {print $TRAY_H3_Y + $COVER3_OFFSET_Y_1}")
+COVER3_T3_Z_5=$(awk "BEGIN {print $TRAY_H3_Z + $COVER3_OFFSET_Z}")
+
+# 6: (100, 6, -3) mm
+COVER3_T3_X_6=$(awk "BEGIN {print $TRAY_H3_X + $COVER3_OFFSET_X_3}")
+COVER3_T3_Y_6=$(awk "BEGIN {print $TRAY_H3_Y + $COVER3_OFFSET_Y_2}")
+COVER3_T3_Z_6=$(awk "BEGIN {print $TRAY_H3_Z + $COVER3_OFFSET_Z}")
 # Cover rotation: -90 degrees around Z axis (yaw)
 COVER_YAW=-1.5708  # -90 degrees in radians
 
@@ -214,20 +238,54 @@ ros2 run gazebo_ros spawn_entity.py \
     -entity heating_plate_t5_2nd \
     -x $Plate_T5_X_2ND -y $Plate_T5_Y_2ND -z $Plate_T5_Z_2ND
 
+# Cover3 rotation: -90 degrees around Z axis (yaw)
+COVER3_YAW=-1.5708  # -90 degrees in radians
+
+# Spawn cover3 on Tray 3
 echo ""
+echo "Spawning cover3 on Tray 3..."
+echo "  - Cover3_01 at ($COVER3_T3_X_1, $COVER3_T3_Y_1, $COVER3_T3_Z_1) with rotation -90° Z"
+ros2 run gazebo_ros spawn_entity.py \
+    -file "$OBJECTS_DIR/heating_plate_cover3-1.sdf" \
+    -entity heating_plate_cover3_1_t3_1 \
+    -x $COVER3_T3_X_1 -y $COVER3_T3_Y_1 -z $COVER3_T3_Z_1 \
+    -R 0 -P 0 -Y $COVER3_YAW
+
+echo "  - Cover3_02 at ($COVER3_T3_X_2, $COVER3_T3_Y_2, $COVER3_T3_Z_2) with rotation -90° Z"
+ros2 run gazebo_ros spawn_entity.py \
+    -file "$OBJECTS_DIR/heating_plate_cover3-2.sdf" \
+    -entity heating_plate_cover3_2_t3_2 \
+    -x $COVER3_T3_X_2 -y $COVER3_T3_Y_2 -z $COVER3_T3_Z_2 \
+    -R 0 -P 0 -Y $COVER3_YAW
+
+echo "  - Cover3_03 at ($COVER3_T3_X_3, $COVER3_T3_Y_3, $COVER3_T3_Z_3) with rotation -90° Z"
+ros2 run gazebo_ros spawn_entity.py \
+    -file "$OBJECTS_DIR/heating_plate_cover3-1.sdf" \
+    -entity heating_plate_cover3_1_t3_3 \
+    -x $COVER3_T3_X_3 -y $COVER3_T3_Y_3 -z $COVER3_T3_Z_3 \
+    -R 0 -P 0 -Y $COVER3_YAW
+
+echo "  - Cover3_04 at ($COVER3_T3_X_4, $COVER3_T3_Y_4, $COVER3_T3_Z_4) with rotation -90° Z"
+ros2 run gazebo_ros spawn_entity.py \
+    -file "$OBJECTS_DIR/heating_plate_cover3-2.sdf" \
+    -entity heating_plate_cover3_2_t3_4 \
+    -x $COVER3_T3_X_4 -y $COVER3_T3_Y_4 -z $COVER3_T3_Z_4 \
+    -R 0 -P 0 -Y $COVER3_YAW
+
+echo "  - Cover3_05 at ($COVER3_T3_X_5, $COVER3_T3_Y_5, $COVER3_T3_Z_5) with rotation -90° Z"
+ros2 run gazebo_ros spawn_entity.py \
+    -file "$OBJECTS_DIR/heating_plate_cover3-1.sdf" \
+    -entity heating_plate_cover3_1_t3_5 \
+    -x $COVER3_T3_X_5 -y $COVER3_T3_Y_5 -z $COVER3_T3_Z_5 \
+    -R 0 -P 0 -Y $COVER3_YAW
+
+echo "  - Cover3_06 at ($COVER3_T3_X_6, $COVER3_T3_Y_6, $COVER3_T3_Z_6) with rotation -90° Z"
+ros2 run gazebo_ros spawn_entity.py \
+    -file "$OBJECTS_DIR/heating_plate_cover3-2.sdf" \
+    -entity heating_plate_cover3_2_t3_6 \
+    -x $COVER3_T3_X_6 -y $COVER3_T3_Y_6 -z $COVER3_T3_Z_6 \
+    -R 0 -P 0 -Y $COVER3_YAW
+
 echo "All mobile trays and covers spawned successfully!"
-echo "Objects created:"
-echo "  - mobile_tray_h1"
-echo "  - mobile_tray_h2"
-echo "  - mobile_tray_h3"
-echo "  - mobile_tray_h4"
-echo "  - mobile_tray_h5"
-echo "  - heating_plate_cover_t1_1st "
-echo "  - heating_plate_cover_t1_2nd "
-echo "  - heating_plate_cover_t4_1st "
-echo "  - heating_plate_cover_t4_2nd "
-echo "  - heating_plate_t2_1st "
-echo "  - heating_plate_t2_2nd "
-echo "  - heating_plate_t5_1st "
-echo "  - heating_plate_t5_2nd "
+
 
