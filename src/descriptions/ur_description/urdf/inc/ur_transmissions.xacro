@@ -151,37 +151,37 @@
 
     <!-- Supply Joints -->
 
-    <transmission name="supply_y_axis_plate_trans">
+    <transmission name="feeder_y_axis_plate_trans">
       <type>transmission_interface/SimpleTransmission</type>
-      <joint name="supply_y_axis_plate_joint">
+      <joint name="feeder_y_axis_plate_joint">
         <hardwareInterface>${hw_interface}</hardwareInterface>
       </joint>
     </transmission>
 
-    <transmission name="supply_x_axis_mobile_base_trans">
+    <transmission name="feeder_x_axis_mobile_base_trans">
       <type>transmission_interface/SimpleTransmission</type>
-      <joint name="supply_x_axis_mobile_base_joint">
+      <joint name="feeder_x_axis_mobile_base_joint">
         <hardwareInterface>${hw_interface}</hardwareInterface>
       </joint>
     </transmission>
 
-    <transmission name="supply_arm_base_trans">
+    <transmission name="feeder_arm_base_trans">
       <type>transmission_interface/SimpleTransmission</type>
-      <joint name="supply_arm_base_joint">
+      <joint name="feeder_arm_base_joint">
         <hardwareInterface>${hw_interface}</hardwareInterface>
       </joint>
     </transmission>
     
-    <transmission name="supply_arm_slider_trans">
+    <transmission name="feeder_arm_slider_trans">
       <type>transmission_interface/SimpleTransmission</type>
-      <joint name="supply_arm_slider_joint">
+      <joint name="feeder_arm_slider_joint">
         <hardwareInterface>${hw_interface}</hardwareInterface>
       </joint>
     </transmission>
     
-    <transmission name="supply_arm_plate_trans">
+    <transmission name="feeder_arm_plate_trans">
       <type>transmission_interface/SimpleTransmission</type>
-      <joint name="supply_arm_plate_joint">
+      <joint name="feeder_arm_plate_joint">
         <hardwareInterface>${hw_interface}</hardwareInterface>
       </joint>
     </transmission>

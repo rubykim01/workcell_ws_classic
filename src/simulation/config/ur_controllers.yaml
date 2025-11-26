@@ -54,23 +54,23 @@ controller_manager:
       type: joint_trajectory_controller/JointTrajectoryController
 
     #Supply x-axis mobile base Controller
-    supply_x_axis_mobile_base_trajectory_controller:
+    feeder_x_axis_mobile_base_trajectory_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
     #Supply y-axis plate Controller
-    supply_y_axis_plate_trajectory_controller:
+    feeder_y_axis_plate_trajectory_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
     #Supply arm base Controller
-    supply_arm_base_trajectory_controller:
+    feeder_arm_base_trajectory_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
     #Supply arm slider Controller
-    supply_arm_slider_trajectory_controller:
+    feeder_arm_slider_trajectory_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
     #Supply arm plate Controller
-    supply_arm_plate_trajectory_controller:
+    feeder_arm_plate_trajectory_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
 speed_scaling_state_broadcaster:
@@ -249,10 +249,10 @@ denso_axis_trajectory_controller:
       denso_axis_joint: { trajectory: 0.1, goal: 0.05 }
 
 # Supply x-axis mobile base Controller
-supply_x_axis_mobile_base_trajectory_controller:
+feeder_x_axis_mobile_base_trajectory_controller:
   ros__parameters:
     joints:
-      - supply_x_axis_mobile_base_joint
+      - feeder_x_axis_mobile_base_joint
     command_interfaces:
       - position
     state_interfaces:
@@ -266,10 +266,10 @@ supply_x_axis_mobile_base_trajectory_controller:
       goal_time: 0.0
 
 # Supply y-axis plate Controller
-supply_y_axis_plate_trajectory_controller:
+feeder_y_axis_plate_trajectory_controller:
   ros__parameters:
     joints:
-      - supply_y_axis_plate_joint
+      - feeder_y_axis_plate_joint
     command_interfaces:
       - position
     state_interfaces:
@@ -284,10 +284,10 @@ supply_y_axis_plate_trajectory_controller:
 
 
 # Supply arm base Controller
-supply_arm_base_trajectory_controller:
+feeder_arm_base_trajectory_controller:
   ros__parameters:
     joints:
-      - supply_arm_base_joint
+      - feeder_arm_base_joint
     command_interfaces:
       - position
     state_interfaces:
@@ -301,10 +301,10 @@ supply_arm_base_trajectory_controller:
       goal_time: 0.0
 
 # Supply arm slider Controller
-supply_arm_slider_trajectory_controller:
+feeder_arm_slider_trajectory_controller:
   ros__parameters:
     joints:
-      - supply_arm_slider_joint
+      - feeder_arm_slider_joint
     command_interfaces:
       - position
     state_interfaces:
@@ -318,10 +318,10 @@ supply_arm_slider_trajectory_controller:
       goal_time: 0.0
 
 # Supply arm plate Controller
-supply_arm_plate_trajectory_controller:
+feeder_arm_plate_trajectory_controller:
   ros__parameters:
     joints:
-      - supply_arm_plate_joint
+      - feeder_arm_plate_joint
     command_interfaces:
       - position
     state_interfaces:

@@ -6,7 +6,7 @@
       <visual name="visual">
         <geometry>
           <mesh>
-            <uri>file:///root/workcell_ws_classic/src/descriptions/ur_description/meshes/supply/trays/Mobile_Tray_H1.STL</uri>
+            <uri>file:///root/workcell_ws_classic/src/descriptions/ur_description/meshes/feeder/trays/Mobile_Tray_H1.STL</uri>
             <scale>1 1 1</scale>
           </mesh>
         </geometry>

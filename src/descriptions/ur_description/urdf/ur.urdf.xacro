@@ -14,8 +14,8 @@
    <xacro:include filename="$(find ur_description)/urdf/arf.xacro"/>
    <!-- import denso macro -->
    <xacro:include filename="$(find ur_description)/urdf/denso.xacro"/>
-   <!-- import supply macro -->
-   <xacro:include filename="$(find ur_description)/urdf/supply.xacro"/>
+   <!-- import feeder macro -->
+   <xacro:include filename="$(find ur_description)/urdf/feeder.xacro"/>
    <!-- import gazebo materials -->
    <xacro:include filename="$(find ur_description)/urdf/gazebo_materials.xacro"/>
    <!-- possible 'ur_type' values: ur3, ur3e, ur5, ur5e, ur7e, ur10, ur10e, ur12e, ur16e, ur15, ur20, ur30 -->
@@ -110,8 +110,8 @@
   <!-- denso components -->
   <xacro:denso parent="world"/>
   
-  <!-- supply components -->
-  <xacro:supply parent="world"/>
+  <!-- feeder components -->
+  <xacro:feeder parent="world"/>
 
    <!-- Load trolley positions configuration -->
    <xacro:property name="trolley_positions" value="${xacro.load_yaml('$(find ur_description)/config/trolley_positions.yaml')}"/>

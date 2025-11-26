@@ -247,57 +247,57 @@
 
       <!-- Supply Joints -->
       <!-- Supply Y Axis Plate Joint -->
-      <joint name="supply_y_axis_plate_joint">
+      <joint name="feeder_y_axis_plate_joint">
         <command_interface name="position"/>
         <command_interface name="velocity"/>
         <state_interface name="position">
           <!-- initial position for the FakeSystem and simulation -->
-          <param name="initial_value">${initial_positions['supply_y_axis_plate_joint']}</param>
+          <param name="initial_value">${initial_positions['feeder_y_axis_plate_joint']}</param>
         </state_interface>
         <state_interface name="velocity"/>
         <state_interface name="effort"/>
       </joint>
       <!-- Supply X Axis Mobile Base Joint -->
-      <joint name="supply_x_axis_mobile_base_joint">
+      <joint name="feeder_x_axis_mobile_base_joint">
         <command_interface name="position"/>
         <command_interface name="velocity"/>
         <state_interface name="position">
           <!-- initial position for the FakeSystem and simulation -->
-          <param name="initial_value">${initial_positions['supply_x_axis_mobile_base_joint']}</param>
+          <param name="initial_value">${initial_positions['feeder_x_axis_mobile_base_joint']}</param>
         </state_interface>
         <state_interface name="velocity"/>
         <state_interface name="effort"/>
       </joint>
 
       <!-- Supply Arm Base Joint -->
-      <joint name="supply_arm_base_joint">
+      <joint name="feeder_arm_base_joint">
         <command_interface name="position"/>
         <command_interface name="velocity"/>
         <state_interface name="position">
           <!-- initial position for the FakeSystem and simulation -->
-          <param name="initial_value">${initial_positions['supply_arm_base_joint']}</param>
+          <param name="initial_value">${initial_positions['feeder_arm_base_joint']}</param>
         </state_interface>
         <state_interface name="velocity"/>
         <state_interface name="effort"/>
       </joint>
       <!-- Supply Arm Slider Joint -->
-      <joint name="supply_arm_slider_joint">
+      <joint name="feeder_arm_slider_joint">
         <command_interface name="position"/>
         <command_interface name="velocity"/>
         <state_interface name="position">
           <!-- initial position for the FakeSystem and simulation -->
-          <param name="initial_value">${initial_positions['supply_arm_slider_joint']}</param>
+          <param name="initial_value">${initial_positions['feeder_arm_slider_joint']}</param>
         </state_interface>
         <state_interface name="velocity"/>
         <state_interface name="effort"/>
       </joint>
       <!-- Supply Arm Plate Joint -->
-      <joint name="supply_arm_plate_joint">
+      <joint name="feeder_arm_plate_joint">
         <command_interface name="position"/>
         <command_interface name="velocity"/>
         <state_interface name="position">
           <!-- initial position for the FakeSystem and simulation -->
-          <param name="initial_value">${initial_positions['supply_arm_plate_joint']}</param>
+          <param name="initial_value">${initial_positions['feeder_arm_plate_joint']}</param>
         </state_interface>
         <state_interface name="velocity"/>
         <state_interface name="effort"/>

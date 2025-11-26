@@ -1,31 +1,31 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://wiki.ros.org/xacro">
 
-  <xacro:macro name="supply" params="parent">
-  <xacro:property name="supply_visual_params" value="${xacro.load_yaml('$(find ur_description)/config/supply_visual_parameters.yaml')}"/>
-  <xacro:property name="sec_mesh_files" value="${supply_visual_params['mesh_files']}" scope="parent"/>
+  <xacro:macro name="feeder" params="parent">
+  <xacro:property name="feeder_visual_params" value="${xacro.load_yaml('$(find ur_description)/config/feeder_visual_parameters.yaml')}"/>
+  <xacro:property name="sec_mesh_files" value="${feeder_visual_params['mesh_files']}" scope="parent"/>
   <xacro:property name="force_abs_paths" value="true" scope="parent"/>
 
 
   <!-- Load trolley positions configuration -->
   <xacro:property name="trolley_positions" value="${xacro.load_yaml('$(find ur_description)/config/trolley_positions.yaml')}"/>
-  <xacro:property name="supply_pos" value="${trolley_positions['trolley_positions']['supply']}"/>
+  <xacro:property name="feeder_pos" value="${trolley_positions['trolley_positions']['feeder']}"/>
 
-<!-- supply base link -->
-    <link name="supply_base_link">
+<!-- feeder base link -->
+    <link name="feeder_base_link">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <xacro:get_mesh name="supply_base" type="visual"/>
+          <xacro:get_mesh name="feeder_base" type="visual"/>
         </geometry>
-        <material name="${sec_mesh_files['supply_base']['visual']['material']['name']}">
-          <color rgba="${sec_mesh_files['supply_base']['visual']['material']['color']}"/>
+        <material name="${sec_mesh_files['feeder_base']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['feeder_base']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <xacro:get_mesh name="supply_base" type="collision"/>
+          <xacro:get_mesh name="feeder_base" type="collision"/>
         </geometry>
       </collision>
       <inertial>
@@ -35,28 +35,28 @@
       </inertial>
     </link>
 
-    <!-- world to supply base joint -->
-   <joint name="supply_base_joint" type="fixed">
+    <!-- world to feeder base joint -->
+   <joint name="feeder_base_joint" type="fixed">
       <parent link="${parent}" />
-      <child link="supply_base_link" />
-      <origin xyz="${supply_pos['x']} ${supply_pos['y']} ${supply_pos['z']}" rpy="${supply_pos['roll']} ${supply_pos['pitch']} ${supply_pos['yaw']}"/>
+      <child link="feeder_base_link" />
+      <origin xyz="${feeder_pos['x']} ${feeder_pos['y']} ${feeder_pos['z']}" rpy="${feeder_pos['roll']} ${feeder_pos['pitch']} ${feeder_pos['yaw']}"/>
     </joint>
 
-<!-- supply y axis plate link -->
-    <link name="supply_y_axis_plate_link">
+<!-- feeder y axis plate link -->
+    <link name="feeder_y_axis_plate_link">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <xacro:get_mesh name="supply_y_axis_plate" type="visual"/>
+          <xacro:get_mesh name="feeder_y_axis_plate" type="visual"/>
         </geometry>
-        <material name="${sec_mesh_files['supply_y_axis_plate']['visual']['material']['name']}">
-          <color rgba="${sec_mesh_files['supply_y_axis_plate']['visual']['material']['color']}"/>
+        <material name="${sec_mesh_files['feeder_y_axis_plate']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['feeder_y_axis_plate']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <xacro:get_mesh name="supply_y_axis_plate" type="collision"/>
+          <xacro:get_mesh name="feeder_y_axis_plate" type="collision"/>
         </geometry>
       </collision>
       <inertial>
@@ -66,30 +66,30 @@
       </inertial>
     </link>
 
-    <!-- supply base to supply y axis plate joint (needs to be prismatic) **********-->
-    <joint name="supply_y_axis_plate_joint" type="prismatic">
-      <parent link="supply_base_link" />
-      <child link="supply_y_axis_plate_link" />
+    <!-- feeder base to feeder y axis plate joint (needs to be prismatic) **********-->
+    <joint name="feeder_y_axis_plate_joint" type="prismatic">
+      <parent link="feeder_base_link" />
+      <child link="feeder_y_axis_plate_link" />
       <origin xyz="0.0 -0.98 0.0" rpy="0 0 0"/>
       <axis xyz="0 0 1"/>
       <limit lower="-0.98" upper="0.98" effort="100" velocity="10" />
     </joint>
 
-<!-- supply x axis mobile base link -->
-    <link name="supply_x_axis_mobile_base_link">
+<!-- feeder x axis mobile base link -->
+    <link name="feeder_x_axis_mobile_base_link">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <xacro:get_mesh name="supply_x_axis_mobile_base" type="visual"/>
+          <xacro:get_mesh name="feeder_x_axis_mobile_base" type="visual"/>
         </geometry>
-        <material name="${sec_mesh_files['supply_x_axis_mobile_base']['visual']['material']['name']}">
-          <color rgba="${sec_mesh_files['supply_x_axis_mobile_base']['visual']['material']['color']}"/>
+        <material name="${sec_mesh_files['feeder_x_axis_mobile_base']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['feeder_x_axis_mobile_base']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <xacro:get_mesh name="supply_x_axis_mobile_base" type="collision"/>
+          <xacro:get_mesh name="feeder_x_axis_mobile_base" type="collision"/>
         </geometry>
       </collision>
       <inertial>
@@ -99,27 +99,27 @@
       </inertial>
     </link>
 
-      <!-- supply base to supply x axis mobile base joint (needs to be prismatic) **********--> 
-  <joint name="supply_x_axis_mobile_base_joint" type="prismatic">
-      <parent link="supply_base_link" />
-      <child link="supply_x_axis_mobile_base_link" />
+      <!-- feeder base to feeder x axis mobile base joint (needs to be prismatic) **********--> 
+  <joint name="feeder_x_axis_mobile_base_joint" type="prismatic">
+      <parent link="feeder_base_link" />
+      <child link="feeder_x_axis_mobile_base_link" />
       <origin xyz="0.0 0.0 0.01" rpy="0 0 0"/>
       <axis xyz="0 1 0"/>
       <limit lower="-0.98" upper="0.98" effort="100" velocity="10" />
     </joint>
 
-<!-- supply arm base link -->
-    <link name="supply_arm_base_link">
+<!-- feeder arm base link -->
+    <link name="feeder_arm_base_link">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <xacro:get_mesh name="supply_arm_base" type="visual"/>
+          <xacro:get_mesh name="feeder_arm_base" type="visual"/>
         </geometry>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <xacro:get_mesh name="supply_arm_base" type="collision"/>
+          <xacro:get_mesh name="feeder_arm_base" type="collision"/>
         </geometry>
       </collision>
       <inertial>
@@ -129,27 +129,27 @@
       </inertial>
     </link>
 
-    <!-- supply y axis plate to supply arm base joint (needs to be prismatic??) **********-->
-    <joint name="supply_arm_base_joint" type="prismatic">
-      <parent link="supply_x_axis_mobile_base_link" />
-      <child link="supply_arm_base_link" />
+    <!-- feeder y axis plate to feeder arm base joint (needs to be prismatic??) **********-->
+    <joint name="feeder_arm_base_joint" type="prismatic">
+      <parent link="feeder_x_axis_mobile_base_link" />
+      <child link="feeder_arm_base_link" />
       <origin xyz="0.0 0.0 0.2566" rpy="0 0 0"/>
       <axis xyz="0 0 1"/>
       <limit lower="-0.98" upper="0.98" effort="100" velocity="10" />
     </joint>
 
-<!-- supply arm slider link -->
-    <link name="supply_arm_slider_link">
+<!-- feeder arm slider link -->
+    <link name="feeder_arm_slider_link">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <xacro:get_mesh name="supply_arm_slider" type="visual"/>
+          <xacro:get_mesh name="feeder_arm_slider" type="visual"/>
         </geometry>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <xacro:get_mesh name="supply_arm_slider" type="collision"/>
+          <xacro:get_mesh name="feeder_arm_slider" type="collision"/>
         </geometry>
       </collision>
       <inertial>
@@ -159,27 +159,27 @@
       </inertial>
     </link>
 
-    <!-- supply arm base to supply arm slider joint (needs to be prismatic??) **********-->
-    <joint name="supply_arm_slider_joint" type="prismatic">
-      <parent link="supply_arm_base_link" />
-      <child link="supply_arm_slider_link" />
+    <!-- feeder arm base to feeder arm slider joint (needs to be prismatic??) **********-->
+    <joint name="feeder_arm_slider_joint" type="prismatic">
+      <parent link="feeder_arm_base_link" />
+      <child link="feeder_arm_slider_link" />
       <origin xyz="0.0 0.0 0.0215" rpy="0 0 0"/>
       <axis xyz="1 0 0"/>
       <limit lower="-0.98" upper="0.98" effort="100" velocity="10" />
     </joint>
 
-<!-- supply arm plate link -->
-    <link name="supply_arm_plate_link">
+<!-- feeder arm plate link -->
+    <link name="feeder_arm_plate_link">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <xacro:get_mesh name="supply_arm_plate" type="visual"/>
+          <xacro:get_mesh name="feeder_arm_plate" type="visual"/>
         </geometry>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <xacro:get_mesh name="supply_arm_plate" type="collision"/>
+          <xacro:get_mesh name="feeder_arm_plate" type="collision"/>
         </geometry>
       </collision>
       <inertial>
@@ -188,10 +188,10 @@
         <inertia ixx="0.05" ixy="0" ixz="0" iyy="0.05" iyz="0" izz="0.05"/>
       </inertial>
     </link>
-    <!-- supply arm slider to supply arm plate joint (needs to be prismatic?? & need z offset) **********-->
-    <joint name="supply_arm_plate_joint" type="prismatic">
-      <parent link="supply_arm_slider_link" />
-      <child link="supply_arm_plate_link" />
+    <!-- feeder arm slider to feeder arm plate joint (needs to be prismatic?? & need z offset) **********-->
+    <joint name="feeder_arm_plate_joint" type="prismatic">
+      <parent link="feeder_arm_slider_link" />
+      <child link="feeder_arm_plate_link" />
       <origin xyz="0.0 0.0 0.01" rpy="0 0 0"/>
       <axis xyz="1 0 0"/>
       <limit lower="-0.98" upper="0.98" effort="100" velocity="10" />

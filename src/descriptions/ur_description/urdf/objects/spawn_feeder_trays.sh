@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Script to spawn mobile trays on supply base
-# Usage: ./spawn_supply_trays.sh
+# Script to spawn mobile trays on feeder base
+# Usage: ./spawn_feeder_trays.sh
 
-# Supply base position in world (meters)
-SUPPLY_BASE_X=1.0
-SUPPLY_BASE_Y=0.0
-SUPPLY_BASE_Z=0.92
+# Feeder base position in world (meters)
+FEEDER_BASE_X=1.0
+FEEDER_BASE_Y=0.0
+FEEDER_BASE_Z=0.92
 
 # Offset values in meters
 OFFSET_X=-0.361
@@ -35,25 +35,25 @@ COVER3_OFFSET_Z=-0.003
 
 
 # Calculate world positions (base position + offset)
-TRAY_H1_X=$(awk "BEGIN {print $SUPPLY_BASE_X + $OFFSET_X}")
-TRAY_H1_Y=$(awk "BEGIN {print $SUPPLY_BASE_Y + $OFFSET_Y}")
-TRAY_H1_Z=$(awk "BEGIN {print $SUPPLY_BASE_Z + $OFFSET_H1_Z}")
+TRAY_H1_X=$(awk "BEGIN {print $FEEDER_BASE_X + $OFFSET_X}")
+TRAY_H1_Y=$(awk "BEGIN {print $FEEDER_BASE_Y + $OFFSET_Y}")
+TRAY_H1_Z=$(awk "BEGIN {print $FEEDER_BASE_Z + $OFFSET_H1_Z}")
 
-TRAY_H2_X=$(awk "BEGIN {print $SUPPLY_BASE_X + $OFFSET_X}")
-TRAY_H2_Y=$(awk "BEGIN {print $SUPPLY_BASE_Y + $OFFSET_Y}")
-TRAY_H2_Z=$(awk "BEGIN {print $SUPPLY_BASE_Z + $OFFSET_H2_Z}")
+TRAY_H2_X=$(awk "BEGIN {print $FEEDER_BASE_X + $OFFSET_X}")
+TRAY_H2_Y=$(awk "BEGIN {print $FEEDER_BASE_Y + $OFFSET_Y}")
+TRAY_H2_Z=$(awk "BEGIN {print $FEEDER_BASE_Z + $OFFSET_H2_Z}")
 
-TRAY_H3_X=$(awk "BEGIN {print $SUPPLY_BASE_X + $OFFSET_X}")
-TRAY_H3_Y=$(awk "BEGIN {print $SUPPLY_BASE_Y + $OFFSET_Y}")
-TRAY_H3_Z=$(awk "BEGIN {print $SUPPLY_BASE_Z + $OFFSET_H3_Z}")
+TRAY_H3_X=$(awk "BEGIN {print $FEEDER_BASE_X + $OFFSET_X}")
+TRAY_H3_Y=$(awk "BEGIN {print $FEEDER_BASE_Y + $OFFSET_Y}")
+TRAY_H3_Z=$(awk "BEGIN {print $FEEDER_BASE_Z + $OFFSET_H3_Z}")
 
-TRAY_H4_X=$(awk "BEGIN {print $SUPPLY_BASE_X + $OFFSET_X}")
-TRAY_H4_Y=$(awk "BEGIN {print $SUPPLY_BASE_Y + $OFFSET_Y}")
-TRAY_H4_Z=$(awk "BEGIN {print $SUPPLY_BASE_Z + $OFFSET_H4_Z}")
+TRAY_H4_X=$(awk "BEGIN {print $FEEDER_BASE_X + $OFFSET_X}")
+TRAY_H4_Y=$(awk "BEGIN {print $FEEDER_BASE_Y + $OFFSET_Y}")
+TRAY_H4_Z=$(awk "BEGIN {print $FEEDER_BASE_Z + $OFFSET_H4_Z}")
 
-TRAY_H5_X=$(awk "BEGIN {print $SUPPLY_BASE_X + $OFFSET_X}")
-TRAY_H5_Y=$(awk "BEGIN {print $SUPPLY_BASE_Y + $OFFSET_Y}")
-TRAY_H5_Z=$(awk "BEGIN {print $SUPPLY_BASE_Z + $OFFSET_H5_Z}")
+TRAY_H5_X=$(awk "BEGIN {print $FEEDER_BASE_X + $OFFSET_X}")
+TRAY_H5_Y=$(awk "BEGIN {print $FEEDER_BASE_Y + $OFFSET_Y}")
+TRAY_H5_Z=$(awk "BEGIN {print $FEEDER_BASE_Z + $OFFSET_H5_Z}")
 
 
 # Get the current workspace directory
