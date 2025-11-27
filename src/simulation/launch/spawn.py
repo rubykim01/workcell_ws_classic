@@ -216,7 +216,7 @@ class MainWindow(QMainWindow):
         # Create message
         if configured_positions:
             message = "\n".join(configured_positions)
-            if len(configured_positions) <= 5:
+            if len(configured_positions) <= 0:
                 message += "\n\nNeed to configure other positions as well"
                 QMessageBox.warning(self, "Not Configured", message)
             else:
