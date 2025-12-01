@@ -129,7 +129,7 @@
       </inertial>
     </link>
 
-    <!-- feeder y axis plate to feeder arm base joint (needs to be prismatic??) **********-->
+    <!-- feeder x axis mobile base to feeder arm base joint (needs to be prismatic??) **********-->
     <joint name="feeder_arm_base_joint" type="prismatic">
       <parent link="feeder_x_axis_mobile_base_link" />
       <child link="feeder_arm_base_link" />

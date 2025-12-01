@@ -207,7 +207,7 @@
        <!-- arf back aircyl link -->
     <link name="arf_back_aircyl_link">
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 -3.141592"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
           <xacro:get_mesh name="arf_back_aircyl" type="visual"/>
         </geometry>
@@ -216,7 +216,7 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="0 0 0" rpy="0 0 -3.141592"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
           <xacro:get_mesh name="arf_back_aircyl" type="collision"/>
         </geometry>
