@@ -70,22 +70,22 @@
 
     <!-- UR Robot Gripper Tooltips -->
 
-<transmission name="tooltip1_trans">
+<transmission name="tooltip_adapter1_trans">
   <type>transmission_interface/SimpleTransmission</type>
-  <joint name="tooltip1_joint">
+  <joint name="tooltip_adapter1_joint">
     <hardwareInterface>${hw_interface}</hardwareInterface>
   </joint>
-  <actuator name="tooltip1_motor">
+  <actuator name="tooltip_adapter1_motor">
     <mechanicalReduction>1</mechanicalReduction>
   </actuator>
 </transmission>
 
-<transmission name="tooltip2_trans">
+<transmission name="tooltip_adapter2_trans">
   <type>transmission_interface/SimpleTransmission</type>
-  <joint name="tooltip2_joint">
+  <joint name="tooltip_adapter2_joint">
     <hardwareInterface>${hw_interface}</hardwareInterface>
   </joint>
-  <actuator name="tooltip2_motor">
+  <actuator name="tooltip_adapter2_motor">
     <mechanicalReduction>1</mechanicalReduction>
   </actuator>
 </transmission>
