@@ -115,6 +115,9 @@
         <geometry>
           <xacro:get_mesh name="feeder_arm_base" type="visual"/>
         </geometry>
+        <material name="${sec_mesh_files['feeder_arm_base']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['feeder_arm_base']['visual']['material']['color']}"/>
+        </material>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -145,6 +148,9 @@
         <geometry>
           <xacro:get_mesh name="feeder_arm_slider" type="visual"/>
         </geometry>
+        <material name="${sec_mesh_files['feeder_arm_slider']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['feeder_arm_slider']['visual']['material']['color']}"/>
+        </material>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -175,6 +181,9 @@
         <geometry>
           <xacro:get_mesh name="feeder_arm_plate" type="visual"/>
         </geometry>
+        <material name="${sec_mesh_files['feeder_arm_plate']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['feeder_arm_plate']['visual']['material']['color']}"/>
+        </material>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0"/>
