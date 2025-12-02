@@ -18,12 +18,12 @@ mesh_files:
     visual:
       mesh:
         package: ur_description
-        path: meshes/toolchanger/tool_changer.STL
+        path: meshes/toolchanger/Tool_Changer_Assy.STL
       material:
         name: "Yellow_toolstand"
         color: "0.6 0.5 0.05 1.0"
     collision:
       mesh:
         package: ur_description
-        path: meshes/toolchanger/tool_changer.STL
+        path: meshes/toolchanger/Tool_Changer_Assy.STL
       
