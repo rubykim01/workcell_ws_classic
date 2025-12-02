@@ -29,32 +29,7 @@
       <parent link="${parent}"/>
       <child link="quickchanger_link"/>
       <!-- adjust quickchanger orientation to match flange orientation -->
-      <origin xyz="0 0 0" rpy="1.57 1.57 1.57"/>
-    </joint>
-
-    <!-- suction_master_link -->
-    <link name="suction_master_link">
-      <visual>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <geometry>
-          <xacro:get_mesh name="suction_master" type="visual"/>
-        </geometry>
-        <material name="${sec_mesh_files['suction_master']['visual']['material']['name']}">
-          <color rgba="${sec_mesh_files['suction_master']['visual']['material']['color']}"/>
-        </material>
-      </visual>
-      <inertial>
-        <mass value="1.0"/>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <inertia ixx="1e-5" ixy="0" ixz="0" iyy="1e-5" iyz="0" izz="1e-5"/>
-      </inertial>
-    </link>
-
-    <!-- suction_master_joint -->
-    <joint name="suction_master_joint" type="fixed">
-      <parent link="quickchanger_link"/>
-      <child link="suction_master_link"/>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0 0 0.012" rpy="1.57 3.14 1.57"/>
     </joint>
 
     <!-- suction_link -->
@@ -77,20 +52,20 @@
 
     <!-- suction_joint -->
     <joint name="suction_joint" type="fixed">
-      <parent link="suction_master_link"/>
+      <parent link="quickchanger_link"/>
       <child link="suction_link"/>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0.1208 0.0019 0.1088" rpy="0 0.785 0"/>
     </joint>
 
-    <!-- gripper_link -->
-    <link name="gripper_link">
+    <!-- tooltip_adapter_link -->
+    <link name="tooltip_adapter_link">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <xacro:get_mesh name="gripper" type="visual"/>
+          <xacro:get_mesh name="tooltip_adapter" type="visual"/>
         </geometry>
-        <material name="${sec_mesh_files['gripper']['visual']['material']['name']}">
-          <color rgba="${sec_mesh_files['gripper']['visual']['material']['color']}"/>
+        <material name="${sec_mesh_files['tooltip_adapter']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['tooltip_adapter']['visual']['material']['color']}"/>
         </material>
       </visual>
       <inertial>
@@ -100,11 +75,11 @@
       </inertial>
     </link>
 
-    <!-- gripper_joint -->
-    <joint name="gripper_joint" type="fixed">
+    <!-- tooltip_adapter_joint -->
+    <joint name="tooltip_adapter_joint" type="fixed">
       <parent link="quickchanger_link"/>
-      <child link="gripper_link"/>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <child link="tooltip_adapter_link"/>
+      <origin xyz="-0.1341 0.053 0.1221" rpy="-0.785 0 1.57"/>
     </joint>
 
     <!-- tooltip1_link -->
@@ -128,9 +103,9 @@
     <!-- tooltip1_joint -->
 
     <joint name="tooltip1_joint" type="prismatic">
-      <parent link="gripper_link"/>
+      <parent link="tooltip_adapter_link"/>
       <child link="tooltip1_link"/>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="-0.002 0 0.04" rpy="0 0 0"/>
       <axis xyz="1 0 0"/>
       <limit lower="-1.0" upper="0.041" effort="50" velocity="10"/>
     </joint>
@@ -154,9 +129,9 @@
     </link>
 
     <joint name="tooltip2_joint" type="prismatic">
-      <parent link="gripper_link"/>
+      <parent link="tooltip_adapter_link"/>
       <child link="tooltip2_link"/>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0.002 0 0.04" rpy="0 0 3.14"/>
       <axis xyz="1 0 0"/>
       <limit lower="-1.0" upper="0.041" effort="50" velocity="10"/>
     </joint>

@@ -5,76 +5,64 @@ mesh_files:
     visual:
       mesh:
         package: ur_description
-        path: meshes/quickchanger_grippers/converted_quickchanger.stl
+        path: meshes/quickchanger_grippers/Assy_Quick_Gripper.STL
       material:
         name: "Grey_quickchanger"
         color: "0.6 0.6 0.6 1.0"
     collision:
       mesh:
         package: ur_description
-        path: meshes/quickchanger_grippers/converted_quickchanger.stl
+        path: meshes/quickchanger_grippers/Assy_Quick_Gripper.STL
   #Suction
-  suction_master:
-    visual:
-      mesh:
-        package: ur_description
-        path: meshes/quickchanger_grippers/converted_suction_master.stl
-      material:
-        name: "DarkGrey_suction_master"
-        color: "0.3 0.3 0.3 1.0"
-    collision:
-      mesh:
-        package: ur_description
-        path: meshes/quickchanger_grippers/converted_suction_master.stl
   suction:
     visual:
       mesh:
         package: ur_description
-        path: meshes/quickchanger_grippers/converted_suction.stl
+        path: meshes/quickchanger_grippers/KRVG.STL
       material:
         name: "DarkGrey_suction"
         color: "0.3 0.3 0.3 1.0"
     collision:
       mesh:
         package: ur_description
-        path: meshes/quickchanger_grippers/converted_suction.stl
+        path: meshes/quickchanger_grippers/KRVG.STL
 
-  gripper:
+  tooltip_adapter:
     visual:
       mesh:
         package: ur_description
-        path: meshes/quickchanger_grippers/converted_gripper.stl
+        path: meshes/quickchanger_grippers/Tooltip_Adap_Assy.STL
       material:
-        name: "Black_gripper"
+        name: "Black_tooltip_adapter"
         color: "0.1 0.1 0.1 1.0"
     collision:
       mesh:
         package: ur_description
-        path: meshes/quickchanger_grippers/converted_gripper.stl
+        path: meshes/quickchanger_grippers/Tooltip_Adap_Assy.STL
 
   tooltip1:
     visual:
       mesh:
         package: ur_description
-        path: meshes/quickchanger_grippers/converted_tooltip1.stl
+        path: meshes/quickchanger_grippers/Tooltip_01.STL
       material:
         name: "Silver_tooltip1"
         color: "0.8 0.8 0.8 1.0"
     collision:
       mesh:
         package: ur_description
-        path: meshes/quickchanger_grippers/converted_tooltip1.stl
+        path: meshes/quickchanger_grippers/Tooltip_01.STL
       
   tooltip2:
     visual:
       mesh:
         package: ur_description
-        path: meshes/quickchanger_grippers/converted_tooltip2.stl
+        path: meshes/quickchanger_grippers/Tooltip_01.STL
       material:
         name: "Silver_tooltip2"
         color: "0.8 0.8 0.8 1.0"
     collision:
       mesh:
         package: ur_description
-        path: meshes/quickchanger_grippers/converted_tooltip2.stl
+        path: meshes/quickchanger_grippers/Tooltip_01.STL
 
