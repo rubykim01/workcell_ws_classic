@@ -1,0 +1,93 @@
+# Visualisation
+
+mesh_files:
+  arf_elec_trolley:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/arf_elec/Assy_Docking_Cartbase_ARF_E.STL
+      material:
+        name: "LightGrey_arf_elec_trolley"
+        color: "0.89 0.91 0.93 1.0"
+    collision:
+      box:
+        size: "0.8 0.8 0.86"
+        origin: "0 0 -0.43"
+
+  arf_elec_x_axis:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/arf_elec/ARF_E_X-Axis.STL
+      material:
+        name: "Grey_arf_elec_x_axis"
+        color: "0.4 0.42 0.45 1.0"
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/arf_elec/ARF_E_X-Axis.STL
+
+  arf_elec_y_axis:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/arf_elec/ARF_E_Y-Axis.STL
+      material:
+        name: "Grey_arf_elec_y_axis"
+        color: "0.4 0.42 0.45 1.0"
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/arf_elec/ARF_E_Y-Axis.STL
+  
+  arf_elec_jig:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/arf_elec/ARF_E_Jig.STL
+      material:
+        name: "Blue_arf_elec_jig"
+        color: "0.33 0.61 0.72 1.0"
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/arf_elec/ARF_E_Jig.STL
+  
+  arf_elec_aircyl_1:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/arf_elec/ARF_E_Air_Cyl_01.STL
+      material:
+        name: "Blue_arf_elec_aircyl_1"
+        color: "0.23 0.51 0.62 1.0"
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/arf_elec/ARF_E_Air_Cyl_01.STL
+
+  arf_elec_aircyl_1_2:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/arf_elec/ARF_E_Air_Cyl_01_02.STL
+      material:
+        name: "Blue_arf_elec_aircyl_1_2"
+        color: "0.23 0.51 0.62 1.0"
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/arf_elec/ARF_E_Air_Cyl_01_02.STL
+
+  arf_elec_aircyl_2:
+    visual:
+      mesh:
+        package: ur_description
+        path: meshes/arf_elec/ARF_E_Air_Cyl_02.STL
+      material:
+        name: "Blue_arf_elec_aircyl_2"
+        color: "0.23 0.51 0.62 1.0"
+    collision:
+      mesh:
+        package: ur_description
+        path: meshes/arf_elec/ARF_E_Air_Cyl_02.STL

@@ -1,0 +1,268 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+
+  <xacro:macro name="arf_elec" params="parent">
+  <xacro:property name="arf_elec_visual_params" value="${xacro.load_yaml('$(find ur_description)/config/arf_elec_parameters.yaml')}"/>
+  <xacro:property name="sec_mesh_files" value="${arf_elec_visual_params['mesh_files']}" scope="parent"/>
+  <xacro:property name="force_abs_paths" value="true" scope="parent"/>
+  
+  <!-- Load trolley positions configuration -->
+  <xacro:property name="trolley_positions" value="${xacro.load_yaml('$(find ur_description)/config/trolley_positions.yaml')}"/>
+  <xacro:property name="arf_elec_pos" value="${trolley_positions['trolley_positions']['arf_elec']}"/>
+
+<!-- arf trolley link -->
+    <link name="arf_elec_trolley_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="arf_elec_trolley" type="visual"/>
+        </geometry>
+        <material name="${sec_mesh_files['arf_elec_trolley']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['arf_elec_trolley']['visual']['material']['color']}"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="${sec_mesh_files['arf_elec_trolley']['collision']['box']['origin']}" rpy="0 0 0"/>
+        <geometry>
+          <box size="${sec_mesh_files['arf_elec_trolley']['collision']['box']['size']}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="5.0"/>
+        <origin xyz="0 0 -0.43" rpy="0 0 0"/>
+        <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
+      </inertial>
+    </link>
+
+    <!-- world to trolley joint -->
+   <joint name="arf_elec_trolley_joint" type="fixed">
+      <parent link="${parent}" />
+      <child link="arf_elec_trolley_link" />
+      <origin xyz="${arf_elec_pos['x']} ${arf_elec_pos['y']} ${arf_elec_pos['z']}" rpy="${arf_elec_pos['roll']} ${arf_elec_pos['pitch']} ${arf_elec_pos['yaw']}"/>
+    </joint>
+
+<!-- arf x axis link -->
+    <link name="arf_elec_x_axis_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="arf_elec_x_axis" type="visual"/>
+        </geometry>
+        <material name="${sec_mesh_files['arf_elec_x_axis']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['arf_elec_x_axis']['visual']['material']['color']}"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="arf_elec_x_axis" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="3.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.05" ixy="0" ixz="0" iyy="0.05" iyz="0" izz="0.05"/>
+      </inertial>
+    </link>
+
+    <!-- trolley to arf x axis joint -->
+    <joint name="arf_elec_x_axis_joint" type="fixed">
+      <parent link="arf_elec_trolley_link" />
+      <child link="arf_elec_x_axis_link" />
+      <origin xyz="-0.264 -0.025 0.014" rpy="0 0 0"/>
+    </joint>
+
+    <!-- arf y axis link (slider) -->
+    <link name="arf_elec_y_axis_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="arf_elec_y_axis" type="visual"/>
+        </geometry>
+        <material name="${sec_mesh_files['arf_elec_y_axis']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['arf_elec_y_axis']['visual']['material']['color']}"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="arf_elec_y_axis" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="2.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.02" ixy="0" ixz="0" iyy="0.02" iyz="0" izz="0.02"/>
+      </inertial>
+    </link>
+
+    <!-- arf_x_axis to arf_y_axis joint (prismatic*********) -->
+    <joint name="arf_elec_axis_1_joint" type="fixed">
+      <parent link="arf_elec_x_axis_link" />
+      <child link="arf_elec_y_axis_link" />
+      <origin xyz="0.2555 0.0 0.049" rpy="0 0 0"/>
+    </joint>
+
+  <!-- dummy link for jig joint -->
+    <link name = "arf_elec_jig_dummy_link">
+      <inertial>
+        <mass value="0.001"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+      </inertial>
+    </link>
+
+      <!-- y axis to dummy link joint -->
+    <joint name="arf_elec_jig_dummy_joint" type="fixed">
+      <parent link="arf_elec_y_axis_link" />
+      <child link="arf_elec_jig_dummy_link" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- arf jig link -->
+    <link name="arf_elec_jig_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="arf_elec_jig" type="visual"/>
+        </geometry>
+        <material name="${sec_mesh_files['arf_elec_jig']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['arf_elec_jig']['visual']['material']['color']}"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="arf_elec_jig" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="1.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+      </inertial>
+    </link> 
+
+    <!-- arf_y_axis to arf_jig joint (prismatic *********) -->
+    <joint name="arf_elec_axis_2_joint" type="fixed">
+      <parent link="arf_elec_jig_dummy_link" />
+      <child link="arf_elec_jig_link" />
+      <origin xyz="0 0.01 0.1215" rpy="0 0 0"/>
+    </joint>
+
+    <!-- dummy link for aircyl joints -->
+    <link name = "arf_elec_aircyl_dummy_link">
+      <inertial>
+        <mass value="0.001"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+      </inertial>
+    </link>
+
+      <!-- jig to dummy link joint -->
+    <joint name="arf_elec_aircyl_dummy_joint" type="fixed">
+      <parent link="arf_elec_jig_link" />
+      <child link="arf_elec_aircyl_dummy_link" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+
+    <!-- arf front aircyl link -->
+    <link name="arf_elec_aircyl_1_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="arf_elec_aircyl_1" type="visual"/>
+        </geometry>
+        <material name="${sec_mesh_files['arf_elec_aircyl_1']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['arf_elec_aircyl_1']['visual']['material']['color']}"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="arf_elec_aircyl_1" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.5"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+      </inertial>
+    </link>
+
+    <!-- arf jig to front aircyl joint (prismatic *********) -->
+    <joint name="arf_elec_aircyl_1_joint" type="fixed">
+      <parent link="arf_elec_aircyl_dummy_link" />
+      <child link="arf_elec_aircyl_1_link" />
+      <origin xyz="0.145 0.214 -0.0145" rpy="0 0 0"/>
+    </joint>
+
+    <!-- arf front aircyl 2 link -->
+    <link name="arf_elec_aircyl_1_2_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="arf_elec_aircyl_1_2" type="visual"/>
+        </geometry>
+        <material name="${sec_mesh_files['arf_elec_aircyl_1_2']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['arf_elec_aircyl_1_2']['visual']['material']['color']}"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="arf_elec_aircyl_1_2" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.5"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+      </inertial>
+    </link>
+
+    <!-- arf front aircyl 2 joint (prismatic *********) -->
+    <joint name="arf_elec_aircyl_1_2_joint" type="fixed">
+      <parent link="arf_elec_aircyl_dummy_link" />
+      <child link="arf_elec_aircyl_1_2_link" />
+      <origin xyz="-0.145 0.214 -0.0145" rpy="0 0 0"/>
+    </joint>
+
+    <!-- arf back aircyl link -->
+    <link name="arf_elec_aircyl_2_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 -1.5708"/>
+        <geometry>
+          <xacro:get_mesh name="arf_elec_aircyl_2" type="visual"/>
+        </geometry>
+        <material name="${sec_mesh_files['arf_elec_aircyl_2']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['arf_elec_aircyl_2']['visual']['material']['color']}"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 -1.5708"/>
+        <geometry>
+          <xacro:get_mesh name="arf_elec_aircyl_2" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.5"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+      </inertial>
+    </link>
+
+    <!-- arf jig to back aircyl joint (prismatic *********) -->
+    <joint name="arf_elec_aircyl_2_joint" type="fixed">
+      <parent link="arf_elec_aircyl_dummy_link" />
+      <child link="arf_elec_aircyl_2_link" />
+      <origin xyz="0.2815 0 -0.0145" rpy="0 0 0"/>
+    </joint>
+
+
+
+
+  </xacro:macro>
+</robot>
+

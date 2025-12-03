@@ -126,7 +126,7 @@
   </gazebo>
 
   <gazebo reference="tool_changer_link">
-    <material>Gazebo/Blue</material>
+    <material>Gazebo/Yellow</material>
   </gazebo>
 
   <!-- Toolchanger Joint Components -->
@@ -152,11 +152,11 @@
   </gazebo>
 
   <gazebo reference="arf_front_aircyl_link">
-    <material>Gazebo/Yellow</material>
+    <material>Gazebo/Green</material>
   </gazebo>
 
   <gazebo reference="arf_back_aircyl_link">
-    <material>Gazebo/Yellow</material>
+    <material>Gazebo/Green</material>
   </gazebo>
 
   <!-- ARF Joint Components -->
@@ -165,6 +165,50 @@
   </gazebo>
 
   <gazebo reference="arf_y_axis_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <!-- ARF Elec Link Components -->
+  <gazebo reference="arf_elec_trolley_link">
+    <material>Gazebo/LightGrey</material>
+  </gazebo>
+  <gazebo reference="arf_elec_x_axis_link">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+  <gazebo reference="arf_elec_y_axis_link">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+  <gazebo reference="arf_elec_jig_link">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+  <gazebo reference="arf_elec_aircyl_1_link">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+  <gazebo reference="arf_elec_aircyl_1_2_link">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+  <gazebo reference="arf_elec_aircyl_2_link">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+
+  <!-- ARF Elec Joint Components -->
+  <gazebo reference="arf_elec_x_axis_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+  <gazebo reference="arf_elec_y_axis_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+  <gazebo reference="arf_elec_jig_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="arf_elec_aircyl_1_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+  <gazebo reference="arf_elec_aircyl_1_2_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+  <gazebo reference="arf_elec_aircyl_2_joint">
     <preserveFixedJoint>true</preserveFixedJoint>
   </gazebo>
 
@@ -201,15 +245,15 @@
   </gazebo>
 
   <gazebo reference="feeder_arm_base_link">
-    <material>Gazebo/LightGrey</material>
+    <material>Gazebo/Grey</material>
   </gazebo>
 
   <gazebo reference="feeder_arm_slider_link">
-    <material>Gazebo/Yellow</material>
+    <material>Gazebo/Grey</material>
   </gazebo>
 
   <gazebo reference="feeder_arm_plate_link">
-    <material>Gazebo/Green</material>
+    <material>Gazebo/Grey</material>
   </gazebo>
 
   <!-- Supply Joint Components -->

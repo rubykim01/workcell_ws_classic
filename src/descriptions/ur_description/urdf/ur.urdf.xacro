@@ -12,6 +12,8 @@
    <xacro:include filename="$(find ur_description)/urdf/quickchanger_grippers.xacro"/>
    <!-- import arf macro -->
    <xacro:include filename="$(find ur_description)/urdf/arf.xacro"/>
+   <!-- import arf_elec macro -->
+   <xacro:include filename="$(find ur_description)/urdf/arf_elec.xacro"/>
    <!-- import denso macro -->
    <xacro:include filename="$(find ur_description)/urdf/denso.xacro"/>
    <!-- import feeder macro -->
@@ -106,6 +108,9 @@
 
   <!-- arf components -->
   <xacro:arf parent="world"/>
+
+  <!-- arf_elec components -->
+  <xacro:arf_elec parent="world"/>
 
   <!-- denso components -->
   <xacro:denso parent="world"/>
