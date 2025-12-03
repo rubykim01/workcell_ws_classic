@@ -25,7 +25,7 @@ class MainWindow(QMainWindow):
         main_layout = QVBoxLayout()
 
         # Trolley options for dropdowns
-        self.trolley_options = ["-", "toolchanger", "denso", "ur", "arf", "vision", "feeder"]
+        self.trolley_options = ["-", "toolchanger", "denso", "ur", "arf", "vision", "feeder", "arf_elec"]
         
         # Position to coordinates mapping
         self.position_coordinates = {
@@ -186,6 +186,15 @@ class MainWindow(QMainWindow):
             # Initialize trolley_positions if it doesn't exist
             if 'trolley_positions' not in data:
                 data['trolley_positions'] = {}
+            
+            # Get list of all possible trolleys (excluding "-")
+            all_trolleys = set(self.trolley_options[1:])  # Exclude "-"
+            selected_trolleys = set(trolley_assignments.keys())
+            
+            # Remove trolleys that are not selected
+            for trolley in list(data['trolley_positions'].keys()):
+                if trolley not in selected_trolleys:
+                    del data['trolley_positions'][trolley]
             
             # Update positions for assigned trolleys
             for trolley, position in trolley_assignments.items():

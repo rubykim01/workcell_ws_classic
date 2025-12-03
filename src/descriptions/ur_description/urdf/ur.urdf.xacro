@@ -100,27 +100,47 @@
      </joint>
    </xacro:if>
 
-  <!-- vision components -->
-  <xacro:vision parent="world"/>
-
-  <!-- toolchanger components -->
-  <xacro:toolchanger parent="world"/>
-
-  <!-- arf components -->
-  <xacro:arf parent="world"/>
-
-  <!-- arf_elec components -->
-  <xacro:arf_elec parent="world"/>
-
-  <!-- denso components -->
-  <xacro:denso parent="world"/>
-  
-  <!-- feeder components -->
-  <xacro:feeder parent="world"/>
-
    <!-- Load trolley positions configuration -->
    <xacro:property name="trolley_positions" value="${xacro.load_yaml('$(find ur_description)/config/trolley_positions.yaml')}"/>
-   <xacro:property name="ur_pos" value="${trolley_positions['trolley_positions']['ur']}"/>
+   <xacro:property name="trolley_positions_dict" value="${trolley_positions['trolley_positions']}"/>
+   <xacro:property name="ur_pos" value="${trolley_positions_dict['ur']}"/>
+
+  <!-- vision components - only if vision is in trolley_positions -->
+  <xacro:property name="has_vision" value="${'vision' in trolley_positions_dict}"/>
+  <xacro:if value="${has_vision}">
+    <xacro:vision parent="world"/>
+  </xacro:if>
+
+  <!-- toolchanger components - only if toolchanger is in trolley_positions -->
+  <xacro:property name="has_toolchanger" value="${'toolchanger' in trolley_positions_dict}"/>
+  <xacro:if value="${has_toolchanger}">
+    <xacro:toolchanger parent="world"/>
+  </xacro:if>
+
+  <!-- arf components - only if arf is in trolley_positions and arf_elec is not -->
+  <xacro:property name="has_arf_key" value="${'arf' in trolley_positions_dict}"/>
+  <xacro:property name="has_arf_elec_key" value="${'arf_elec' in trolley_positions_dict}"/>
+  <xacro:property name="has_arf" value="${has_arf_key and not has_arf_elec_key}"/>
+  <xacro:if value="${has_arf}">
+    <xacro:arf parent="world"/>
+  </xacro:if>
+
+  <!-- arf_elec components - only if arf_elec is in trolley_positions -->
+  <xacro:if value="${has_arf_elec_key}">
+    <xacro:arf_elec parent="world"/>
+  </xacro:if>
+
+  <!-- denso components - only if denso is in trolley_positions -->
+  <xacro:property name="has_denso" value="${'denso' in trolley_positions_dict}"/>
+  <xacro:if value="${has_denso}">
+    <xacro:denso parent="world"/>
+  </xacro:if>
+  
+  <!-- feeder components - only if feeder is in trolley_positions -->
+  <xacro:property name="has_feeder" value="${'feeder' in trolley_positions_dict}"/>
+  <xacro:if value="${has_feeder}">
+    <xacro:feeder parent="world"/>
+  </xacro:if>
 
    <!-- arm -->
    <xacro:ur_robot

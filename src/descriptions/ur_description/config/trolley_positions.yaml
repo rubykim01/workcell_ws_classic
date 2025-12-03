@@ -6,13 +6,6 @@ trolley_positions:
     roll: 0.0
     pitch: 0.0
     yaw: 0.0
-  arf:
-    x: 0.0
-    y: 0.8
-    z: 0.86
-    roll: 0.0
-    pitch: 0.0
-    yaw: 0.0
   vision:
     x: 0.0
     y: 1.6
@@ -41,8 +34,8 @@ trolley_positions:
     roll: 0.0
     pitch: 0.0
     yaw: 0.0
-  arf_elec:
-    x: -1.6
+  arf:
+    x: 0.0
     y: 0.8
     z: 0.86
     roll: 0.0
