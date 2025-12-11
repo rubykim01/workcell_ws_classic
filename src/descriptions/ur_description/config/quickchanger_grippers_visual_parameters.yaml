@@ -27,31 +27,18 @@ mesh_files:
         package: ur_description
         path: meshes/quickchanger_grippers/KRVG.STL
 
-  tooltip_adapter:
-    visual:
-      mesh:
-        package: ur_description
-        path: meshes/quickchanger_grippers/Tooltip_Adap_Assy.STL
-      material:
-        name: "Black_tooltip_adapter"
-        color: "0.1 0.1 0.1 1.0"
-    collision:
-      mesh:
-        package: ur_description
-        path: meshes/quickchanger_grippers/Tooltip_Adap_Assy.STL
-
   tooltip_adapter_1:
     visual:
       mesh:
         package: ur_description
-        path: meshes/quickchanger_grippers/Tooltip_Adap_Assy.STL
+        path: meshes/quickchanger_grippers/Tooltip_Adap_Assy_1.STL
       material:
         name: "Black_tooltip_adapter_1"
         color: "0.1 0.1 0.1 1.0"
     collision:
       mesh:
         package: ur_description
-        path: meshes/quickchanger_grippers/Tooltip_Adap_Assy.STL
+        path: meshes/quickchanger_grippers/Tooltip_Adap_Assy_1.STL
 
   tooltip_adapter_2:
     visual:
