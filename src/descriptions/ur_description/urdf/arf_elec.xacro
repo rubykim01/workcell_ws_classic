@@ -100,7 +100,7 @@
     <joint name="arf_elec_axis_1_joint" type="fixed">
       <parent link="arf_elec_x_axis_link" />
       <child link="arf_elec_y_axis_link" />
-      <origin xyz="0.2555 0.0 0.049" rpy="0 0 0"/>
+      <origin xyz="0.395 0.0 0.049" rpy="0 0 0"/>
     </joint>
 
   <!-- dummy link for jig joint -->
@@ -118,7 +118,7 @@
       <child link="arf_elec_jig_dummy_link" />
       <origin xyz="0 0 0" rpy="0 0 0"/>
     </joint>
-
+-
     <!-- arf jig link -->
     <link name="arf_elec_jig_link">
       <visual>
@@ -147,7 +147,7 @@
     <joint name="arf_elec_axis_2_joint" type="fixed">
       <parent link="arf_elec_jig_dummy_link" />
       <child link="arf_elec_jig_link" />
-      <origin xyz="0 0.01 0.1215" rpy="0 0 0"/>
+      <origin xyz="0 0.1 0.1215" rpy="0 0 0"/>
     </joint>
 
     <!-- dummy link for aircyl joints -->

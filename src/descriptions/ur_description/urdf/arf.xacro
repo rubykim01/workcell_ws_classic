@@ -100,7 +100,7 @@
     <joint name="arf_axis_1_joint" type="prismatic">
       <parent link="arf_x_axis_link" />
       <child link="arf_y_axis_link" />
-      <origin xyz="-0.360 0.0 0.054" rpy="0 0 0"/>
+      <origin xyz="-0.1413 0.0 0.054" rpy="0 0 0"/>
       <axis xyz="-1 0 0"/>
       <limit lower="0.0" upper="0.35" effort="100" velocity="10" />
     </joint>
@@ -149,7 +149,7 @@
     <joint name="arf_axis_2_joint" type="prismatic">
       <parent link="arf_jig_dummy_link" />
       <child link="arf_jig_link" />
-      <origin xyz="0 0.300 0.107" rpy="0 0 0"/>
+      <origin xyz="0 0.418 0.107" rpy="0 0 0"/>
       <axis xyz="0 1 0"/>
       <limit lower="-0.25" upper="0" effort="100" velocity="10" />
     </joint>
