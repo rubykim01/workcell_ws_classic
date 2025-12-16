@@ -82,6 +82,7 @@
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <axis xyz="0 -1 0"/>
       <limit lower="-0.041" upper="0.041" effort="50" velocity="10"/>
+      <dynamics damping="100" friction="10"/>
     </joint>
 
     <!-- tooltip_adapter_2_link -->
@@ -109,57 +110,10 @@
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <axis xyz="0 -1 0"/>
       <limit lower="-0.041" upper="0.041" effort="50" velocity="10"/>
+      <dynamics damping="100" friction="10"/>
     </joint>
 
-    <!-- tooltip1_link -->
-    <link name="tooltip1_link">
-      <visual>
-        <origin xyz="0 0 0" rpy="0 0 1.5708"/>
-        <geometry>
-          <xacro:get_mesh name="tooltip1" type="visual"/>
-        </geometry>
-        <material name="${sec_mesh_files['tooltip1']['visual']['material']['name']}">
-          <color rgba="${sec_mesh_files['tooltip1']['visual']['material']['color']}"/>
-        </material>
-      </visual>
-      <inertial>
-        <mass value="0.5"/>
-        <origin xyz="0 0 0" rpy="0 0 1.5708"/>
-        <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
-      </inertial>
-    </link>
-
-    <!-- tooltip1_joint -->
-    <joint name="tooltip1_joint" type="fixed">
-      <parent link="tooltip_adapter_1_link"/>
-      <child link="tooltip1_link"/>
-      <origin xyz="-0.1624 0.051 0.1504" rpy="0 0 -1.5708"/>
-    </joint>
-
-    <!-- tooltip2_link -->
-    <link name="tooltip2_link">
-      <visual>
-        <origin xyz="0 0 0" rpy="0 0 1.5708"/>
-        <geometry>
-          <xacro:get_mesh name="tooltip2" type="visual"/>
-        </geometry>
-        <material name="${sec_mesh_files['tooltip2']['visual']['material']['name']}">
-          <color rgba="${sec_mesh_files['tooltip2']['visual']['material']['color']}"/>
-        </material>
-      </visual>
-      <inertial>
-        <mass value="0.5"/>
-        <origin xyz="0 0 0" rpy="0 0 1.5708"/>
-        <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
-      </inertial>
-    </link>
-
-    <!-- tooltip2_joint -->
-    <joint name="tooltip2_joint" type="fixed">
-      <parent link="tooltip_adapter_2_link"/>
-      <child link="tooltip2_link"/>
-      <origin xyz="-0.1624 -0.051 0.1504" rpy="0 0 1.5708"/>
-    </joint>
+    
 
 
 

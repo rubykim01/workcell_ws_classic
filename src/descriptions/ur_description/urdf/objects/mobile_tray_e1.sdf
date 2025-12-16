@@ -1,20 +1,20 @@
 <?xml version="1.0" ?>
 <sdf version="1.6">
-  <model name="heating_plate_cover1">
+  <model name="mobile_tray_e1">
     <link name="link">
       <gravity>false</gravity>
       <visual name="visual">
         <geometry>
           <mesh>
-            <uri>file:///root/workcell_ws_classic/src/descriptions/ur_description/meshes/feeder/heater/objects/heating_plate_cover1.STL</uri>
+            <uri>file:///root/workcell_ws_classic/src/descriptions/ur_description/meshes/feeder/elec/trays/Mobile_Tray_E1.STL</uri>
             <scale>1 1 1</scale>
           </mesh>
         </geometry>
         <material>
-          <!-- Navy blue color -->
-          <ambient>0.05 0.05 0.2 1</ambient>
-          <diffuse>0.0 0.0 0.5 1</diffuse>
-          <specular>0.1 0.1 0.2 1</specular>
+          <!-- Medium grey color -->
+          <ambient>0.5 0.5 0.5 1</ambient>
+          <diffuse>0.6 0.6 0.6 1</diffuse>
+          <specular>0.7 0.7 0.7 1</specular>
           <emissive>0 0 0 1</emissive>
         </material>
       </visual>
@@ -32,4 +32,5 @@
         </inertial>
     </link>
   </model>
-</sdf> 
+</sdf>
+
