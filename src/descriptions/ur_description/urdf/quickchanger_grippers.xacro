@@ -32,31 +32,6 @@
       <origin xyz="0 0 0.012" rpy="1.57 3.14 1.57"/>
     </joint>
 
-    <!-- suction_link -->
-    <link name="suction_link">
-      <visual>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <geometry>
-          <xacro:get_mesh name="suction" type="visual"/>
-        </geometry>
-        <material name="${sec_mesh_files['suction']['visual']['material']['name']}">
-          <color rgba="${sec_mesh_files['suction']['visual']['material']['color']}"/>
-        </material>
-      </visual>
-      <inertial>
-        <mass value="1.0"/>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <inertia ixx="1e-5" ixy="0" ixz="0" iyy="1e-5" iyz="0" izz="1e-5"/>
-      </inertial>
-    </link>
-
-    <!-- suction_joint -->
-    <joint name="suction_joint" type="fixed">
-      <parent link="quickchanger_link"/>
-      <child link="suction_link"/>
-      <origin xyz="0.1208 0.0019 0.1088" rpy="0 0.785 0"/>
-    </joint>
-
     <!-- tooltip_adapter_1_link -->
     <link name="tooltip_adapter_1_link">
       <visual>
@@ -82,7 +57,7 @@
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <axis xyz="0 -1 0"/>
       <limit lower="-0.041" upper="0.041" effort="50" velocity="10"/>
-      <dynamics damping="100" friction="10"/>
+      <dynamics damping="10" friction="10"/>
     </joint>
 
     <!-- tooltip_adapter_2_link -->
@@ -110,7 +85,6 @@
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <axis xyz="0 -1 0"/>
       <limit lower="-0.041" upper="0.041" effort="50" velocity="10"/>
-      <dynamics damping="100" friction="10"/>
     </joint>
 
     

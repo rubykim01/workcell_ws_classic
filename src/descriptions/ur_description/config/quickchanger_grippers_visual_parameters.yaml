@@ -13,19 +13,6 @@ mesh_files:
       mesh:
         package: ur_description
         path: meshes/quickchanger_grippers/Assy_Quick_Gripper.STL
-  #Suction
-  suction:
-    visual:
-      mesh:
-        package: ur_description
-        path: meshes/quickchanger_grippers/KRVG.STL
-      material:
-        name: "DarkGrey_suction"
-        color: "0.3 0.3 0.3 1.0"
-    collision:
-      mesh:
-        package: ur_description
-        path: meshes/quickchanger_grippers/KRVG.STL
 
   tooltip_adapter_1:
     visual:

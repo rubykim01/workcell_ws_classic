@@ -93,9 +93,9 @@ ros2 run gazebo_ros spawn_entity.py \
     -entity mobile_tray_e6 \
     -x $TRAY_E6_X -y $TRAY_E6_Y -z $TRAY_E6_Z
 
-# ============================================
+
 # Electrical components offsets from tray origin (in meters, converted from mm)
-# ============================================
+
 # MCCB_ABE_32B_30A: (-88.5, 14.5, -3) mm
 MCCB_OFFSET_X=-0.0885
 MCCB_OFFSET_Y=0.0145
@@ -126,9 +126,9 @@ BUSBAR_OFFSET_X=0.126
 BUSBAR_OFFSET_Y=-0.032
 BUSBAR_OFFSET_Z=-0.003
 
-# ============================================
+
 # E2 & E5 tray components offsets
-# ============================================
+
 # Single-MC_GMC_30P2 #1: (-113.6, 14.9, -3) mm
 SINGLE_MC1_OFFSET_X=-0.1136
 SINGLE_MC1_OFFSET_Y=0.0149
@@ -149,9 +149,8 @@ SMPS_OFFSET_X=0.0797
 SMPS_OFFSET_Y=-0.0245
 SMPS_OFFSET_Z=0.015
 
-# ============================================
+
 # Calculate positions for E1 tray components
-# ============================================
 MCCB_E1_X=$(awk "BEGIN {print $TRAY_E1_X + $MCCB_OFFSET_X}")
 MCCB_E1_Y=$(awk "BEGIN {print $TRAY_E1_Y + $MCCB_OFFSET_Y}")
 MCCB_E1_Z=$(awk "BEGIN {print $TRAY_E1_Z + $MCCB_OFFSET_Z}")
@@ -176,9 +175,8 @@ BUSBAR_E1_X=$(awk "BEGIN {print $TRAY_E1_X + $BUSBAR_OFFSET_X}")
 BUSBAR_E1_Y=$(awk "BEGIN {print $TRAY_E1_Y + $BUSBAR_OFFSET_Y}")
 BUSBAR_E1_Z=$(awk "BEGIN {print $TRAY_E1_Z + $BUSBAR_OFFSET_Z}")
 
-# ============================================
+
 # Calculate positions for E4 tray components
-# ============================================
 MCCB_E4_X=$(awk "BEGIN {print $TRAY_E4_X + $MCCB_OFFSET_X}")
 MCCB_E4_Y=$(awk "BEGIN {print $TRAY_E4_Y + $MCCB_OFFSET_Y}")
 MCCB_E4_Z=$(awk "BEGIN {print $TRAY_E4_Z + $MCCB_OFFSET_Z}")
@@ -203,9 +201,8 @@ BUSBAR_E4_X=$(awk "BEGIN {print $TRAY_E4_X + $BUSBAR_OFFSET_X}")
 BUSBAR_E4_Y=$(awk "BEGIN {print $TRAY_E4_Y + $BUSBAR_OFFSET_Y}")
 BUSBAR_E4_Z=$(awk "BEGIN {print $TRAY_E4_Z + $BUSBAR_OFFSET_Z}")
 
-# ============================================
+
 # Calculate positions for E2 tray components
-# ============================================
 SINGLE_MC1_E2_X=$(awk "BEGIN {print $TRAY_E2_X + $SINGLE_MC1_OFFSET_X}")
 SINGLE_MC1_E2_Y=$(awk "BEGIN {print $TRAY_E2_Y + $SINGLE_MC1_OFFSET_Y}")
 SINGLE_MC1_E2_Z=$(awk "BEGIN {print $TRAY_E2_Z + $SINGLE_MC1_OFFSET_Z}")
@@ -222,9 +219,8 @@ SMPS_E2_X=$(awk "BEGIN {print $TRAY_E2_X + $SMPS_OFFSET_X}")
 SMPS_E2_Y=$(awk "BEGIN {print $TRAY_E2_Y + $SMPS_OFFSET_Y}")
 SMPS_E2_Z=$(awk "BEGIN {print $TRAY_E2_Z + $SMPS_OFFSET_Z}")
 
-# ============================================
+
 # Calculate positions for E5 tray components
-# ============================================
 SINGLE_MC1_E5_X=$(awk "BEGIN {print $TRAY_E5_X + $SINGLE_MC1_OFFSET_X}")
 SINGLE_MC1_E5_Y=$(awk "BEGIN {print $TRAY_E5_Y + $SINGLE_MC1_OFFSET_Y}")
 SINGLE_MC1_E5_Z=$(awk "BEGIN {print $TRAY_E5_Z + $SINGLE_MC1_OFFSET_Z}")
@@ -241,9 +237,8 @@ SMPS_E5_X=$(awk "BEGIN {print $TRAY_E5_X + $SMPS_OFFSET_X}")
 SMPS_E5_Y=$(awk "BEGIN {print $TRAY_E5_Y + $SMPS_OFFSET_Y}")
 SMPS_E5_Z=$(awk "BEGIN {print $TRAY_E5_Z + $SMPS_OFFSET_Z}")
 
-# ============================================
+
 # Spawn electrical components on E1 tray
-# ============================================
 echo ""
 echo "Spawning electrical components on E1 tray..."
 
@@ -283,9 +278,8 @@ ros2 run gazebo_ros spawn_entity.py \
     -entity busbar_6p_e1 \
     -x $BUSBAR_E1_X -y $BUSBAR_E1_Y -z $BUSBAR_E1_Z
 
-# ============================================
+
 # Spawn electrical components on E4 tray
-# ============================================
 echo ""
 echo "Spawning electrical components on E4 tray..."
 
@@ -325,9 +319,8 @@ ros2 run gazebo_ros spawn_entity.py \
     -entity busbar_6p_e4 \
     -x $BUSBAR_E4_X -y $BUSBAR_E4_Y -z $BUSBAR_E4_Z
 
-# ============================================
+
 # Spawn electrical components on E2 tray
-# ============================================
 echo ""
 echo "Spawning electrical components on E2 tray..."
 
@@ -355,9 +348,8 @@ ros2 run gazebo_ros spawn_entity.py \
     -entity smps_wdr_120_24v_e2 \
     -x $SMPS_E2_X -y $SMPS_E2_Y -z $SMPS_E2_Z
 
-# ============================================
+
 # Spawn electrical components on E5 tray
-# ============================================
 echo ""
 echo "Spawning electrical components on E5 tray..."
 
@@ -385,16 +377,11 @@ ros2 run gazebo_ros spawn_entity.py \
     -entity smps_wdr_120_24v_e5 \
     -x $SMPS_E5_X -y $SMPS_E5_Y -z $SMPS_E5_Z
 
-# ============================================
+
 # TB_JOTN-15A grid for E3 and E6 trays
-# 2 rows x 8 columns = 16 per tray
-# X: -134.75 to 134.75 mm (every 38.5mm)
-# Y: -67.5 and 7.5 mm (75mm apart)
-# Z: 2mm
-# ============================================
 TB_OFFSET_Z=0.002
 
-# X positions (8 columns, 38.5mm spacing)
+# X positions (38.5mm spacing)
 TB_X1=-0.13475
 TB_X2=-0.09625
 TB_X3=-0.05775
@@ -404,13 +391,12 @@ TB_X6=0.05775
 TB_X7=0.09625
 TB_X8=0.13475
 
-# Y positions (2 rows, 75mm spacing)
+# Y positions (75mm spacing)
 TB_Y1=-0.0675
 TB_Y2=0.0075
 
-# ============================================
+
 # Spawn TB_JOTN-15A on E3 tray (16 units)
-# ============================================
 echo ""
 echo "Spawning TB_JOTN-15A grid on E3 tray (2x8 = 16 units)..."
 
@@ -440,9 +426,8 @@ for i in 1 2 3 4 5 6 7 8; do
         -x $TB_POS_X -y $TB_POS_Y -z $TB_POS_Z
 done
 
-# ============================================
+
 # Spawn TB_JOTN-15A on E6 tray (16 units)
-# ============================================
 echo ""
 echo "Spawning TB_JOTN-15A grid on E6 tray (2x8 = 16 units)..."
 
