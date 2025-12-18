@@ -183,8 +183,8 @@
      >
      <origin xyz="${ur_pos['x']} ${ur_pos['y']} ${ur_pos['z']}" rpy="${ur_pos['roll']} ${ur_pos['pitch']} ${ur_pos['yaw']}" />
    </xacro:ur_robot>
-     <!-- attach gripper -->
-   <xacro:quickchanger_grippers parent="$(arg tf_prefix)flange"/>
+    <!-- attach gripper -->
+  <xacro:quickchanger_grippers parent="$(arg tf_prefix)tool0"/>
 
    <xacro:if value="$(arg sim_gazebo)">
     <!-- Gazebo plugins -->

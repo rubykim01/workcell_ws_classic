@@ -11,9 +11,9 @@ echo "Objects directory: $OBJECTS_DIR"
 
 # Tool positions (world coordinates) 
 # Based on quickchanger_link home position
-TOOL_X=0.353
-TOOL_Y=0.267
-TOOL_Z=1.715
+TOOL_X=0.359
+TOOL_Y=0.282
+TOOL_Z=1.706
 
 
 # Quickchanger rotation in WORLD frame 
