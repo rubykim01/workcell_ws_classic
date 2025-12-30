@@ -11,10 +11,10 @@
           </mesh>
         </geometry>
         <material>
-          <!-- Dark grey metallic -->
-          <ambient>0.25 0.25 0.25 1</ambient>
-          <diffuse>0.35 0.35 0.35 1</diffuse>
-          <specular>0.5 0.5 0.5 1</specular>
+          <!-- Silver metallic -->
+          <ambient>0.6 0.6 0.6 1</ambient>
+          <diffuse>0.7 0.7 0.7 1</diffuse>
+          <specular>0.8 0.8 0.8 1</specular>
           <emissive>0 0 0 1</emissive>
         </material>
       </visual>
