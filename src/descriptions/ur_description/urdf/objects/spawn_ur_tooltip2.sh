@@ -13,7 +13,7 @@ echo "Objects directory: $OBJECTS_DIR"
 # Based on quickchanger_link home position
 TOOL_X=0.359
 TOOL_Y=0.282
-TOOL_Z=1.706
+TOOL_Z=1.707
 
 
 # Quickchanger rotation in WORLD frame 
@@ -32,6 +32,11 @@ ros2 run gazebo_ros spawn_entity.py \
     -x $TOOL_X -y $TOOL_Y -z $TOOL_Z \
     -R $TOOL_ROLL -P $TOOL_PITCH -Y $TOOL_YAW
 
+# Attach Tooltip 02 to quickchanger
+echo "Attaching tooltip_02 to quickchanger_link..."
+ros2 service call /ATTACHLINK linkattacher_msgs/srv/AttachLink "{model1_name: 'ur', link1_name: 'quickchanger_link', model2_name: 'tooltip_02', link2_name: 'link'}"
+
+
 # Spawn Tooltip 02_2 
 echo ""
 echo "Spawning Tooltip 02_2 at ($TOOL_X, $TOOL_Y, $TOOL_Z) with rotation ($TOOL_ROLL, $TOOL_PITCH, $TOOL_YAW)"
@@ -41,6 +46,10 @@ ros2 run gazebo_ros spawn_entity.py \
     -x $TOOL_X -y $TOOL_Y -z $TOOL_Z \
     -R $TOOL_ROLL -P $TOOL_PITCH -Y $TOOL_YAW
 
+# Attach Tooltip 02_2 to quickchanger
+echo "Attaching tooltip_02_2 to quickchanger_link..."
+ros2 service call /ATTACHLINK linkattacher_msgs/srv/AttachLink "{model1_name: 'ur', link1_name: 'quickchanger_link', model2_name: 'tooltip_02_2', link2_name: 'link'}"
+
 # Spawn KRVG 
 echo ""
 echo "Spawning KRVG at ($TOOL_X, $TOOL_Y, $TOOL_Z) with rotation ($TOOL_ROLL, $TOOL_PITCH, $TOOL_YAW)"
@@ -49,6 +58,10 @@ ros2 run gazebo_ros spawn_entity.py \
     -entity krvg \
     -x $TOOL_X -y $TOOL_Y -z $TOOL_Z \
     -R $TOOL_ROLL -P $TOOL_PITCH -Y $TOOL_YAW
+
+# Attach KRVG (suction) to quickchanger
+echo "Attaching krvg to quickchanger_link..."
+ros2 service call /ATTACHLINK linkattacher_msgs/srv/AttachLink "{model1_name: 'ur', link1_name: 'quickchanger_link', model2_name: 'krvg', link2_name: 'link'}"
 
 echo ""
 echo "Tools spawned successfully!"
