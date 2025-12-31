@@ -8,20 +8,39 @@ OBJECTS_DIR="/root/workcell_ws_classic/src/descriptions/ur_description/urdf/obje
 
 echo "Objects directory: $OBJECTS_DIR"
 
+# Get current quickchanger_link pose from TF2
+echo "Getting current quickchanger_link pose from TF2..."
 
-# Tool positions (world coordinates) 
-# Based on quickchanger_link home position
-TOOL_X=0.359
-TOOL_Y=0.282
-TOOL_Z=1.707
+# Capture tf2_echo output (timeout after 3 seconds to get at least one reading)
+TF_OUTPUT=$(timeout 3 ros2 run tf2_ros tf2_echo world quickchanger_link 2>/dev/null | grep -A 10 "At time")
 
+if [ -z "$TF_OUTPUT" ]; then
+    echo "ERROR: Could not get TF transform. Make sure the robot is running."
+    exit 1
+fi
 
-# Quickchanger rotation in WORLD frame 
-# Based on quickchanger_link home orientation
-TOOL_ROLL=2.776
-TOOL_PITCH=-0.147
-TOOL_YAW=2.633
+# Parse Translation [x, y, z]
+TRANSLATION_LINE=$(echo "$TF_OUTPUT" | grep "Translation:" | head -1)
+TOOL_X=$(echo "$TRANSLATION_LINE" | sed 's/.*\[//' | sed 's/\].*//' | cut -d',' -f1 | tr -d ' ')
+TOOL_Y=$(echo "$TRANSLATION_LINE" | sed 's/.*\[//' | sed 's/\].*//' | cut -d',' -f2 | tr -d ' ')
+TOOL_Z=$(echo "$TRANSLATION_LINE" | sed 's/.*\[//' | sed 's/\].*//' | cut -d',' -f3 | tr -d ' ')
 
+# Parse RPY (radian) [roll, pitch, yaw] from TF
+RPY_LINE=$(echo "$TF_OUTPUT" | grep "RPY (radian)" | head -1)
+TF_ROLL=$(echo "$RPY_LINE" | sed 's/.*\[//' | sed 's/\].*//' | cut -d',' -f1 | tr -d ' ')
+TF_PITCH=$(echo "$RPY_LINE" | sed 's/.*\[//' | sed 's/\].*//' | cut -d',' -f2 | tr -d ' ')
+TF_YAW=$(echo "$RPY_LINE" | sed 's/.*\[//' | sed 's/\].*//' | cut -d',' -f3 | tr -d ' ')
+
+echo "Current quickchanger_link pose:"
+echo "  Translation: X=$TOOL_X, Y=$TOOL_Y, Z=$TOOL_Z"
+echo "  TF Rotation (RPY): R=$TF_ROLL, P=$TF_PITCH, Y=$TF_YAW"
+
+# Apply transformation: -roll, -pitch, yaw+π
+TOOL_ROLL=$(awk "BEGIN {print -($TF_ROLL)}")
+TOOL_PITCH=$(awk "BEGIN {print -($TF_PITCH)}")
+TOOL_YAW=$(awk "BEGIN {print $TF_YAW + 3.141592}")
+
+echo "  Adjusted (RPY): R=$TOOL_ROLL, P=$TOOL_PITCH, Y=$TOOL_YAW"
 
 # Spawn Tooltip 01 
 echo ""
