@@ -12,7 +12,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Configure Spawn Positions")
+        self.setWindowTitle("Spawn Configuration")
         
         # Set window size 
         #self.resize(400, 500)
@@ -56,9 +56,18 @@ class MainWindow(QMainWindow):
         workspace_root = script_dir.parent.parent.parent
         self.yaml_path = workspace_root / "src" / "descriptions" / "config" / "trolley_positions.yaml"
         
+        combobox_label = QLabel("Configure Spawn Positions")
+        combobox_label.setAlignment(Qt.AlignCenter)
+        combobox_label.setStyleSheet("font-weight: bold; font-size: 16px; margin-top: 15px; color: #333333;")
+        main_layout.addWidget(combobox_label)
+        
+        # Add spacing between label and grid
+        main_layout.addSpacing(5)
+        
         # Create 3x3 grid layout
         grid_layout = QGridLayout()
         grid_layout.setSpacing(15)
+        main_layout.addLayout(grid_layout)
         
         # Store comboboxes by position number
         self.position_comboboxes = {}
@@ -122,9 +131,8 @@ class MainWindow(QMainWindow):
             combobox.setCurrentText(current if current in options else "-")
             combobox.blockSignals(False)
 
-        main_layout.addLayout(grid_layout)
 
-        # Button layout
+        # Button layout 
         button_layout = QVBoxLayout()
         button_layout.setSpacing(10)
         
@@ -140,7 +148,9 @@ class MainWindow(QMainWindow):
         reset_button.setStyleSheet("font-size: 18px; padding: 10px; background-color: #ffcccc; color: black; border: none; border-radius: 5px;")
         button_layout.addWidget(reset_button)
         
+        main_layout.addSpacing(5)
         main_layout.addLayout(button_layout)
+        main_layout.addSpacing(10)
         
         # Feeder spawn buttons section
         feeder_label = QLabel("Spawn Feeder Objects")
@@ -152,13 +162,13 @@ class MainWindow(QMainWindow):
         feeder_button_layout.setSpacing(10)
         
         # Spawn Feeder Heater button
-        spawn_heater_button = QPushButton("Spawn Feeder Heater")
+        spawn_heater_button = QPushButton("Heater Objects")
         spawn_heater_button.clicked.connect(self.spawn_feeder_heater)
         spawn_heater_button.setStyleSheet("font-size: 16px; padding: 10px; background-color: #ffe4cc; color: black; border: none; border-radius: 5px;")
         feeder_button_layout.addWidget(spawn_heater_button)
         
         # Spawn Feeder Elec button
-        spawn_elec_button = QPushButton("Spawn Feeder Elec")
+        spawn_elec_button = QPushButton("Elec Objects")
         spawn_elec_button.clicked.connect(self.spawn_feeder_elec)
         spawn_elec_button.setStyleSheet("font-size: 16px; padding: 10px; background-color: #cce4ff; color: black; border: none; border-radius: 5px;")
         feeder_button_layout.addWidget(spawn_elec_button)
