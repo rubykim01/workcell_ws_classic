@@ -173,10 +173,10 @@
     <material>Gazebo/LightGrey</material>
   </gazebo>
   <gazebo reference="arf_elec_x_axis_link">
-    <material>Gazebo/Blue</material>
+    <material>Gazebo/Grey</material>
   </gazebo>
   <gazebo reference="arf_elec_y_axis_link">
-    <material>Gazebo/Blue</material>
+    <material>Gazebo/Grey</material>
   </gazebo>
   <gazebo reference="arf_elec_jig_link">
     <material>Gazebo/Blue</material>

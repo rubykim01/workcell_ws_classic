@@ -96,11 +96,14 @@
       </inertial>
     </link>
 
-    <!-- arf_x_axis to arf_y_axis joint (prismatic*********) -->
-    <joint name="arf_elec_axis_1_joint" type="fixed">
+    <!-- arf_x_axis to arf_y_axis joint (prismatic - moves along -X) -->
+    <joint name="arf_elec_axis_1_joint" type="prismatic">
       <parent link="arf_elec_x_axis_link" />
       <child link="arf_elec_y_axis_link" />
       <origin xyz="0.395 0.0 0.049" rpy="0 0 0"/>
+      <axis xyz="-1 0 0"/>
+      <limit lower="-0.3" upper="0.3" effort="100" velocity="0.5"/>
+      <dynamics damping="10" friction="1"/>
     </joint>
 
   <!-- dummy link for jig joint -->
@@ -143,11 +146,14 @@
       </inertial>
     </link> 
 
-    <!-- arf_y_axis to arf_jig joint (prismatic *********) -->
-    <joint name="arf_elec_axis_2_joint" type="fixed">
+    <!-- arf_y_axis to arf_jig joint (prismatic - moves along -Y) -->
+    <joint name="arf_elec_axis_2_joint" type="prismatic">
       <parent link="arf_elec_jig_dummy_link" />
       <child link="arf_elec_jig_link" />
       <origin xyz="0 0.1 0.1215" rpy="0 0 0"/>
+      <axis xyz="0 -1 0"/>
+      <limit lower="-0.2" upper="0.2" effort="100" velocity="0.5"/>
+      <dynamics damping="10" friction="1"/>
     </joint>
 
     <!-- dummy link for aircyl joints -->
@@ -167,7 +173,7 @@
     </joint>
 
 
-    <!-- arf front aircyl link -->
+    <!-- arf side aircyl link -->
     <link name="arf_elec_aircyl_1_link">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -191,14 +197,17 @@
       </inertial>
     </link>
 
-    <!-- arf jig to front aircyl joint (prismatic *********) -->
-    <joint name="arf_elec_aircyl_1_joint" type="fixed">
+    <!-- arf jig to side aircyl joint (prismatic - moves along Y) -->
+    <joint name="arf_elec_gripper_joint_1" type="prismatic">
       <parent link="arf_elec_aircyl_dummy_link" />
       <child link="arf_elec_aircyl_1_link" />
       <origin xyz="0.145 0.214 -0.0145" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+      <limit lower="-0.05" upper="0.05" effort="50" velocity="0.2"/>
+      <dynamics damping="5" friction="0.5"/>
     </joint>
 
-    <!-- arf front aircyl 2 link -->
+    <!-- arf side aircyl 2 link -->
     <link name="arf_elec_aircyl_1_2_link">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -222,14 +231,17 @@
       </inertial>
     </link>
 
-    <!-- arf front aircyl 2 joint (prismatic *********) -->
-    <joint name="arf_elec_aircyl_1_2_joint" type="fixed">
+    <!-- arf side aircyl 2 joint (prismatic - moves along Y) -->
+    <joint name="arf_elec_gripper_joint_2" type="prismatic">
       <parent link="arf_elec_aircyl_dummy_link" />
       <child link="arf_elec_aircyl_1_2_link" />
       <origin xyz="-0.145 0.214 -0.0145" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+      <limit lower="-0.05" upper="0.05" effort="50" velocity="0.2"/>
+      <dynamics damping="5" friction="0.5"/>
     </joint>
 
-    <!-- arf back aircyl link -->
+    <!-- arf front aircyl link -->
     <link name="arf_elec_aircyl_2_link">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 -1.5708"/>
@@ -253,11 +265,14 @@
       </inertial>
     </link>
 
-    <!-- arf jig to back aircyl joint (prismatic *********) -->
-    <joint name="arf_elec_aircyl_2_joint" type="fixed">
+    <!-- arf jig to front aircyl joint (prismatic - moves along X) -->
+    <joint name="arf_elec_gripper_joint_3" type="prismatic">
       <parent link="arf_elec_aircyl_dummy_link" />
       <child link="arf_elec_aircyl_2_link" />
       <origin xyz="0.2815 0 -0.0145" rpy="0 0 0"/>
+      <axis xyz="1 0 0"/>
+      <limit lower="-0.05" upper="0.05" effort="50" velocity="0.2"/>
+      <dynamics damping="5" friction="0.5"/>
     </joint>  
 
   </xacro:macro>

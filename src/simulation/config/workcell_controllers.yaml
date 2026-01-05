@@ -45,6 +45,14 @@ controller_manager:
     arf_gripper_trajectory_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
+    #ARF Elec Axis Joints
+    arf_elec_axis_trajectory_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+    #ARF Elec Gripper Joints
+    arf_elec_gripper_trajectory_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
     #Denso Robot Controller
     denso_joint_trajectory_controller:
       type: joint_trajectory_controller/JointTrajectoryController
@@ -194,6 +202,43 @@ arf_gripper_trajectory_controller:
     joints:
       - arf_gripper_joint_1
       - arf_gripper_joint_2
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity
+    state_publish_rate: 125.0
+    action_monitor_rate: 25.0
+    allow_partial_joints_goal: false
+    constraints:
+      stopped_velocity_tolerance: 0.01
+      goal_time: 0.0
+
+# ARF Elec Axis Joints
+arf_elec_axis_trajectory_controller:
+  ros__parameters:
+    joints:
+      - arf_elec_axis_1_joint
+      - arf_elec_axis_2_joint
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity
+    state_publish_rate: 125.0
+    action_monitor_rate: 25.0
+    allow_partial_joints_goal: false
+    constraints:
+      stopped_velocity_tolerance: 0.01
+      goal_time: 0.0
+
+# ARF Elec Gripper Joints
+arf_elec_gripper_trajectory_controller:
+  ros__parameters:
+    joints:
+      - arf_elec_gripper_joint_1
+      - arf_elec_gripper_joint_2
+      - arf_elec_gripper_joint_3
     command_interfaces:
       - position
     state_interfaces:

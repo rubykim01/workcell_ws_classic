@@ -192,6 +192,21 @@ def launch_setup(context, *args, **kwargs):
         output="screen"
     )
 
+    # ARF Elec Axis Controller
+    arf_elec_axis_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["arf_elec_axis_trajectory_controller", "-c", "/controller_manager"],
+        output="screen"
+    )
+
+    # ARF Elec Gripper Controller
+    arf_elec_gripper_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["arf_elec_gripper_trajectory_controller", "-c", "/controller_manager"],
+        output="screen"
+    )
 
     # Denso Axis Controller 
     denso_axis_controller_spawner = Node(
@@ -272,6 +287,8 @@ def launch_setup(context, *args, **kwargs):
         denso_joint_trajectory_controller_spawner,
         arf_axis_controller_spawner,
         arf_gripper_controller_spawner,
+        arf_elec_axis_controller_spawner,
+        arf_elec_gripper_controller_spawner,
         denso_axis_controller_spawner,
         feeder_x_axis_mobile_base_controller_spawner,
         feeder_y_axis_plate_controller_spawner,
