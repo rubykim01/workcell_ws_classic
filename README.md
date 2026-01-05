@@ -8,8 +8,8 @@ and Denso robots with MoveIt2 integration and Gazebo Classic simulation.
 ```
 workcell_ws_classic/
 ├── src/
-│   ├── descriptions/         # Robot models (UR + Denso)
-│   ├── link_attacher/        # Link attachment utilities
+│   ├── descriptions/         # Robot models 
+│   ├── link_attacher/        # Link attachment 
 │   ├── moveit_config/        # Inverse kinematics & motion planning
 │   └── simulation/           # Gazebo simulation
 ├── env/
@@ -69,18 +69,18 @@ workcell_ws_classic/
 
    ##### 2-1) **Launch without MoveIt2**
    ```bash
-   ros2 launch simulation ur_sim_control.launch.py
+   ros2 launch simulation workcell_sim_control.launch.py
    ```
 
    ##### 2-2) **Launch with MoveIt2**:
    ```bash
-   ros2 launch simulation ur_sim_moveit.launch.py
+   ros2 launch simulation workcell_sim_moveit.launch.py
    ```
 
 3. **Spawn pick objects**:
    ```bash
    cd ~/workcell_ws_classic
-   ./src/descriptions/ur_description/urdf/objects/spawn_all_heating_objects.sh 
+   ./src/descriptions/urdf/objects/spawn_all_heating_objects.sh 
    ```
 
 ## Dependencies
