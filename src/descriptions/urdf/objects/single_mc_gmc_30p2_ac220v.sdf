@@ -1,0 +1,36 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="single_mc_gmc_30p2_ac220v">
+    <link name="link">
+      <gravity>false</gravity>
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>file:///root/workcell_ws_classic/src/descriptions/meshes/feeder/elec/objects/Single-MC_GMC_30P2_AC220V.STL</uri>
+            <scale>1 1 1</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <!-- Dark green metallic -->
+          <ambient>0.05 0.15 0.08 1</ambient>
+          <diffuse>0.08 0.22 0.12 1</diffuse>
+          <specular>0.4 0.5 0.4 1</specular>
+          <emissive>0 0 0 1</emissive>
+        </material>
+      </visual>
+      
+        <inertial>
+          <mass>0.4</mass>
+          <inertia>
+            <ixx>0.001</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>0.001</iyy>
+            <iyz>0</iyz>
+            <izz>0.001</izz>
+          </inertia>
+        </inertial>
+    </link>
+  </model>
+</sdf>
+

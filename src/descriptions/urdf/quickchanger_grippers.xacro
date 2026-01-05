@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+
+  <xacro:macro name="quickchanger_grippers" params="parent">
+  <xacro:property name="quickchanger_grippers_visual_params" value="${xacro.load_yaml('$(find descriptions)/config/quickchanger_grippers_visual_parameters.yaml')}"/>
+  <xacro:property name="sec_mesh_files" value="${quickchanger_grippers_visual_params['mesh_files']}" scope="parent"/>
+  <xacro:property name="force_abs_paths" value="true" scope="parent"/>
+
+    <!-- quickchanger_link -->
+    <link name="quickchanger_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 3.14"/>
+        <geometry>
+          <xacro:get_mesh name="quickchanger" type="visual"/>
+        </geometry>
+        <material name="${sec_mesh_files['quickchanger']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['quickchanger']['visual']['material']['color']}"/>
+        </material>
+      </visual>
+      <inertial>
+        <mass value="2.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.002" ixy="0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/>
+      </inertial>
+    </link>
+
+    <!-- quickchanger_joint - attached to tool0, rpy="0 0 0" -->
+    <joint name="quickchanger_joint" type="fixed">
+      <parent link="${parent}"/>
+      <child link="quickchanger_link"/>
+      <origin xyz="0 0 0.012" rpy="0 0 0"/>
+      <dynamics damping="100" friction="100"/>
+    </joint>
+
+    <!-- tooltip_adapter_1_link -->
+    <link name="tooltip_adapter_1_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 3.14"/>
+        <geometry>
+          <xacro:get_mesh name="tooltip_adapter_1" type="visual"/>
+        </geometry>
+        <material name="${sec_mesh_files['tooltip_adapter_1']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['tooltip_adapter_1']['visual']['material']['color']}"/>
+        </material>
+      </visual>
+      <inertial>
+        <mass value="0.5"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+      </inertial>
+    </link>
+
+    <!-- tooltip_adapter1_joint -->
+    <joint name="tooltip_adapter1_joint" type="prismatic">
+      <parent link="quickchanger_link"/>
+      <child link="tooltip_adapter_1_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="0 -1 0"/>
+      <limit lower="-0.041" upper="0.041" effort="50" velocity="10"/>
+      <dynamics damping="10" friction="10"/>
+    </joint>
+
+    <!-- tooltip_adapter_2_link -->
+    <link name="tooltip_adapter_2_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 3.14"/>
+        <geometry>
+          <xacro:get_mesh name="tooltip_adapter_2" type="visual"/>
+        </geometry>
+        <material name="${sec_mesh_files['tooltip_adapter_2']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['tooltip_adapter_2']['visual']['material']['color']}"/>
+        </material>
+      </visual>
+      <inertial>
+        <mass value="0.5"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+      </inertial>
+    </link>
+
+    <!-- tooltip_adapter_2_joint -->
+    <joint name="tooltip_adapter2_joint" type="prismatic">
+      <parent link="quickchanger_link"/>
+      <child link="tooltip_adapter_2_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="0 -1 0"/>
+      <limit lower="-0.041" upper="0.041" effort="50" velocity="10"/>
+      <dynamics damping="10" friction="10"/>
+    </joint>
+
+    
+
+  </xacro:macro>
+</robot>

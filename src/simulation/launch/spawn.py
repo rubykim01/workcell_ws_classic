@@ -1,10 +1,11 @@
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, 
-    QComboBox, QMessageBox, QLabel, QGridLayout
+    QComboBox, QMessageBox, QLabel, QGridLayout, QHBoxLayout
 )
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QProcess
 import yaml
+import subprocess
 from pathlib import Path
 
 class MainWindow(QMainWindow):
@@ -53,7 +54,7 @@ class MainWindow(QMainWindow):
         # Path to trolley_positions.yaml
         script_dir = Path(__file__).parent.absolute()
         workspace_root = script_dir.parent.parent.parent
-        self.yaml_path = workspace_root / "src" / "descriptions" / "ur_description" / "config" / "trolley_positions.yaml"
+        self.yaml_path = workspace_root / "src" / "descriptions" / "config" / "trolley_positions.yaml"
         
         # Create 3x3 grid layout
         grid_layout = QGridLayout()
@@ -140,6 +141,32 @@ class MainWindow(QMainWindow):
         button_layout.addWidget(reset_button)
         
         main_layout.addLayout(button_layout)
+        
+        # Feeder spawn buttons section
+        feeder_label = QLabel("Spawn Feeder Objects")
+        feeder_label.setAlignment(Qt.AlignCenter)
+        feeder_label.setStyleSheet("font-weight: bold; font-size: 16px; margin-top: 15px; color: #333333;")
+        main_layout.addWidget(feeder_label)
+        
+        feeder_button_layout = QHBoxLayout()
+        feeder_button_layout.setSpacing(10)
+        
+        # Spawn Feeder Heater button
+        spawn_heater_button = QPushButton("Spawn Feeder Heater")
+        spawn_heater_button.clicked.connect(self.spawn_feeder_heater)
+        spawn_heater_button.setStyleSheet("font-size: 16px; padding: 10px; background-color: #ffe4cc; color: black; border: none; border-radius: 5px;")
+        feeder_button_layout.addWidget(spawn_heater_button)
+        
+        # Spawn Feeder Elec button
+        spawn_elec_button = QPushButton("Spawn Feeder Elec")
+        spawn_elec_button.clicked.connect(self.spawn_feeder_elec)
+        spawn_elec_button.setStyleSheet("font-size: 16px; padding: 10px; background-color: #cce4ff; color: black; border: none; border-radius: 5px;")
+        feeder_button_layout.addWidget(spawn_elec_button)
+        
+        main_layout.addLayout(feeder_button_layout)
+        
+        # Path to shell scripts
+        self.scripts_dir = workspace_root / "src" / "descriptions" / "urdf" / "objects"
         
         window.setLayout(main_layout)
         self.show()
@@ -276,6 +303,54 @@ class MainWindow(QMainWindow):
             combobox.blockSignals(False)
         
         QMessageBox.information(self, "Reset", "All positions reset to default assignments")
+
+    def spawn_feeder_heater(self):
+        """Run the spawn_feeder_heater.sh script"""
+        script_path = self.scripts_dir / "spawn_feeder_heater.sh"
+        
+        if not script_path.exists():
+            QMessageBox.critical(self, "Error", f"Script not found: {script_path}")
+            return
+        
+        try:
+            print(f"Running: {script_path}")
+            # Run the script in background
+            process = subprocess.Popen(
+                ['bash', str(script_path)],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                cwd=str(self.scripts_dir)
+            )
+            QMessageBox.information(self, "Spawning", "Feeder Heater spawn script started.")
+            print("Feeder Heater spawn script started")
+        except Exception as e:
+            error_msg = f"Error running script: {str(e)}"
+            print(error_msg)
+            QMessageBox.critical(self, "Error", error_msg)
+
+    def spawn_feeder_elec(self):
+        """Run the spawn_feeder_elec.sh script"""
+        script_path = self.scripts_dir / "spawn_feeder_elec.sh"
+        
+        if not script_path.exists():
+            QMessageBox.critical(self, "Error", f"Script not found: {script_path}")
+            return
+        
+        try:
+            print(f"Running: {script_path}")
+            # Run the script in background
+            process = subprocess.Popen(
+                ['bash', str(script_path)],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                cwd=str(self.scripts_dir)
+            )
+            QMessageBox.information(self, "Spawning", "Feeder Elec spawn script started.")
+            print("Feeder Elec spawn script started")
+        except Exception as e:
+            error_msg = f"Error running script: {str(e)}"
+            print(error_msg)
+            QMessageBox.critical(self, "Error", error_msg)
 
 
 if __name__ == "__main__":

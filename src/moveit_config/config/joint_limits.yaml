@@ -1,4 +1,4 @@
-# These limits are used by MoveIt and augment/override the definitions in ur_description.
+# These limits are used by MoveIt and augment/override the definitions in descriptions.
 #
 # While the robot does not inherently have any limits on joint accelerations (only on torques),
 # MoveIt needs them for time parametrization. They were chosen conservatively to work in most use

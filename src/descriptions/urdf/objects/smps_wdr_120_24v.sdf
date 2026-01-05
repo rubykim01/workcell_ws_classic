@@ -1,0 +1,36 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="smps_wdr_120_24v">
+    <link name="link">
+      <gravity>false</gravity>
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>file:///root/workcell_ws_classic/src/descriptions/meshes/feeder/elec/objects/SMPS_WDR_120_24V.STL</uri>
+            <scale>1 1 1</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <!-- Dark purple metallic -->
+          <ambient>0.15 0.05 0.18 1</ambient>
+          <diffuse>0.25 0.08 0.3 1</diffuse>
+          <specular>0.5 0.4 0.55 1</specular>
+          <emissive>0 0 0 1</emissive>
+        </material>
+      </visual>
+      
+        <inertial>
+          <mass>0.6</mass>
+          <inertia>
+            <ixx>0.001</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>0.001</iyy>
+            <iyz>0</iyz>
+            <izz>0.001</izz>
+          </inertia>
+        </inertial>
+    </link>
+  </model>
+</sdf>
+

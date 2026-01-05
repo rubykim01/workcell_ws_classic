@@ -1,0 +1,41 @@
+# Visualisation
+
+mesh_files:
+  vision_trolley:
+    visual:
+      mesh:
+        package: descriptions
+        path: meshes/vision/Assy_Docking_Cartbase_Vision.STL
+      material:
+        name: "LightGrey_vision_trolley"
+        color: "0.89 0.91 0.93 1.0"
+    collision:
+      box:
+        size: "0.8 0.8 0.86"
+        origin: "0 0 -0.43"
+
+  vision_cam_jig:
+    visual:
+      mesh:
+        package: descriptions
+        path: meshes/vision/vision_cam_jig.STL
+      material:
+        name: "Red_vision_cam_jig"
+        color: "0.9 0.0 0.0 1.0"
+    collision:
+      mesh:
+        package: descriptions
+        path: meshes/vision/vision_cam_jig.STL
+
+  vision_feeder:
+    visual:
+      mesh:
+        package: descriptions
+        path: meshes/vision/vision_feeder.STL
+      material:
+        name: "Orange_vision_feeder"
+        color: "0.95 0.55 0.0 1.0"
+    collision:
+      mesh:
+        package: descriptions
+        path: meshes/vision/vision_feeder.STL

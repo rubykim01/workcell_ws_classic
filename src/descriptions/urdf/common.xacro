@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+  <!--
+    Common helper macros for loading meshes from visual parameter YAML files.
+    Used by all robot components in the workcell.
+  -->
+
+  <xacro:macro name="cylinder_inertial" params="radius length mass *origin">
+    <inertial>
+      <mass value="${mass}" />
+      <xacro:insert_block name="origin" />
+      <inertia ixx="${0.0833333 * mass * (3 * radius * radius + length * length)}" ixy="0.0" ixz="0.0"
+        iyy="${0.0833333 * mass * (3 * radius * radius + length * length)}" iyz="0.0"
+        izz="${0.5 * mass * radius * radius}" />
+    </inertial>
+  </xacro:macro>
+
+  <xacro:macro name="get_visual_params" params="name:=^ type:=^" >
+    <xacro:if value="${type in sec_mesh_files[name]}">
+      <xacro:property name="visual_params" value="${sec_mesh_files[name][type]}" scope="parent"/>
+    </xacro:if>
+    <xacro:unless value="${type in sec_mesh_files[name]}">
+      <xacro:property name="visual_params" value="" scope="parent"/>
+    </xacro:unless>
+  </xacro:macro>
+
+  <xacro:macro name="get_mesh_path" params="name:=^ type:=^" >
+    <xacro:get_visual_params />
+    <xacro:if value="${force_abs_paths}">
+      <xacro:property name="mesh" value="file://$(find ${visual_params['mesh']['package']})/${visual_params['mesh']['path']}" scope="parent"/>
+    </xacro:if>
+    <xacro:unless value="${force_abs_paths}">
+      <xacro:property name="mesh" value="package://${visual_params['mesh']['package']}/${visual_params['mesh']['path']}" scope="parent"/>
+    </xacro:unless>
+  </xacro:macro>
+
+  <xacro:macro name="get_mesh" params="name type" >
+    <xacro:get_mesh_path/>
+    <mesh filename="${mesh}"/>
+  </xacro:macro>
+
+</robot>
+

@@ -1,0 +1,68 @@
+# Visualisation
+
+mesh_files:
+  quickchanger:
+    visual:
+      mesh:
+        package: descriptions
+        path: meshes/quickchanger_grippers/Assy_Quick_Gripper.STL
+      material:
+        name: "Grey_quickchanger"
+        color: "0.6 0.6 0.6 1.0"
+    collision:
+      mesh:
+        package: descriptions
+        path: meshes/quickchanger_grippers/Assy_Quick_Gripper.STL
+
+  tooltip_adapter_1:
+    visual:
+      mesh:
+        package: descriptions
+        path: meshes/quickchanger_grippers/Tooltip_Adap_Assy_1.STL
+      material:
+        name: "Black_tooltip_adapter_1"
+        color: "0.1 0.1 0.1 1.0"
+    collision:
+      mesh:
+        package: descriptions
+        path: meshes/quickchanger_grippers/Tooltip_Adap_Assy_1.STL
+
+  tooltip_adapter_2:
+    visual:
+      mesh:
+        package: descriptions
+        path: meshes/quickchanger_grippers/Tooltip_Adap_Assy_2.STL
+      material:
+        name: "Black_tooltip_adapter_2"
+        color: "0.1 0.1 0.1 1.0"
+    collision:
+      mesh:
+        package: descriptions
+        path: meshes/quickchanger_grippers/Tooltip_Adap_Assy_2.STL
+
+  tooltip1:
+    visual:
+      mesh:
+        package: descriptions
+        path: meshes/quickchanger_grippers/Tooltip_01.STL
+      material:
+        name: "Silver_tooltip1"
+        color: "0.8 0.8 0.8 1.0"
+    collision:
+      mesh:
+        package: descriptions
+        path: meshes/quickchanger_grippers/Tooltip_01.STL
+      
+  tooltip2:
+    visual:
+      mesh:
+        package: descriptions
+        path: meshes/quickchanger_grippers/Tooltip_01.STL
+      material:
+        name: "Silver_tooltip2"
+        color: "0.8 0.8 0.8 1.0"
+    collision:
+      mesh:
+        package: descriptions
+        path: meshes/quickchanger_grippers/Tooltip_01.STL
+
