@@ -331,8 +331,8 @@ class MainWindow(QMainWindow):
                 stderr=subprocess.PIPE,
                 cwd=str(self.scripts_dir)
             )
-            QMessageBox.information(self, "Spawning", "Feeder Heater spawn script started.")
-            print("Feeder Heater spawn script started")
+            QMessageBox.information(self, "Spawn Objects", "Spawning Feeder Heater objects")
+            print("Spawned Objects: Feeder Heater")
         except Exception as e:
             error_msg = f"Error running script: {str(e)}"
             print(error_msg)
@@ -355,8 +355,8 @@ class MainWindow(QMainWindow):
                 stderr=subprocess.PIPE,
                 cwd=str(self.scripts_dir)
             )
-            QMessageBox.information(self, "Spawning", "Feeder Elec spawn script started.")
-            print("Feeder Elec spawn script started")
+            QMessageBox.information(self, "Spawn Objects", "Spawning Feeder Elec objects")
+            print("Spawned Objects: Feeder Elec")
         except Exception as e:
             error_msg = f"Error running script: {str(e)}"
             print(error_msg)

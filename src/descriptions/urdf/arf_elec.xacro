@@ -121,7 +121,7 @@
       <child link="arf_elec_jig_dummy_link" />
       <origin xyz="0 0 0" rpy="0 0 0"/>
     </joint>
--
+
     <!-- arf jig link -->
     <link name="arf_elec_jig_link">
       <visual>
