@@ -11,8 +11,8 @@ echo "Objects directory: $OBJECTS_DIR"
 # Get current quickchanger_link pose from TF2
 echo "Getting current quickchanger_link pose from TF2..."
 
-# Capture tf2_echo output (timeout after 3 seconds to get at least one reading)
-TF_OUTPUT=$(timeout 2 ros2 run tf2_ros tf2_echo world quickchanger_link 2>/dev/null | grep -A 10 "At time")
+# Capture tf2_echo output (timeout after 1.5 seconds to get at least one reading)
+TF_OUTPUT=$(timeout 1.5 ros2 run tf2_ros tf2_echo world quickchanger_link 2>/dev/null | grep -A 10 "At time")
 
 if [ -z "$TF_OUTPUT" ]; then
     echo "ERROR: Could not get TF transform. Make sure the robot is running."
