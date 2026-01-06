@@ -207,7 +207,6 @@ def launch_setup(context, *args, **kwargs):
         arguments=["arf_elec_gripper_trajectory_controller", "-c", "/controller_manager"],
         output="screen"
     )
-
     # Denso Axis Controller 
     denso_axis_controller_spawner = Node(
         package="controller_manager",
@@ -273,8 +272,6 @@ def launch_setup(context, *args, **kwargs):
         arguments=["-entity", "ur", "-topic", "robot_description"],
         output="screen",
     )
-
-
 
     nodes_to_start = [
         robot_state_publisher_node,
@@ -400,5 +397,4 @@ def generate_launch_description():
             "gazebo_gui", default_value="true", description="Start gazebo with GUI?"
         )
     )
-
     return LaunchDescription(declared_arguments + [OpaqueFunction(function=launch_setup)])

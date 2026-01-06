@@ -16,7 +16,7 @@ class MainWindow(QMainWindow):
         
         # Set window size 
         #self.resize(400, 500)
-        self.setMinimumSize(700, 600)
+        self.setMinimumSize(900, 600)
         self.setStyleSheet("background-color: #ffffff;")
         # Create central widget 
         window = QWidget()
@@ -164,16 +164,46 @@ class MainWindow(QMainWindow):
         # Spawn Feeder Heater button
         spawn_heater_button = QPushButton("Heater Objects")
         spawn_heater_button.clicked.connect(self.spawn_feeder_heater)
-        spawn_heater_button.setStyleSheet("font-size: 16px; padding: 10px; background-color: #ffe4cc; color: black; border: none; border-radius: 5px;")
+        spawn_heater_button.setStyleSheet("font-size: 16px; padding: 10px; background-color: #e8e8e8; color: black; border: 1px solid #aaaaaa; border-radius: 5px;")
         feeder_button_layout.addWidget(spawn_heater_button)
         
         # Spawn Feeder Elec button
         spawn_elec_button = QPushButton("Elec Objects")
         spawn_elec_button.clicked.connect(self.spawn_feeder_elec)
-        spawn_elec_button.setStyleSheet("font-size: 16px; padding: 10px; background-color: #cce4ff; color: black; border: none; border-radius: 5px;")
+        spawn_elec_button.setStyleSheet("font-size: 16px; padding: 10px; background-color: #e8e8e8; color: black; border: 1px solid #aaaaaa; border-radius: 5px;")
         feeder_button_layout.addWidget(spawn_elec_button)
         
         main_layout.addLayout(feeder_button_layout)
+        
+        # Tooltip spawn buttons section
+        main_layout.addSpacing(10)
+        tooltip_label = QLabel("Spawn Tooltip + Toolchanger Tools")
+        tooltip_label.setAlignment(Qt.AlignCenter)
+        tooltip_label.setStyleSheet("font-weight: bold; font-size: 16px; margin-top: 15px; color: #333333;")
+        main_layout.addWidget(tooltip_label)
+        
+        tooltip_button_layout = QHBoxLayout()
+        tooltip_button_layout.setSpacing(10)
+        
+        # Tooltip 1 button
+        tooltip1_button = QPushButton("Tooltip 1")
+        tooltip1_button.clicked.connect(self.spawn_tooltip1)
+        tooltip1_button.setStyleSheet("font-size: 16px; padding: 10px; background-color: #e8e8e8; color: black; border: 1px solid #aaaaaa; border-radius: 5px;")
+        tooltip_button_layout.addWidget(tooltip1_button)
+        
+        # Tooltip 2 button
+        tooltip2_button = QPushButton("Tooltip 2")
+        tooltip2_button.clicked.connect(self.spawn_tooltip2)
+        tooltip2_button.setStyleSheet("font-size: 16px; padding: 10px; background-color: #e8e8e8; color: black; border: 1px solid #aaaaaa; border-radius: 5px;")
+        tooltip_button_layout.addWidget(tooltip2_button)
+        
+        # Tooltip 3 button
+        tooltip3_button = QPushButton("Tooltip 3")
+        tooltip3_button.clicked.connect(self.spawn_tooltip3)
+        tooltip3_button.setStyleSheet("font-size: 16px; padding: 10px; background-color: #e8e8e8; color: black; border: 1px solid #aaaaaa; border-radius: 5px;")
+        tooltip_button_layout.addWidget(tooltip3_button)
+        
+        main_layout.addLayout(tooltip_button_layout)
         
         # Path to shell scripts
         self.scripts_dir = workspace_root / "src" / "descriptions" / "urdf" / "objects"
@@ -257,8 +287,6 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Error", error_msg)
             return
 
-            
-        
         # Create message
         if configured_positions:
             message = "\n".join(configured_positions)
@@ -359,6 +387,58 @@ class MainWindow(QMainWindow):
             print("Spawned Objects: Feeder Elec")
         except Exception as e:
             error_msg = f"Error running script: {str(e)}"
+            print(error_msg)
+            QMessageBox.critical(self, "Error", error_msg)
+
+    def spawn_tooltip1(self):
+        """Run spawn_ur_tooltip1.sh and spawn_toolchanger_tools.sh"""
+        self._spawn_tooltip_and_tools("spawn_ur_tooltip1.sh", "Tooltip 1")
+
+    def spawn_tooltip2(self):
+        """Run spawn_ur_tooltip2.sh and spawn_toolchanger_tools.sh"""
+        self._spawn_tooltip_and_tools("spawn_ur_tooltip2.sh", "Tooltip 2")
+
+    def spawn_tooltip3(self):
+        """Run spawn_ur_tooltip3.sh and spawn_toolchanger_tools.sh"""
+        self._spawn_tooltip_and_tools("spawn_ur_tooltip3.sh", "Tooltip 3")
+
+    def _spawn_tooltip_and_tools(self, tooltip_script, tooltip_name):
+        """Run tooltip script first, then toolchanger_tools script"""
+        tooltip_path = self.scripts_dir / tooltip_script
+        tools_path = self.scripts_dir / "spawn_toolchanger_tools.sh"
+        
+        if not tooltip_path.exists():
+            QMessageBox.critical(self, "Error", f"Script not found: {tooltip_path}")
+            return
+        
+        if not tools_path.exists():
+            QMessageBox.critical(self, "Error", f"Script not found: {tools_path}")
+            return
+        
+        try:
+            # Run tooltip script first and wait for completion
+            print(f"Running: {tooltip_path}")
+            tooltip_process = subprocess.Popen(
+                ['bash', str(tooltip_path)],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                cwd=str(self.scripts_dir)
+            )
+            tooltip_process.wait()  # Wait for tooltip to finish
+            
+            # Then run toolchanger tools
+            print(f"Running: {tools_path}")
+            subprocess.Popen(
+                ['bash', str(tools_path)],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                cwd=str(self.scripts_dir)
+            )
+            
+            QMessageBox.information(self, "Spawn Objects", f"Spawned {tooltip_name} + Toolchanger Tools")
+            print(f"Spawned Objects: {tooltip_name} + Toolchanger Tools")
+        except Exception as e:
+            error_msg = f"Error running scripts: {str(e)}"
             print(error_msg)
             QMessageBox.critical(self, "Error", error_msg)
 
