@@ -3,8 +3,9 @@
 # Script to spawn tools attached to UR quickchanger
 # Usage: ./spawn_ur_attached_tools.sh
 
-# Get the current workspace directory
-OBJECTS_DIR="/root/workcell_ws_classic/src/descriptions/urdf/objects"
+# Get the current workspace directory dynamically
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+OBJECTS_DIR="$SCRIPT_DIR"
 
 echo "Objects directory: $OBJECTS_DIR"
 

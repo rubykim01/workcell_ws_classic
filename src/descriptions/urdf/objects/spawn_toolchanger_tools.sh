@@ -3,7 +3,9 @@
 # Script to spawn tools on the tool changer base assembly stand
 # Usage: ./spawn_toolchanger_tools.sh
 
-OBJECTS_DIR="/root/workcell_ws_classic/src/descriptions/urdf/objects"
+# Get the current workspace directory dynamically
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+OBJECTS_DIR="$SCRIPT_DIR"
 
 # Cart position from World (m)
 CART_X=-0.8

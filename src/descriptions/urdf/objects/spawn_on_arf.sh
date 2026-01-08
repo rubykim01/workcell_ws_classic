@@ -51,8 +51,9 @@ echo "  heating_plate_cover3-2: ($HPC32_X, $HPC32_Y, $HPC32_Z)"
 
 echo "Spawning all heating plates and covers for ARF test"
 
-# Get the current workspace directory
-OBJECTS_DIR="/root/workcell_ws_classic/src/descriptions/urdf/objects"
+# Get the current workspace directory dynamically
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+OBJECTS_DIR="$SCRIPT_DIR"
 
 echo "Objects directory: $OBJECTS_DIR"
 

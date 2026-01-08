@@ -56,8 +56,9 @@ TRAY_H5_Y=$(awk "BEGIN {print $FEEDER_BASE_Y + $OFFSET_Y}")
 TRAY_H5_Z=$(awk "BEGIN {print $FEEDER_BASE_Z + $OFFSET_H5_Z}")
 
 
-# Get the current workspace directory
-OBJECTS_DIR="/root/workcell_ws_classic/src/descriptions/urdf/objects"
+# Get the current workspace directory dynamically
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+OBJECTS_DIR="$SCRIPT_DIR"
 
 echo "Objects directory: $OBJECTS_DIR"
 
