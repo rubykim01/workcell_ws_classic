@@ -352,14 +352,15 @@ class MainWindow(QMainWindow):
         
         try:
             print(f"Running: {script_path}")
-            # Run the script in background
+            # Run the script and wait for completion
             process = subprocess.Popen(
                 ['bash', str(script_path)],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 cwd=str(self.scripts_dir)
             )
-            QMessageBox.information(self, "Spawn Objects", "Spawning Feeder Heater objects")
+            process.wait()  # Wait for all objects to spawn
+            QMessageBox.information(self, "Spawn Complete", "All Feeder Heater objects spawned successfully")
             print("Spawned Objects: Feeder Heater")
         except Exception as e:
             error_msg = f"Error running script: {str(e)}"
@@ -376,14 +377,15 @@ class MainWindow(QMainWindow):
         
         try:
             print(f"Running: {script_path}")
-            # Run the script in background
+            # Run the script and wait for completion
             process = subprocess.Popen(
                 ['bash', str(script_path)],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 cwd=str(self.scripts_dir)
             )
-            QMessageBox.information(self, "Spawn Objects", "Spawning Feeder Elec objects")
+            process.wait()  # Wait for all objects to spawn
+            QMessageBox.information(self, "Spawn Complete", "All Feeder Elec objects spawned successfully")
             print("Spawned Objects: Feeder Elec")
         except Exception as e:
             error_msg = f"Error running script: {str(e)}"
@@ -426,16 +428,17 @@ class MainWindow(QMainWindow):
             )
             tooltip_process.wait()  # Wait for tooltip to finish
             
-            # Then run toolchanger tools
+            # Then run toolchanger tools and wait for completion
             print(f"Running: {tools_path}")
-            subprocess.Popen(
+            tools_process = subprocess.Popen(
                 ['bash', str(tools_path)],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 cwd=str(self.scripts_dir)
             )
+            tools_process.wait()  # Wait for all tools to spawn
             
-            QMessageBox.information(self, "Spawn Objects", f"Spawned {tooltip_name} + Toolchanger Tools")
+            QMessageBox.information(self, "Spawn Complete", f"All {tooltip_name} + Toolchanger Tools spawned successfully")
             print(f"Spawned Objects: {tooltip_name} + Toolchanger Tools")
         except Exception as e:
             error_msg = f"Error running scripts: {str(e)}"
