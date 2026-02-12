@@ -66,7 +66,7 @@
       </inertial>
     </link>
 
-    <!-- feeder base to feeder y axis plate joint (needs to be prismatic) **********-->
+    <!-- feeder base to feeder y axis plate joint -->
     <joint name="feeder_y_axis_plate_joint" type="prismatic">
       <parent link="feeder_base_link" />
       <child link="feeder_y_axis_plate_link" />
@@ -99,7 +99,7 @@
       </inertial>
     </link>
 
-      <!-- feeder base to feeder x axis mobile base joint (needs to be prismatic) **********--> 
+      <!-- feeder base to feeder x axis mobile base joint --> 
   <joint name="feeder_x_axis_mobile_base_joint" type="prismatic">
       <parent link="feeder_base_link" />
       <child link="feeder_x_axis_mobile_base_link" />
@@ -132,7 +132,7 @@
       </inertial>
     </link>
 
-    <!-- feeder x axis mobile base to feeder arm base joint (needs to be prismatic??) **********-->
+    <!-- feeder x axis mobile base to feeder arm base joint -->
     <joint name="feeder_arm_base_joint" type="prismatic">
       <parent link="feeder_x_axis_mobile_base_link" />
       <child link="feeder_arm_base_link" />
@@ -165,7 +165,7 @@
       </inertial>
     </link>
 
-    <!-- feeder arm base to feeder arm slider joint (needs to be prismatic??) **********-->
+    <!-- feeder arm base to feeder arm slider joint -->
     <joint name="feeder_arm_slider_joint" type="prismatic">
       <parent link="feeder_arm_base_link" />
       <child link="feeder_arm_slider_link" />
@@ -197,7 +197,7 @@
         <inertia ixx="0.05" ixy="0" ixz="0" iyy="0.05" iyz="0" izz="0.05"/>
       </inertial>
     </link>
-    <!-- feeder arm slider to feeder arm plate joint (needs to be prismatic?? & need z offset) **********-->
+    <!-- feeder arm slider to feeder arm plate joint -->
     <joint name="feeder_arm_plate_joint" type="prismatic">
       <parent link="feeder_arm_slider_link" />
       <child link="feeder_arm_plate_link" />
