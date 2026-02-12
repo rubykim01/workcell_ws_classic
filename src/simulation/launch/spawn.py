@@ -3,10 +3,14 @@ from PyQt5.QtWidgets import (
     QComboBox, QMessageBox, QLabel, QGridLayout, QHBoxLayout
 )
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import Qt, QProcess
+from PyQt5.QtCore import Qt, QProcess, QTimer
 import yaml
 import subprocess
+import signal
+import sys
+import time
 from pathlib import Path
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -208,6 +212,10 @@ class MainWindow(QMainWindow):
         # Path to shell scripts
         self.scripts_dir = workspace_root / "src" / "descriptions" / "urdf" / "objects"
         
+        # Track spawned objects
+        self.tooltip_spawned = None  # None, "tooltip1", "tooltip2", or "tooltip3"
+        self.feeder_spawned = None  # None, "heater", or "elec"
+        
         window.setLayout(main_layout)
         self.show()
 
@@ -344,13 +352,17 @@ class MainWindow(QMainWindow):
 
     def spawn_feeder_heater(self):
         """Run the spawn_feeder_heater.sh script"""
+        if self.feeder_spawned is not None:
+            QMessageBox.warning(self, "Already Spawned", f"Feeder objects already spawned ({self.feeder_spawned}). Cannot spawn another feeder type.")
+            return
+        
         script_path = self.scripts_dir / "spawn_feeder_heater.sh"
         
         if not script_path.exists():
             QMessageBox.critical(self, "Error", f"Script not found: {script_path}")
             return
         
-        try:
+        try:    
             print(f"Running: {script_path}")
             # Run the script and wait for completion
             process = subprocess.Popen(
@@ -360,6 +372,7 @@ class MainWindow(QMainWindow):
                 cwd=str(self.scripts_dir)
             )
             process.wait()  # Wait for all objects to spawn
+            self.feeder_spawned = "heater"
             QMessageBox.information(self, "Spawn Complete", "All Feeder Heater objects spawned successfully")
             print("Spawned Objects: Feeder Heater")
         except Exception as e:
@@ -369,6 +382,10 @@ class MainWindow(QMainWindow):
 
     def spawn_feeder_elec(self):
         """Run the spawn_feeder_elec.sh script"""
+        if self.feeder_spawned is not None:
+            QMessageBox.warning(self, "Already Spawned", f"Feeder objects already spawned ({self.feeder_spawned}). Cannot spawn another feeder type.")
+            return
+        
         script_path = self.scripts_dir / "spawn_feeder_elec.sh"
         
         if not script_path.exists():
@@ -385,6 +402,7 @@ class MainWindow(QMainWindow):
                 cwd=str(self.scripts_dir)
             )
             process.wait()  # Wait for all objects to spawn
+            self.feeder_spawned = "elec"
             QMessageBox.information(self, "Spawn Complete", "All Feeder Elec objects spawned successfully")
             print("Spawned Objects: Feeder Elec")
         except Exception as e:
@@ -394,17 +412,88 @@ class MainWindow(QMainWindow):
 
     def spawn_tooltip1(self):
         """Run spawn_ur_tooltip1.sh and spawn_toolchanger_tools.sh"""
-        self._spawn_tooltip_and_tools("spawn_ur_tooltip1.sh", "Tooltip 1")
+        if self.tooltip_spawned is not None:
+            QMessageBox.warning(self, "Already Spawned", f"Tooltip already spawned ({self.tooltip_spawned}). Cannot spawn another tooltip.")
+            return
+        self._spawn_tooltip_and_tools("spawn_ur_tooltip1.sh", "Tooltip 1", "tooltip1")
 
     def spawn_tooltip2(self):
         """Run spawn_ur_tooltip2.sh and spawn_toolchanger_tools.sh"""
-        self._spawn_tooltip_and_tools("spawn_ur_tooltip2.sh", "Tooltip 2")
+        if self.tooltip_spawned is not None:
+            QMessageBox.warning(self, "Already Spawned", f"Tooltip already spawned ({self.tooltip_spawned}). Cannot spawn another tooltip.")
+            return
+        self._spawn_tooltip_and_tools("spawn_ur_tooltip2.sh", "Tooltip 2", "tooltip2")
 
     def spawn_tooltip3(self):
         """Run spawn_ur_tooltip3.sh and spawn_toolchanger_tools.sh"""
-        self._spawn_tooltip_and_tools("spawn_ur_tooltip3.sh", "Tooltip 3")
+        if self.tooltip_spawned is not None:
+            QMessageBox.warning(self, "Already Spawned", f"Tooltip already spawned ({self.tooltip_spawned}). Cannot spawn another tooltip.")
+            return
+        self._spawn_tooltip_and_tools("spawn_ur_tooltip3.sh", "Tooltip 3", "tooltip3")
 
-    def _spawn_tooltip_and_tools(self, tooltip_script, tooltip_name):
+    def attach_tooltip_to_adapter(self, tooltip_entity, adapter_link):
+        """Attach a tooltip to a tooltip adapter using ROS2 service"""
+        try:
+            # First, detach from quickchanger_link if already attached (spawn scripts attach to quickchanger_link)
+            print(f"Detaching {tooltip_entity} from quickchanger_link (if attached)...")
+            detach_call = [
+                'ros2', 'service', 'call', '/DETACHLINK',
+                'linkattacher_msgs/srv/DetachLink',
+                f"{{model1_name: 'ur', link1_name: 'quickchanger_link', model2_name: '{tooltip_entity}', link2_name: 'link'}}"
+            ]
+            
+            detach_result = subprocess.run(
+                detach_call,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                timeout=3
+            )
+            # Don't fail if detach fails (might not be attached)
+            if detach_result.returncode == 0:
+                print(f"Detached {tooltip_entity} from quickchanger_link")
+            
+            # Small delay to ensure detach completes and physics settles
+            time.sleep(0.5)
+            
+            # Now attach to adapter link
+            print(f"Attaching {tooltip_entity} to {adapter_link}...")
+            attach_call = [
+                'ros2', 'service', 'call', '/ATTACHLINK',
+                'linkattacher_msgs/srv/AttachLink',
+                f"{{model1_name: 'ur', link1_name: '{adapter_link}', model2_name: '{tooltip_entity}', link2_name: 'link'}}"
+            ]
+            
+            result = subprocess.run(
+                attach_call,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                timeout=5
+            )
+            
+            if result.returncode == 0:
+                print(f"Successfully attached {tooltip_entity} to {adapter_link}")
+                print(f"Attachment stdout: {result.stdout}")
+                return True
+            else:
+                error_msg = f"Failed to attach {tooltip_entity} to {adapter_link}"
+                print(error_msg)
+                print(f"Return code: {result.returncode}")
+                print(f"Stdout: {result.stdout}")
+                print(f"Stderr: {result.stderr}")
+                print(f"Command: {' '.join(attach_call)}")
+                return False
+        except subprocess.TimeoutExpired:
+            error_msg = f"Attachment service call timed out for {tooltip_entity}"
+            print(error_msg)
+            return False
+        except Exception as e:
+            error_msg = f"Error attaching tooltip {tooltip_entity}: {str(e)}"
+            print(error_msg)
+            return False
+
+    def _spawn_tooltip_and_tools(self, tooltip_script, tooltip_name, tooltip_id):
         """Run tooltip script first, then toolchanger_tools script"""
         tooltip_path = self.scripts_dir / tooltip_script
         tools_path = self.scripts_dir / "spawn_toolchanger_tools.sh"
@@ -438,8 +527,49 @@ class MainWindow(QMainWindow):
             )
             tools_process.wait()  # Wait for all tools to spawn
             
+            # Wait for physics to settle before attaching
+            print("Waiting for physics to settle before attaching tooltips...")
+            time.sleep(1.0)
+            
+            # Set flag only after successful spawn
+            self.tooltip_spawned = tooltip_id
+            
             QMessageBox.information(self, "Spawn Complete", f"All {tooltip_name} + Toolchanger Tools spawned successfully")
             print(f"Spawned Objects: {tooltip_name} + Toolchanger Tools")
+            
+            # Automatically attach tooltips to adapters
+            # Determine which tooltips were spawned based on tooltip_name
+            if "1" in tooltip_name:
+                tooltip1_entity = "tooltip_01"
+                tooltip2_entity = "tooltip_01_2"
+            elif "2" in tooltip_name:
+                tooltip1_entity = "tooltip_02"
+                tooltip2_entity = "tooltip_02_2"
+            elif "3" in tooltip_name:
+                tooltip1_entity = "tooltip_03"
+                tooltip2_entity = "tooltip_03_2"
+            else:
+                return  # Unknown tooltip name
+            
+            # Attach first tooltip to adapter 1
+            print(f"Attaching {tooltip1_entity} to tooltip_adapter_1_link...")
+            success1 = self.attach_tooltip_to_adapter(tooltip1_entity, "tooltip_adapter_1_link")
+            if not success1:
+                print(f"Warning: Failed to attach {tooltip1_entity} to tooltip_adapter_1_link")
+            else:
+                print(f"Successfully attached {tooltip1_entity} to tooltip_adapter_1_link")
+            
+            # Longer delay between attachments to ensure first attachment completes
+            print("Waiting before attaching second tooltip...")
+            time.sleep(1.0)
+            
+            # Attach second tooltip to adapter 2
+            print(f"Attaching {tooltip2_entity} to tooltip_adapter_2_link...")
+            success2 = self.attach_tooltip_to_adapter(tooltip2_entity, "tooltip_adapter_2_link")
+            if not success2:
+                print(f"Warning: Failed to attach {tooltip2_entity} to tooltip_adapter_2_link")
+            else:
+                print(f"Successfully attached {tooltip2_entity} to tooltip_adapter_2_link")
         except Exception as e:
             error_msg = f"Error running scripts: {str(e)}"
             print(error_msg)
@@ -450,6 +580,25 @@ if __name__ == "__main__":
     app = QApplication([])
     window = MainWindow()
     window.show()
+    
+    # Handle Ctrl+C to close the GUI
+    # Use a list to hold the flag (works around Python closure limitations)
+    interrupted = [False]
+    
+    def signal_handler(signum, frame):
+        interrupted[0] = True
+    
+    signal.signal(signal.SIGINT, signal_handler)
+    
+    # Timer to check for interrupt signal
+    def check_interrupt():
+        if interrupted[0]:
+            app.quit()
+    
+    timer = QTimer()
+    timer.timeout.connect(check_interrupt)
+    timer.start(100)  # Check every 100ms
+    
     app.exec_()
 
     
