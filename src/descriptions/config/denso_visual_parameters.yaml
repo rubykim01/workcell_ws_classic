@@ -26,4 +26,81 @@ mesh_files:
       mesh:
         package: descriptions
         path: meshes/denso/denso_slider_jig.STL
-      
+
+  denso_base_link:
+    visual:
+      mesh:
+        package: descriptions
+        path: meshes/denso/denso_base_link.STL
+      material:
+        name: "Grey_denso_base_link"
+        color: "0.7 0.7 0.7 1.0"
+    collision:
+      mesh:
+        package: descriptions
+        path: meshes/denso/denso_base_link.STL
+
+  denso_J1:
+    visual:
+      mesh:
+        package: descriptions
+        path: meshes/denso/denso_link1.STL
+      material:
+        name: "Grey_denso_J1"
+        color: "0.7 0.7 0.7 1.0"
+    collision:
+      mesh:
+        package: descriptions
+        path: meshes/denso/denso_link1.STL
+
+  denso_J2:
+    visual:
+      mesh:
+        package: descriptions
+        path: meshes/denso/denso_link2.STL
+      material:
+        name: "Grey_denso_J2"
+        color: "0.7 0.7 0.7 1.0"
+    collision:
+      mesh:
+        package: descriptions
+        path: meshes/denso/denso_link2.STL
+
+  denso_J3:
+    visual:
+      mesh:
+        package: descriptions
+        path: meshes/denso/denso_link3.STL
+      material:
+        name: "Grey_denso_J3"
+        color: "0.7 0.7 0.7 1.0"
+    collision:
+      mesh:
+        package: descriptions
+        path: meshes/denso/denso_link3.STL
+
+  denso_J4:
+    visual:
+      cylinder:
+        radius: 0.02
+        length: 0.04
+      material:
+        name: "Grey_denso_J4"
+        color: "0.7 0.7 0.7 1.0"
+    collision:
+      cylinder:
+        radius: 0.02
+        length: 0.04
+
+  denso_screwdriver:
+    visual:
+      mesh:
+        package: descriptions
+        path: meshes/denso/denso_screwdriver.STL
+      material:
+        name: "Grey_denso_screwdriver"
+        color: "0.7 0.7 0.7 1.0"
+    collision:
+      mesh:
+        package: descriptions
+        path: meshes/denso/denso_screwdriver.STL
