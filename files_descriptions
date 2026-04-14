@@ -1,4 +1,4 @@
-workcell_ws_classic > src> descriptions 
+workcell_ws_classic > src > descriptions 
 
 1. config 
 1) yaml files for each component: 
@@ -25,18 +25,37 @@ rviz display config
 2) xacro files for each component - link and joint settings
 3) common.xacro - helper
 4) gazebo_materials.xacro - colours for gazebo materials and preserve fixed joint setting
-5) workcell.ros2_control.xacro
-
-> objects - pick and place objects sdf files
-
-
+5) workcell.ros2_control.xacro - hardware & joint interfaces
+	
+   > objects - pick and place objects sdf files
 
 
 
-> link_attacher 
+
+
+workcell_ws_classic > src > link_attacher
 plugin for attaching and detaching objects
 
-> moveit_config
+
+workcell_ws_classic > src > moveit_config
+launch file
+srdf xacro files - can disable collisions here
+
+
+workcell_ws_classic > src > simulation
+spawn.py --> gui for trolleys and tooltips spawn
+workcell_sim_control.launch.py --> launch without moveit
+workcell_sim_moveit.launch.py --> launch with moveit
+
+
+
+
+
+
+
+
+
+
 
 
 
