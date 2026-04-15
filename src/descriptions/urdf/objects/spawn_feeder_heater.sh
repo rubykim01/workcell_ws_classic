@@ -165,3 +165,38 @@ ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/heating_plate_cover3-2.s
 wait
 
 echo "All mobile trays and covers spawned successfully!"
+
+# Wait for physics to settle before attaching
+echo "Waiting for physics to settle before attaching objects to trays..."
+sleep 2
+
+attach_to_tray() {
+    local obj="$1"
+    local tray="$2"
+    echo "Attaching $obj to $tray..."
+    ros2 service call /ATTACHLINK linkattacher_msgs/srv/AttachLink \
+        "{model1_name: '$tray', link1_name: 'link', model2_name: '$obj', link2_name: 'link'}" \
+        > /dev/null
+}
+
+# Tray 1 covers
+attach_to_tray heating_plate_cover_t1_1st mobile_tray_h1
+attach_to_tray heating_plate_cover_t1_2nd mobile_tray_h1
+# Tray 2 plates
+attach_to_tray heating_plate_t2_1st mobile_tray_h2
+attach_to_tray heating_plate_t2_2nd mobile_tray_h2
+# Tray 3 cover3
+attach_to_tray heating_plate_cover3_1_t3_1 mobile_tray_h3
+attach_to_tray heating_plate_cover3_2_t3_2 mobile_tray_h3
+attach_to_tray heating_plate_cover3_1_t3_3 mobile_tray_h3
+attach_to_tray heating_plate_cover3_2_t3_4 mobile_tray_h3
+attach_to_tray heating_plate_cover3_1_t3_5 mobile_tray_h3
+attach_to_tray heating_plate_cover3_2_t3_6 mobile_tray_h3
+# Tray 4 covers
+attach_to_tray heating_plate_cover_t4_1st mobile_tray_h4
+attach_to_tray heating_plate_cover_t4_2nd mobile_tray_h4
+# Tray 5 plates
+attach_to_tray heating_plate_t5_1st mobile_tray_h5
+attach_to_tray heating_plate_t5_2nd mobile_tray_h5
+
+echo "All heater objects attached to trays."

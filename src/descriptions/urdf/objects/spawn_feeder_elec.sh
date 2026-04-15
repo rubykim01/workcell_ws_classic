@@ -305,3 +305,56 @@ echo "E6 TB_JOTN-15A spawned."
 
 echo ""
 echo "All E trays and electrical components spawned successfully!"
+
+# Wait for physics to settle before attaching
+echo "Waiting for physics to settle before attaching objects to trays..."
+sleep 2
+
+attach_to_tray() {
+    local obj="$1"
+    local tray="$2"
+    echo "Attaching $obj to $tray..."
+    ros2 service call /ATTACHLINK linkattacher_msgs/srv/AttachLink \
+        "{model1_name: '$tray', link1_name: 'link', model2_name: '$obj', link2_name: 'link'}" \
+        > /dev/null
+}
+
+# E1 tray components
+attach_to_tray mccb_abe_32b_30a_e1 mobile_tray_e1
+attach_to_tray pdu_sps25_m66xm4_e1_1 mobile_tray_e1
+attach_to_tray pdu_sps25_m66xm4_e1_2 mobile_tray_e1
+attach_to_tray noise_filter_rms_2030_din_e1 mobile_tray_e1
+attach_to_tray plug_socket_drc_220v_16a_e1 mobile_tray_e1
+attach_to_tray busbar_6p_e1 mobile_tray_e1
+
+# E4 tray components
+attach_to_tray mccb_abe_32b_30a_e4 mobile_tray_e4
+attach_to_tray pdu_sps25_m66xm4_e4_1 mobile_tray_e4
+attach_to_tray pdu_sps25_m66xm4_e4_2 mobile_tray_e4
+attach_to_tray noise_filter_rms_2030_din_e4 mobile_tray_e4
+attach_to_tray plug_socket_drc_220v_16a_e4 mobile_tray_e4
+attach_to_tray busbar_6p_e4 mobile_tray_e4
+
+# E2 tray components
+attach_to_tray single_mc_gmc_e2_1 mobile_tray_e2
+attach_to_tray single_mc_gmc_e2_2 mobile_tray_e2
+attach_to_tray single_mc_gmc_e2_3 mobile_tray_e2
+attach_to_tray smps_wdr_120_24v_e2 mobile_tray_e2
+
+# E5 tray components
+attach_to_tray single_mc_gmc_e5_1 mobile_tray_e5
+attach_to_tray single_mc_gmc_e5_2 mobile_tray_e5
+attach_to_tray single_mc_gmc_e5_3 mobile_tray_e5
+attach_to_tray smps_wdr_120_24v_e5 mobile_tray_e5
+
+# E3 and E6 terminal blocks
+for i in 1 2 3 4 5 6 7 8; do
+    attach_to_tray tb_jotn_15a_e3_${i}_1 mobile_tray_e3
+    attach_to_tray tb_jotn_15a_e3_${i}_2 mobile_tray_e3
+done
+for i in 1 2 3 4 5 6 7 8; do
+    attach_to_tray tb_jotn_15a_e6_${i}_1 mobile_tray_e6
+    attach_to_tray tb_jotn_15a_e6_${i}_2 mobile_tray_e6
+done
+
+echo "All elec objects attached to trays."
