@@ -45,20 +45,16 @@ class MainWindow(QMainWindow):
             9: {"x": 1.0, "y": 1.6, "z": 0.92}
         }
         
-        # Default trolley assignments
-        self.default_assignments = {
-            1: "toolchanger",
-            2: "denso",
-            4: "ur",
-            5: "arf",
-            6: "vision",
-            7: "feeder"
-        }
-        
         # Path to trolley_positions.yaml
         script_dir = Path(__file__).parent.absolute()
         workspace_root = script_dir.parent.parent.parent
         self.yaml_path = workspace_root / "src" / "descriptions" / "config" / "trolley_positions.yaml"
+
+        # Default trolley assignments (built from YAML by matching coords to grid positions).
+        # Trolleys whose coords don't match any grid slot are tracked as custom and preserved on save.
+        self.default_assignments = {}
+        self.custom_trolleys = set()
+        self._load_defaults_from_yaml()
         
         combobox_label = QLabel("Configure Spawn Positions")
         combobox_label.setAlignment(Qt.AlignCenter)
@@ -219,6 +215,38 @@ class MainWindow(QMainWindow):
         window.setLayout(main_layout)
         self.show()
 
+    def _load_defaults_from_yaml(self):
+        """Populate default_assignments by matching YAML coords to grid positions.
+        Trolleys with coords not on the grid (e.g. custom feeder pose) go in custom_trolleys."""
+        if not self.yaml_path.exists():
+            return
+        try:
+            with open(self.yaml_path, 'r') as f:
+                data = yaml.safe_load(f) or {}
+        except Exception as e:
+            print(f"Error reading {self.yaml_path}: {e}")
+            return
+
+        tol = 1e-6
+        for trolley, coords in (data.get('trolley_positions') or {}).items():
+            if trolley not in self.trolley_options:
+                continue
+            matched_pos = None
+            for pos, grid in self.position_coordinates.items():
+                if (abs(coords.get('x', 0) - grid['x']) < tol
+                        and abs(coords.get('y', 0) - grid['y']) < tol
+                        and abs(coords.get('z', 0) - grid['z']) < tol
+                        and abs(coords.get('roll', 0)) < tol
+                        and abs(coords.get('pitch', 0)) < tol
+                        and abs(coords.get('yaw', 0)) < tol
+                        and pos not in self.default_assignments):
+                    matched_pos = pos
+                    break
+            if matched_pos is not None:
+                self.default_assignments[matched_pos] = trolley
+            else:
+                self.custom_trolleys.add(trolley)
+
     def on_combobox_changed(self, changed_position):
         """Update all comboboxes to prevent duplicate selections"""
         
@@ -266,9 +294,10 @@ class MainWindow(QMainWindow):
             all_trolleys = set(self.trolley_options[1:])  # Exclude "-"
             selected_trolleys = set(trolley_assignments.keys())
             
-            # Remove trolleys that are not selected
+            # Remove trolleys that are not selected, but preserve custom-positioned ones
+            # (trolleys whose YAML coords don't map to any grid slot, e.g. feeder)
             for trolley in list(data['trolley_positions'].keys()):
-                if trolley not in selected_trolleys:
+                if trolley not in selected_trolleys and trolley not in self.custom_trolleys:
                     del data['trolley_positions'][trolley]
             
             # Update positions for assigned trolleys

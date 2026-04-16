@@ -26,4 +26,17 @@ mesh_files:
       mesh:
         package: descriptions
         path: meshes/denso/denso_slider_jig.STL
+
+  vision_feeder:
+    visual:
+      mesh:
+        package: descriptions
+        path: meshes/vision/vision_feeder.STL
+      material:
+        name: "Orange_vision_feeder"
+        color: "0.95 0.55 0.0 1.0"
+    collision:
+      mesh:
+        package: descriptions
+        path: meshes/vision/vision_feeder.STL
       

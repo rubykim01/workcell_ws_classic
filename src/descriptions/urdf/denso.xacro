@@ -13,7 +13,7 @@
   <!-- denso trolley link -->
     <link name="denso_trolley_link">
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="0 0 0" rpy="0 0 -1.57"/>
         <geometry>
           <xacro:get_mesh name="denso_trolley" type="visual"/>
         </geometry>
@@ -69,7 +69,38 @@
     <joint name="denso_slider_jig_joint" type="fixed">
       <parent link="denso_trolley_link" />
       <child link="denso_slider_jig_link" />
-      <origin xyz="0.025 -0.025 0.0" rpy="0 0 0"/>
+      <origin xyz="0.025 0.175 0.0" rpy="0 0 0"/>
+    </joint>
+
+  <!-- vision feeder link -->
+    <link name="vision_feeder_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="vision_feeder" type="visual"/>
+        </geometry>
+        <material name="${sec_mesh_files['vision_feeder']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['vision_feeder']['visual']['material']['color']}"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="vision_feeder" type="visual"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="3.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.08" ixy="0" ixz="0" iyy="0.08" iyz="0" izz="0.08"/>
+      </inertial>
+    </link>
+
+    <!-- trolley to vision feeder joint -->
+    <joint name="vision_feeder_joint" type="fixed">
+      <parent link="denso_trolley_link" />
+      <child link="vision_feeder_link" />
+      <origin xyz="0.2 -0.2 0.0" rpy="0 0 0"/>
     </joint>
 
     <!-- ==================== DENSO ROBOT ARM ==================== -->

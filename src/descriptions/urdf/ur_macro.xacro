@@ -291,7 +291,7 @@
     <!-- trolley 1 link -->
     <link name="${tf_prefix}ur10_trolley_link">
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="0 0 0" rpy="0 0 -1.57"/>
         <geometry>
           <xacro:get_mesh name="trolley" type="visual"/>
         </geometry>

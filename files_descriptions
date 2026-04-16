@@ -1,0 +1,65 @@
+workcell_ws_classic > src > descriptions 
+
+1. config 
+1) yaml files for each component: 
+stl file path
+colour(used in URDF) --> only for rviz gazebo overridden
+collsion mesh 
+
+2) initial joint positions of the robots, initial trolley positions
+
+--> all used in xacro files
+
+* for gazebo visual materials are defined in gazebo_materials.xacro - overrides for gazebo
+
+
+2. meshes
+includes stl files for each component
+
+
+3. rviz 
+rviz display config
+
+4. urdf 
+1) top level workcell.urdf.xacro (add new gazebo plugin here), 
+2) xacro files for each component - link and joint settings
+3) common.xacro - helper
+4) gazebo_materials.xacro - colours for gazebo materials and preserve fixed joint setting
+5) workcell.ros2_control.xacro - hardware & joint interfaces
+	
+   > objects - pick and place objects sdf files
+
+
+
+
+
+workcell_ws_classic > src > link_attacher
+plugin for attaching and detaching objects
+
+
+workcell_ws_classic > src > moveit_config
+launch file
+srdf xacro files - can disable collisions here
+
+
+workcell_ws_classic > src > simulation
+spawn.py --> gui for trolleys and tooltips spawn
+workcell_sim_control.launch.py --> launch without moveit
+workcell_sim_moveit.launch.py --> launch with moveit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
