@@ -40,9 +40,9 @@ class MainWindow(QMainWindow):
             4: {"x": 0.0, "y": 0.0, "z": 0.86},
             5: {"x": 0.0, "y": 0.8, "z": 0.86},
             6: {"x": 0.0, "y": 1.6, "z": 0.86},
-            7: {"x": 1.0, "y": 0.0, "z": 0.92},
-            8: {"x": 1.0, "y": 0.8, "z": 0.92},
-            9: {"x": 1.0, "y": 1.6, "z": 0.92}
+            7: {"x": 0.8, "y": 0.0, "z": 0.86},
+            8: {"x": 0.8, "y": 0.8, "z": 0.86},
+            9: {"x": 0.8, "y": 1.6, "z": 0.86}
         }
         
         # Path to trolley_positions.yaml
@@ -53,14 +53,14 @@ class MainWindow(QMainWindow):
         # Default trolley assignments (built from YAML by matching coords to grid positions).
         # Trolleys whose coords don't match any grid slot are tracked as custom and preserved on save.
         self.default_assignments = {
-            1: "vision",
+            1: "feeder",
             2: "toolchanger",
             3: "denso",
             4: "-",
             5: "ur",
             6: "arf",
             7: "-",
-            8: "feeder",
+            8: "vision",
             9: "-"
         }
         self.custom_trolleys = set()
@@ -313,13 +313,14 @@ class MainWindow(QMainWindow):
             # Update positions for assigned trolleys
             for trolley, position in trolley_assignments.items():
                 coords = self.position_coordinates[position]
+                is_feeder = trolley == 'feeder'
                 data['trolley_positions'][trolley] = {
-                    'x': coords['x'],
-                    'y': coords['y'],
-                    'z': coords['z'],
+                    'x': coords['x'] + 0.0745 if is_feeder else coords['x'],
+                    'y': coords['y'] + 0.215 if is_feeder else coords['y'],
+                    'z': 0.92 if is_feeder else coords['z'],
                     'roll': 0.0,
                     'pitch': 0.0,
-                    'yaw': 0.0
+                    'yaw': -1.57 if is_feeder else 0.0
                 }
             
             # Write updated YAML file

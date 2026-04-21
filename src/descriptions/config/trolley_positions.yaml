@@ -28,8 +28,8 @@ trolley_positions:
     pitch: 0.0
     yaw: 0.0
   feeder:
-    x: -0.705
-    y: 0.3
+    x: -0.7255
+    y: 0.215
     z: 0.92
     roll: 0.0
     pitch: 0.0
