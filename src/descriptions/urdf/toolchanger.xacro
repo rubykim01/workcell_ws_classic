@@ -44,7 +44,7 @@
 <!-- toolchanger tool stand link -->
     <link name="tool_changer_link">
       <visual>
-        <origin xyz="0 0.25 0" rpy="0 0 1.57"/>
+        <origin xyz="0 0.0 0" rpy="0 0 1.57"/>
         <geometry>
           <xacro:get_mesh name="tool_changer" type="visual"/>
         </geometry>
@@ -69,7 +69,7 @@
   <joint name="toolchanger_tool_changer_joint" type="fixed">
       <parent link="toolchanger_trolley_link" />
       <child link="tool_changer_link" />
-      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <origin xyz="0.0 0.25 0.0" rpy="0 0 0"/>
     </joint>
 
 
