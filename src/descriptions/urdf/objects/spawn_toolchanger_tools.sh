@@ -38,13 +38,31 @@ world_yaw() {
     awk -v fy="$TC_YAW" -v ly="$1" 'BEGIN { printf "%.6f\n", fy + ly }'
 }
 
-# Tool Changer stand offset from trolley (from xacro joint)
-TC_X=0.0
-TC_Y=0.25
-TC_Z=0.0
+# Read tool changer stand offset and visual yaw from xacro
+XACRO_PATH="$SCRIPT_DIR/../toolchanger.xacro"
+if [ ! -f "$XACRO_PATH" ]; then
+    echo "Error: toolchanger.xacro not found at $XACRO_PATH"
+    exit 1
+fi
 
-# Tool changer stand local yaw (from xacro visual rpy)
-TC_STAND_YAW=1.5708
+read TC_X TC_Y TC_Z TC_STAND_YAW <<< "$(python3 -c "
+import xml.etree.ElementTree as ET
+tree = ET.parse('$XACRO_PATH')
+ns = {'xacro': 'http://wiki.ros.org/xacro'}
+root = tree.getroot()
+# Joint origin: toolchanger stand offset from trolley
+for joint in root.iter('joint'):
+    if joint.get('name') == 'toolchanger_tool_changer_joint':
+        xyz = joint.find('origin').get('xyz').split()
+        break
+# Visual origin: stand local yaw
+for link in root.iter('link'):
+    if link.get('name') == 'tool_changer_link':
+        rpy = link.find('visual/origin').get('rpy').split()
+        break
+print(xyz[0], xyz[1], xyz[2], rpy[2])
+")"
+echo "Tool changer stand offset: x=$TC_X y=$TC_Y z=$TC_Z stand_yaw=$TC_STAND_YAW"
 
 # Tool offsets from Tool Changer stand (in stand-local frame)
 # KRVG
