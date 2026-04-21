@@ -14,8 +14,8 @@ trolley_positions:
     pitch: 0.0
     yaw: 0.0
   vision:
-    x: -0.8
-    y: 0.0
+    x: 0.8
+    y: 0.8
     z: 0.86
     roll: 0.0
     pitch: 0.0
@@ -28,12 +28,12 @@ trolley_positions:
     pitch: 0.0
     yaw: 0.0
   feeder:
-    x: 1.0
-    y: 0.8
+    x: -0.705
+    y: 0.3
     z: 0.92
     roll: 0.0
     pitch: 0.0
-    yaw: 0.0
+    yaw: -1.57
   arf:
     x: 0.0
     y: 1.6

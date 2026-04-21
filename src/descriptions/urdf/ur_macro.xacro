@@ -319,7 +319,8 @@
       <child link="${tf_prefix}ur10_trolley_link" />
     </joint>
 
-    <!-- UR feeder link -->
+    <!--
+    UR feeder link
     <link name="${tf_prefix}ur10_feeder_link">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -343,11 +344,43 @@
       </inertial>
     </link>
 
-    <!-- UR feeder joint -->
+    UR feeder joint
     <joint name="${tf_prefix}ur10_feeder_joint" type="fixed">
       <parent link="${tf_prefix}ur10_trolley_link" />
       <child link="${tf_prefix}ur10_feeder_link" />
       <origin xyz="0.525 0.025 0.0" rpy="0 0 0"/>
+    </joint>
+    -->
+
+    <!-- UR slider jig link -->
+    <link name="${tf_prefix}ur10_slider_jig_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="ur_slider_jig" type="visual"/>
+        </geometry>
+        <material name="${sec_mesh_files['ur_slider_jig']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['ur_slider_jig']['visual']['material']['color']}"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <xacro:get_mesh name="ur_slider_jig" type="collision"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="10.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.083" ixy="0" ixz="0" iyy="0.083" iyz="0" izz="0.083"/>
+      </inertial>
+    </link>
+
+    <!-- trolley to slider jig joint -->
+    <joint name="${tf_prefix}ur10_slider_jig_joint" type="fixed">
+      <parent link="${tf_prefix}ur10_trolley_link" />
+      <child link="${tf_prefix}ur10_slider_jig_link" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
     </joint>
 
     <!-- UR plate link-->
@@ -374,11 +407,11 @@
       </inertial>
     </link>
 
-    <!-- trolley1 to UR plate joint -->
+    <!-- slider jig to UR plate joint -->
     <joint name="${tf_prefix}ur10_plate_joint" type="fixed">
-      <parent link="${tf_prefix}ur10_trolley_link" />
+      <parent link="${tf_prefix}ur10_slider_jig_link" />
       <child link="${tf_prefix}ur10_plate_link" />
-      <origin xyz="0 0 0.015" rpy="0 0 0"/>
+      <origin xyz="-0.2 0 0.135" rpy="0 0 0"/>
     </joint>
 
     <!-- ur robot base link -->

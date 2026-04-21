@@ -109,6 +109,19 @@ mesh_files:
         size: "0.8 0.8 0.86"
         origin: "0 0 -0.43"
 
+  ur_slider_jig:
+    visual:
+      mesh:
+        package: descriptions
+        path: meshes/ur10/collision/ur_slider_jig.STL
+      material:
+        name: "Grey_slider_jig"
+        color: "0.4 0.42 0.45 1.0"
+    collision:
+      mesh:
+        package: descriptions
+        path: meshes/ur10/collision/ur_slider_jig.STL
+
   plate:
     visual:
       mesh:
