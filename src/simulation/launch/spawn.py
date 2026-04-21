@@ -52,7 +52,17 @@ class MainWindow(QMainWindow):
 
         # Default trolley assignments (built from YAML by matching coords to grid positions).
         # Trolleys whose coords don't match any grid slot are tracked as custom and preserved on save.
-        self.default_assignments = {}
+        self.default_assignments = {
+            1: "vision",
+            2: "toolchanger",
+            3: "denso",
+            4: "-",
+            5: "ur",
+            6: "arf",
+            7: "-",
+            8: "feeder",
+            9: "-"
+        }
         self.custom_trolleys = set()
         self._load_defaults_from_yaml()
         
