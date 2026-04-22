@@ -461,7 +461,7 @@
            link/frame) to introduce the necessary rotation over Z (of pi rad).
            Additional 90-degree rotation added for custom orientation.
       -->
-      <origin xyz="0 0 0" rpy="0 0 ${pi + pi/2}" />
+      <origin xyz="0 0 0" rpy="0 0 ${pi/2}" />
     </joint>
 
     <!-- ur robot shoulder link -->
