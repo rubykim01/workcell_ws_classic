@@ -304,11 +304,12 @@ class MainWindow(QMainWindow):
             all_trolleys = set(self.trolley_options[1:])  # Exclude "-"
             selected_trolleys = set(trolley_assignments.keys())
             
-            # Remove trolleys that are not selected, but preserve custom-positioned ones
-            # (trolleys whose YAML coords don't map to any grid slot, e.g. feeder)
+            # Remove trolleys that are not selected from the YAML
+            # Custom trolleys are also removed if not assigned to any grid position
             for trolley in list(data['trolley_positions'].keys()):
-                if trolley not in selected_trolleys and trolley not in self.custom_trolleys:
+                if trolley not in selected_trolleys:
                     del data['trolley_positions'][trolley]
+                    self.custom_trolleys.discard(trolley)
             
             # Update positions for assigned trolleys
             for trolley, position in trolley_assignments.items():
