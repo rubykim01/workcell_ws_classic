@@ -180,7 +180,7 @@
       <child link="denso_J1"/>
       <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.4135"/>
       <axis xyz="0.0 0.0 1.0"/>
-      <limit effort="50" lower="-2.26892802759263" upper="2.26892802759263" velocity="3.08615226990019"/>
+      <limit effort="50" lower="-2.87979" upper="2.87979" velocity="3.08615226990019"/>
       <dynamics damping="0.1" friction="0.01"/>
     </joint>
 
@@ -211,7 +211,7 @@
       <child link="denso_J2"/>
       <origin rpy="0.0 0.0 0.0" xyz="0.5 0.0 0.105"/>
       <axis xyz="0.0 0.0 1.0"/>
-      <limit effort="50" lower="-2.61799387799149" upper="2.61799387799149" velocity="5.41357500737341"/>
+      <limit effort="50" lower="-2.35619" upper="2.35619" velocity="5.41357500737341"/>
       <dynamics damping="0.1" friction="0.01"/>
     </joint>
 
