@@ -1,9 +1,10 @@
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, 
+    QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton,
     QComboBox, QMessageBox, QLabel, QGridLayout, QHBoxLayout
 )
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt, QProcess, QTimer
+import math
 import yaml
 import subprocess
 import signal
@@ -11,16 +12,20 @@ import sys
 import time
 from pathlib import Path
 
+# Discrete yaw options exposed in the GUI (degrees) and the matching radian values written to YAML.
+ROTATION_LABELS = ["0", "90", "180", "-90"]
+ROTATION_LABEL_TO_RAD = {label: round(math.radians(int(label)), 4) for label in ROTATION_LABELS}
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
         self.setWindowTitle("Spawn Configuration")
-        
-        # Set window size 
+
+        # Set window size
         #self.resize(400, 500)
-        self.setMinimumSize(900, 600)
+        self.setMinimumSize(950, 850)
         self.setStyleSheet("background-color: #ffffff;")
         # Create central widget 
         window = QWidget()
@@ -64,6 +69,13 @@ class MainWindow(QMainWindow):
             9: "-"
         }
         self.custom_trolleys = set()
+
+        # Per-trolley discrete yaw label ("0"/"90"/"180"/"-90"). Defaults below;
+        # _load_defaults_from_yaml overrides any values present in YAML.
+        self.default_trolley_rotation = {t: "0" for t in self.trolley_options[1:]}
+        self.default_trolley_rotation['feeder'] = "-90"
+        self.trolley_rotation = dict(self.default_trolley_rotation)
+
         self._load_defaults_from_yaml()
         
         combobox_label = QLabel("Configure Spawn Positions")
@@ -79,41 +91,62 @@ class MainWindow(QMainWindow):
         grid_layout.setSpacing(15)
         main_layout.addLayout(grid_layout)
         
-        # Store comboboxes by position number
+        # Store comboboxes and rotation comboboxes by position number
         self.position_comboboxes = {}
-        
+        self.position_rotation_comboboxes = {}
+
         # Create 9 boxes (3x3 grid) for positions 1-9
         position = 1
         for row in range(3):
             for col in range(3):
                 # Create container widget for each position
                 position_widget = QWidget()
-                position_widget.setFixedSize(180, 150)
+                position_widget.setFixedSize(200, 190)
                 # Add border to create lines between boxes
                 position_widget.setStyleSheet("border: 10px solid #cccccc; background-color: #f0f0f0; padding: 5px;")
                 position_layout = QVBoxLayout()
                 position_layout.setSpacing(5)
                 position_layout.setContentsMargins(1,1,1,1)
-                
+
                 # Position number label
                 position_label = QLabel(f"Position {position}")
                 position_label.setAlignment(Qt.AlignCenter)
                 position_label.setStyleSheet("font-weight: bold; font-size: 18px; border: none; background: transparent; color: #000000;")
                 position_layout.addWidget(position_label)
-                
+
                 # Dropdown for trolley selection
                 combobox = QComboBox()
                 combobox.setStyleSheet("border: 8px solid #cccccc; background-color: #f0f0f0; font-size: 18px;")
                 combobox.addItems(self.trolley_options)
-                
+
                 # Connect signal to prevent duplicate selections (before setting default)
                 combobox.currentIndexChanged.connect(lambda idx, pos=position: self.on_combobox_changed(pos))
                 self.position_comboboxes[position] = combobox
                 position_layout.addWidget(combobox)
-                
+
+                # Rotation (yaw) dropdown
+                rotation_row = QHBoxLayout()
+                rotation_row.setSpacing(5)
+                rotation_row.setContentsMargins(0, 0, 0, 0)
+
+                rotation_label = QLabel("Rotation")
+                rotation_label.setStyleSheet("font-weight: bold; font-size: 14px; border: none; background: transparent; color: #000000;")
+                rotation_row.addWidget(rotation_label)
+
+                rotation_combobox = QComboBox()
+                rotation_combobox.setStyleSheet("border: 4px solid #cccccc; background-color: #f0f0f0; font-size: 14px;")
+                rotation_combobox.addItems(ROTATION_LABELS)
+                rotation_combobox.currentTextChanged.connect(
+                    lambda text, pos=position: self.on_rotation_changed(pos, text)
+                )
+                self.position_rotation_comboboxes[position] = rotation_combobox
+                rotation_row.addWidget(rotation_combobox)
+
+                position_layout.addLayout(rotation_row)
+
                 position_widget.setLayout(position_layout)
                 grid_layout.addWidget(position_widget, row, col)
-                
+
                 position += 1
 
         # Set default assignments after all comboboxes are created
@@ -141,8 +174,11 @@ class MainWindow(QMainWindow):
             combobox.setCurrentText(current if current in options else "-")
             combobox.blockSignals(False)
 
+        # Populate rotation comboboxes for each position based on its assigned trolley
+        for pos in self.position_comboboxes:
+            self._sync_rotation_combobox(pos)
 
-        # Button layout 
+        # Button layout
         button_layout = QVBoxLayout()
         button_layout.setSpacing(10)
         
@@ -246,9 +282,6 @@ class MainWindow(QMainWindow):
                 if (abs(coords.get('x', 0) - grid['x']) < tol
                         and abs(coords.get('y', 0) - grid['y']) < tol
                         and abs(coords.get('z', 0) - grid['z']) < tol
-                        and abs(coords.get('roll', 0)) < tol
-                        and abs(coords.get('pitch', 0)) < tol
-                        and abs(coords.get('yaw', 0)) < tol
                         and pos not in self.default_assignments):
                     matched_pos = pos
                     break
@@ -259,21 +292,52 @@ class MainWindow(QMainWindow):
 
     def on_combobox_changed(self, changed_position):
         """Update all comboboxes to prevent duplicate selections"""
-        
+
         # Get all selected trolleys ((excluding "-"))
         selected = {cb.currentText() for cb in self.position_comboboxes.values() if cb.currentText() != "-"}
-        
+
         # Update each combobox
         for combobox in self.position_comboboxes.values():
             current = combobox.currentText()
             combobox.blockSignals(True)
             combobox.clear()
-            
+
             # add only not selected trolleys and "-"
             options = ["-"] + [opt for opt in self.trolley_options[1:] if opt not in selected or opt == current]
             combobox.addItems(options)
             combobox.setCurrentText(current if current in options else "-")
             combobox.blockSignals(False)
+
+        # Refresh the rotation combobox at the changed position to show the
+        # new trolley's stored rotation (or "0"/disabled when "-").
+        self._sync_rotation_combobox(changed_position)
+
+    def _sync_rotation_combobox(self, position):
+        """Load the rotation of the trolley assigned to `position` into its dropdown.
+        Disables the dropdown when no trolley is assigned."""
+        rotation_combobox = self.position_rotation_comboboxes.get(position)
+        if rotation_combobox is None:
+            return
+        trolley = self.position_comboboxes[position].currentText()
+        if trolley == "-":
+            label = "0"
+            enabled = False
+        else:
+            label = self.trolley_rotation.setdefault(trolley, "0")
+            enabled = True
+        rotation_combobox.blockSignals(True)
+        rotation_combobox.setCurrentText(label)
+        rotation_combobox.blockSignals(False)
+        rotation_combobox.setEnabled(enabled)
+
+    def on_rotation_changed(self, position, label):
+        """Persist a rotation-dropdown change into the per-trolley rotation map."""
+        if label not in ROTATION_LABEL_TO_RAD:
+            return
+        trolley = self.position_comboboxes[position].currentText()
+        if trolley == "-":
+            return
+        self.trolley_rotation[trolley] = label
 
     # configure button clicked
     def configure_button_clicked(self):
@@ -315,13 +379,14 @@ class MainWindow(QMainWindow):
             for trolley, position in trolley_assignments.items():
                 coords = self.position_coordinates[position]
                 is_feeder = trolley == 'feeder'
+                yaw_rad = ROTATION_LABEL_TO_RAD[self.trolley_rotation.get(trolley, "0")]
                 data['trolley_positions'][trolley] = {
                     'x': coords['x'] + 0.0745 if is_feeder else coords['x'],
                     'y': coords['y'] + 0.215 if is_feeder else coords['y'],
                     'z': 0.92 if is_feeder else coords['z'],
                     'roll': 0.0,
                     'pitch': 0.0,
-                    'yaw': -1.57 if is_feeder else 0.0
+                    'yaw': yaw_rad,
                 }
             
             # Write updated YAML file
@@ -362,22 +427,22 @@ class MainWindow(QMainWindow):
         # Block signals to prevent duplicate selection checks during reset
         for combobox in self.position_comboboxes.values():
             combobox.blockSignals(True)
-        
+
         # Reset all comboboxes to "-" first
         for position, combobox in self.position_comboboxes.items():
             combobox.clear()
             combobox.addItems(self.trolley_options)
             combobox.setCurrentText("-")
-        
+
         # Now set default assignments
         for position, trolley in self.default_assignments.items():
             combobox = self.position_comboboxes[position]
             combobox.setCurrentText(trolley)
-        
+
         # Unblock signals
         for combobox in self.position_comboboxes.values():
             combobox.blockSignals(False)
-        
+
         # Update all comboboxes to prevent duplicates (same logic as on_combobox_changed)
         selected = {cb.currentText() for cb in self.position_comboboxes.values() if cb.currentText() != "-"}
         for combobox in self.position_comboboxes.values():
@@ -388,7 +453,12 @@ class MainWindow(QMainWindow):
             combobox.addItems(options)
             combobox.setCurrentText(current if current in options else "-")
             combobox.blockSignals(False)
-        
+
+        # Reset per-trolley rotations and refresh all rotation comboboxes
+        self.trolley_rotation = dict(self.default_trolley_rotation)
+        for pos in self.position_comboboxes:
+            self._sync_rotation_combobox(pos)
+
         QMessageBox.information(self, "Reset", "All positions reset to default assignments")
 
     def spawn_feeder_heater(self):
