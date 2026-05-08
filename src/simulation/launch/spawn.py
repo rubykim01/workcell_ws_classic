@@ -16,6 +16,16 @@ from pathlib import Path
 ROTATION_LABELS = ["0", "90", "180", "-90"]
 ROTATION_LABEL_TO_RAD = {label: round(math.radians(int(label)), 4) for label in ROTATION_LABELS}
 
+# Feeder world-frame (dx, dy) added to the trolley grid origin, per yaw label.
+# Calibrated so yaw=-90° reproduces the historical (0.0745, 0.215) offset; the
+# other rotations rotate that same body-frame mount point about the grid origin.
+FEEDER_OFFSET_BY_LABEL = {
+    "0":   (-0.215, 0.0745),
+    "90":  (-0.0745, -0.215),
+    "180": (0.215, -0.0745),
+    "-90": (0.0745, 0.215),
+}
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -379,11 +389,21 @@ class MainWindow(QMainWindow):
             for trolley, position in trolley_assignments.items():
                 coords = self.position_coordinates[position]
                 is_feeder = trolley == 'feeder'
-                yaw_rad = ROTATION_LABEL_TO_RAD[self.trolley_rotation.get(trolley, "0")]
+                rotation_label = self.trolley_rotation.get(trolley, "0")
+                yaw_rad = ROTATION_LABEL_TO_RAD[rotation_label]
+                if is_feeder:
+                    dx, dy = FEEDER_OFFSET_BY_LABEL[rotation_label]
+                    x = coords['x'] + dx
+                    y = coords['y'] + dy
+                    z = 0.92
+                else:
+                    x = coords['x']
+                    y = coords['y']
+                    z = coords['z']
                 data['trolley_positions'][trolley] = {
-                    'x': coords['x'] + 0.0745 if is_feeder else coords['x'],
-                    'y': coords['y'] + 0.215 if is_feeder else coords['y'],
-                    'z': 0.92 if is_feeder else coords['z'],
+                    'x': x,
+                    'y': y,
+                    'z': z,
                     'roll': 0.0,
                     'pitch': 0.0,
                     'yaw': yaw_rad,
