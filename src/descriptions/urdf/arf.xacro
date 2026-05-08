@@ -13,7 +13,7 @@
 <!-- arf trolley link -->
     <link name="arf_trolley_link">
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="0 0 0" rpy="0 0 -1.57"/>
         <geometry>
           <xacro:get_mesh name="arf_trolley" type="visual"/>
         </geometry>

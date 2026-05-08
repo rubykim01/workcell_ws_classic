@@ -3,12 +3,42 @@
 # Script to spawn mobile trays E1-E6 on feeder base (for electronics)
 # Usage: ./spawn_feeder_elec.sh
 
-# Feeder base position in world (meters)
-FEEDER_BASE_X=1.0
-FEEDER_BASE_Y=0.0
-FEEDER_BASE_Z=0.92
+# Get the current workspace directory dynamically
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+OBJECTS_DIR="$SCRIPT_DIR"
 
-# Offset values in meters (converted from mm)
+# Locate trolley_positions.yaml (same relative path in source tree and install share)
+YAML_PATH="$SCRIPT_DIR/../../config/trolley_positions.yaml"
+if [ ! -f "$YAML_PATH" ]; then
+    echo "Error: trolley_positions.yaml not found at $YAML_PATH"
+    exit 1
+fi
+
+# Read feeder pose from YAML so object spawn positions follow the configured feeder
+read FEEDER_WORLD_X FEEDER_WORLD_Y FEEDER_WORLD_Z FEEDER_YAW <<< "$(python3 -c "
+import yaml
+with open('$YAML_PATH') as f:
+    d = yaml.safe_load(f)['trolley_positions']['feeder']
+print(d['x'], d['y'], d['z'], d['yaw'])
+")"
+echo "Feeder world pose: x=$FEEDER_WORLD_X y=$FEEDER_WORLD_Y z=$FEEDER_WORLD_Z yaw=$FEEDER_YAW"
+
+# Convert a feeder-local offset (lx ly lz) to world coords, applying feeder yaw rotation.
+world_xyz() {
+    awk -v fx="$FEEDER_WORLD_X" -v fy="$FEEDER_WORLD_Y" -v fz="$FEEDER_WORLD_Z" -v yaw="$FEEDER_YAW" \
+        -v lx="$1" -v ly="$2" -v lz="$3" \
+        'BEGIN {
+            c = cos(yaw); s = sin(yaw);
+            printf "%.6f %.6f %.6f\n", fx + c*lx - s*ly, fy + s*lx + c*ly, fz + lz;
+        }'
+}
+
+# Sum two scalars (for combining feeder-local offsets before rotation)
+sum() {
+    awk -v a="$1" -v b="$2" 'BEGIN { printf "%.6f\n", a + b }'
+}
+
+# Feeder-local tray offsets (meters, converted from mm)
 OFFSET_X=-0.361
 OFFSET_Y=-0.9685
 OFFSET_E1_Z=0.544
@@ -18,34 +48,13 @@ OFFSET_E4_Z=0.214
 OFFSET_E5_Z=0.104
 OFFSET_E6_Z=-0.006
 
-# Calculate world positions (base position + offset)
-TRAY_E1_X=$(awk "BEGIN {print $FEEDER_BASE_X + $OFFSET_X}")
-TRAY_E1_Y=$(awk "BEGIN {print $FEEDER_BASE_Y + $OFFSET_Y}")
-TRAY_E1_Z=$(awk "BEGIN {print $FEEDER_BASE_Z + $OFFSET_E1_Z}")
-
-TRAY_E2_X=$(awk "BEGIN {print $FEEDER_BASE_X + $OFFSET_X}")
-TRAY_E2_Y=$(awk "BEGIN {print $FEEDER_BASE_Y + $OFFSET_Y}")
-TRAY_E2_Z=$(awk "BEGIN {print $FEEDER_BASE_Z + $OFFSET_E2_Z}")
-
-TRAY_E3_X=$(awk "BEGIN {print $FEEDER_BASE_X + $OFFSET_X}")
-TRAY_E3_Y=$(awk "BEGIN {print $FEEDER_BASE_Y + $OFFSET_Y}")
-TRAY_E3_Z=$(awk "BEGIN {print $FEEDER_BASE_Z + $OFFSET_E3_Z}")
-
-TRAY_E4_X=$(awk "BEGIN {print $FEEDER_BASE_X + $OFFSET_X}")
-TRAY_E4_Y=$(awk "BEGIN {print $FEEDER_BASE_Y + $OFFSET_Y}")
-TRAY_E4_Z=$(awk "BEGIN {print $FEEDER_BASE_Z + $OFFSET_E4_Z}")
-
-TRAY_E5_X=$(awk "BEGIN {print $FEEDER_BASE_X + $OFFSET_X}")
-TRAY_E5_Y=$(awk "BEGIN {print $FEEDER_BASE_Y + $OFFSET_Y}")
-TRAY_E5_Z=$(awk "BEGIN {print $FEEDER_BASE_Z + $OFFSET_E5_Z}")
-
-TRAY_E6_X=$(awk "BEGIN {print $FEEDER_BASE_X + $OFFSET_X}")
-TRAY_E6_Y=$(awk "BEGIN {print $FEEDER_BASE_Y + $OFFSET_Y}")
-TRAY_E6_Z=$(awk "BEGIN {print $FEEDER_BASE_Z + $OFFSET_E6_Z}")
-
-# Get the current workspace directory dynamically
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-OBJECTS_DIR="$SCRIPT_DIR"
+# Tray world positions
+read TRAY_E1_X TRAY_E1_Y TRAY_E1_Z <<< "$(world_xyz $OFFSET_X $OFFSET_Y $OFFSET_E1_Z)"
+read TRAY_E2_X TRAY_E2_Y TRAY_E2_Z <<< "$(world_xyz $OFFSET_X $OFFSET_Y $OFFSET_E2_Z)"
+read TRAY_E3_X TRAY_E3_Y TRAY_E3_Z <<< "$(world_xyz $OFFSET_X $OFFSET_Y $OFFSET_E3_Z)"
+read TRAY_E4_X TRAY_E4_Y TRAY_E4_Z <<< "$(world_xyz $OFFSET_X $OFFSET_Y $OFFSET_E4_Z)"
+read TRAY_E5_X TRAY_E5_Y TRAY_E5_Z <<< "$(world_xyz $OFFSET_X $OFFSET_Y $OFFSET_E5_Z)"
+read TRAY_E6_X TRAY_E6_Y TRAY_E6_Z <<< "$(world_xyz $OFFSET_X $OFFSET_Y $OFFSET_E6_Z)"
 
 echo "Objects directory: $OBJECTS_DIR"
 
@@ -55,14 +64,14 @@ if [ ! -f "$OBJECTS_DIR/mobile_tray_e1.sdf" ]; then
     exit 1
 fi
 
-# Spawn all trays in parallel
+# Spawn all trays in parallel (each tray inherits feeder yaw)
 echo "Spawning E trays in parallel..."
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mobile_tray_e1.sdf" -entity mobile_tray_e1 -x $TRAY_E1_X -y $TRAY_E1_Y -z $TRAY_E1_Z &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mobile_tray_e2.sdf" -entity mobile_tray_e2 -x $TRAY_E2_X -y $TRAY_E2_Y -z $TRAY_E2_Z &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mobile_tray_e3.sdf" -entity mobile_tray_e3 -x $TRAY_E3_X -y $TRAY_E3_Y -z $TRAY_E3_Z &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mobile_tray_e4.sdf" -entity mobile_tray_e4 -x $TRAY_E4_X -y $TRAY_E4_Y -z $TRAY_E4_Z &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mobile_tray_e5.sdf" -entity mobile_tray_e5 -x $TRAY_E5_X -y $TRAY_E5_Y -z $TRAY_E5_Z &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mobile_tray_e6.sdf" -entity mobile_tray_e6 -x $TRAY_E6_X -y $TRAY_E6_Y -z $TRAY_E6_Z &
+ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mobile_tray_e1.sdf" -entity mobile_tray_e1 -x $TRAY_E1_X -y $TRAY_E1_Y -z $TRAY_E1_Z -R 0 -P 0 -Y $FEEDER_YAW &
+ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mobile_tray_e2.sdf" -entity mobile_tray_e2 -x $TRAY_E2_X -y $TRAY_E2_Y -z $TRAY_E2_Z -R 0 -P 0 -Y $FEEDER_YAW &
+ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mobile_tray_e3.sdf" -entity mobile_tray_e3 -x $TRAY_E3_X -y $TRAY_E3_Y -z $TRAY_E3_Z -R 0 -P 0 -Y $FEEDER_YAW &
+ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mobile_tray_e4.sdf" -entity mobile_tray_e4 -x $TRAY_E4_X -y $TRAY_E4_Y -z $TRAY_E4_Z -R 0 -P 0 -Y $FEEDER_YAW &
+ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mobile_tray_e5.sdf" -entity mobile_tray_e5 -x $TRAY_E5_X -y $TRAY_E5_Y -z $TRAY_E5_Z -R 0 -P 0 -Y $FEEDER_YAW &
+ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mobile_tray_e6.sdf" -entity mobile_tray_e6 -x $TRAY_E6_X -y $TRAY_E6_Y -z $TRAY_E6_Z -R 0 -P 0 -Y $FEEDER_YAW &
 wait
 echo "All E trays spawned."
 
@@ -108,117 +117,70 @@ SMPS_OFFSET_X=0.0797
 SMPS_OFFSET_Y=-0.0245
 SMPS_OFFSET_Z=0.015
 
-# Calculate positions for E1 tray components
-MCCB_E1_X=$(awk "BEGIN {print $TRAY_E1_X + $MCCB_OFFSET_X}")
-MCCB_E1_Y=$(awk "BEGIN {print $TRAY_E1_Y + $MCCB_OFFSET_Y}")
-MCCB_E1_Z=$(awk "BEGIN {print $TRAY_E1_Z + $MCCB_OFFSET_Z}")
+# Component world positions: combine tray offset + component offset in feeder-local
+# frame, then rotate into world. Writes a pair of helpers first so each entry is one line.
+world_from_tray() {
+    # $1..$3 = tray-local offset (OFFSET_X, OFFSET_Y, OFFSET_Ei_Z)
+    # $4..$6 = component offset from tray origin
+    world_xyz "$(sum $1 $4)" "$(sum $2 $5)" "$(sum $3 $6)"
+}
 
-PDU1_E1_X=$(awk "BEGIN {print $TRAY_E1_X + $PDU1_OFFSET_X}")
-PDU1_E1_Y=$(awk "BEGIN {print $TRAY_E1_Y + $PDU1_OFFSET_Y}")
-PDU1_E1_Z=$(awk "BEGIN {print $TRAY_E1_Z + $PDU1_OFFSET_Z}")
+# E1 tray components
+read MCCB_E1_X MCCB_E1_Y MCCB_E1_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E1_Z $MCCB_OFFSET_X $MCCB_OFFSET_Y $MCCB_OFFSET_Z)"
+read PDU1_E1_X PDU1_E1_Y PDU1_E1_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E1_Z $PDU1_OFFSET_X $PDU1_OFFSET_Y $PDU1_OFFSET_Z)"
+read PDU2_E1_X PDU2_E1_Y PDU2_E1_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E1_Z $PDU2_OFFSET_X $PDU2_OFFSET_Y $PDU2_OFFSET_Z)"
+read NOISE_FILTER_E1_X NOISE_FILTER_E1_Y NOISE_FILTER_E1_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E1_Z $NOISE_FILTER_OFFSET_X $NOISE_FILTER_OFFSET_Y $NOISE_FILTER_OFFSET_Z)"
+read PLUG_SOCKET_E1_X PLUG_SOCKET_E1_Y PLUG_SOCKET_E1_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E1_Z $PLUG_SOCKET_OFFSET_X $PLUG_SOCKET_OFFSET_Y $PLUG_SOCKET_OFFSET_Z)"
+read BUSBAR_E1_X BUSBAR_E1_Y BUSBAR_E1_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E1_Z $BUSBAR_OFFSET_X $BUSBAR_OFFSET_Y $BUSBAR_OFFSET_Z)"
 
-PDU2_E1_X=$(awk "BEGIN {print $TRAY_E1_X + $PDU2_OFFSET_X}")
-PDU2_E1_Y=$(awk "BEGIN {print $TRAY_E1_Y + $PDU2_OFFSET_Y}")
-PDU2_E1_Z=$(awk "BEGIN {print $TRAY_E1_Z + $PDU2_OFFSET_Z}")
+# E4 tray components
+read MCCB_E4_X MCCB_E4_Y MCCB_E4_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E4_Z $MCCB_OFFSET_X $MCCB_OFFSET_Y $MCCB_OFFSET_Z)"
+read PDU1_E4_X PDU1_E4_Y PDU1_E4_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E4_Z $PDU1_OFFSET_X $PDU1_OFFSET_Y $PDU1_OFFSET_Z)"
+read PDU2_E4_X PDU2_E4_Y PDU2_E4_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E4_Z $PDU2_OFFSET_X $PDU2_OFFSET_Y $PDU2_OFFSET_Z)"
+read NOISE_FILTER_E4_X NOISE_FILTER_E4_Y NOISE_FILTER_E4_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E4_Z $NOISE_FILTER_OFFSET_X $NOISE_FILTER_OFFSET_Y $NOISE_FILTER_OFFSET_Z)"
+read PLUG_SOCKET_E4_X PLUG_SOCKET_E4_Y PLUG_SOCKET_E4_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E4_Z $PLUG_SOCKET_OFFSET_X $PLUG_SOCKET_OFFSET_Y $PLUG_SOCKET_OFFSET_Z)"
+read BUSBAR_E4_X BUSBAR_E4_Y BUSBAR_E4_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E4_Z $BUSBAR_OFFSET_X $BUSBAR_OFFSET_Y $BUSBAR_OFFSET_Z)"
 
-NOISE_FILTER_E1_X=$(awk "BEGIN {print $TRAY_E1_X + $NOISE_FILTER_OFFSET_X}")
-NOISE_FILTER_E1_Y=$(awk "BEGIN {print $TRAY_E1_Y + $NOISE_FILTER_OFFSET_Y}")
-NOISE_FILTER_E1_Z=$(awk "BEGIN {print $TRAY_E1_Z + $NOISE_FILTER_OFFSET_Z}")
+# E2 tray components
+read SINGLE_MC1_E2_X SINGLE_MC1_E2_Y SINGLE_MC1_E2_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E2_Z $SINGLE_MC1_OFFSET_X $SINGLE_MC1_OFFSET_Y $SINGLE_MC1_OFFSET_Z)"
+read SINGLE_MC2_E2_X SINGLE_MC2_E2_Y SINGLE_MC2_E2_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E2_Z $SINGLE_MC2_OFFSET_X $SINGLE_MC2_OFFSET_Y $SINGLE_MC2_OFFSET_Z)"
+read SINGLE_MC3_E2_X SINGLE_MC3_E2_Y SINGLE_MC3_E2_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E2_Z $SINGLE_MC3_OFFSET_X $SINGLE_MC3_OFFSET_Y $SINGLE_MC3_OFFSET_Z)"
+read SMPS_E2_X SMPS_E2_Y SMPS_E2_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E2_Z $SMPS_OFFSET_X $SMPS_OFFSET_Y $SMPS_OFFSET_Z)"
 
-PLUG_SOCKET_E1_X=$(awk "BEGIN {print $TRAY_E1_X + $PLUG_SOCKET_OFFSET_X}")
-PLUG_SOCKET_E1_Y=$(awk "BEGIN {print $TRAY_E1_Y + $PLUG_SOCKET_OFFSET_Y}")
-PLUG_SOCKET_E1_Z=$(awk "BEGIN {print $TRAY_E1_Z + $PLUG_SOCKET_OFFSET_Z}")
+# E5 tray components
+read SINGLE_MC1_E5_X SINGLE_MC1_E5_Y SINGLE_MC1_E5_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E5_Z $SINGLE_MC1_OFFSET_X $SINGLE_MC1_OFFSET_Y $SINGLE_MC1_OFFSET_Z)"
+read SINGLE_MC2_E5_X SINGLE_MC2_E5_Y SINGLE_MC2_E5_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E5_Z $SINGLE_MC2_OFFSET_X $SINGLE_MC2_OFFSET_Y $SINGLE_MC2_OFFSET_Z)"
+read SINGLE_MC3_E5_X SINGLE_MC3_E5_Y SINGLE_MC3_E5_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E5_Z $SINGLE_MC3_OFFSET_X $SINGLE_MC3_OFFSET_Y $SINGLE_MC3_OFFSET_Z)"
+read SMPS_E5_X SMPS_E5_Y SMPS_E5_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E5_Z $SMPS_OFFSET_X $SMPS_OFFSET_Y $SMPS_OFFSET_Z)"
 
-BUSBAR_E1_X=$(awk "BEGIN {print $TRAY_E1_X + $BUSBAR_OFFSET_X}")
-BUSBAR_E1_Y=$(awk "BEGIN {print $TRAY_E1_Y + $BUSBAR_OFFSET_Y}")
-BUSBAR_E1_Z=$(awk "BEGIN {print $TRAY_E1_Z + $BUSBAR_OFFSET_Z}")
-
-# Calculate positions for E4 tray components
-MCCB_E4_X=$(awk "BEGIN {print $TRAY_E4_X + $MCCB_OFFSET_X}")
-MCCB_E4_Y=$(awk "BEGIN {print $TRAY_E4_Y + $MCCB_OFFSET_Y}")
-MCCB_E4_Z=$(awk "BEGIN {print $TRAY_E4_Z + $MCCB_OFFSET_Z}")
-
-PDU1_E4_X=$(awk "BEGIN {print $TRAY_E4_X + $PDU1_OFFSET_X}")
-PDU1_E4_Y=$(awk "BEGIN {print $TRAY_E4_Y + $PDU1_OFFSET_Y}")
-PDU1_E4_Z=$(awk "BEGIN {print $TRAY_E4_Z + $PDU1_OFFSET_Z}")
-
-PDU2_E4_X=$(awk "BEGIN {print $TRAY_E4_X + $PDU2_OFFSET_X}")
-PDU2_E4_Y=$(awk "BEGIN {print $TRAY_E4_Y + $PDU2_OFFSET_Y}")
-PDU2_E4_Z=$(awk "BEGIN {print $TRAY_E4_Z + $PDU2_OFFSET_Z}")
-
-NOISE_FILTER_E4_X=$(awk "BEGIN {print $TRAY_E4_X + $NOISE_FILTER_OFFSET_X}")
-NOISE_FILTER_E4_Y=$(awk "BEGIN {print $TRAY_E4_Y + $NOISE_FILTER_OFFSET_Y}")
-NOISE_FILTER_E4_Z=$(awk "BEGIN {print $TRAY_E4_Z + $NOISE_FILTER_OFFSET_Z}")
-
-PLUG_SOCKET_E4_X=$(awk "BEGIN {print $TRAY_E4_X + $PLUG_SOCKET_OFFSET_X}")
-PLUG_SOCKET_E4_Y=$(awk "BEGIN {print $TRAY_E4_Y + $PLUG_SOCKET_OFFSET_Y}")
-PLUG_SOCKET_E4_Z=$(awk "BEGIN {print $TRAY_E4_Z + $PLUG_SOCKET_OFFSET_Z}")
-
-BUSBAR_E4_X=$(awk "BEGIN {print $TRAY_E4_X + $BUSBAR_OFFSET_X}")
-BUSBAR_E4_Y=$(awk "BEGIN {print $TRAY_E4_Y + $BUSBAR_OFFSET_Y}")
-BUSBAR_E4_Z=$(awk "BEGIN {print $TRAY_E4_Z + $BUSBAR_OFFSET_Z}")
-
-# Calculate positions for E2 tray components
-SINGLE_MC1_E2_X=$(awk "BEGIN {print $TRAY_E2_X + $SINGLE_MC1_OFFSET_X}")
-SINGLE_MC1_E2_Y=$(awk "BEGIN {print $TRAY_E2_Y + $SINGLE_MC1_OFFSET_Y}")
-SINGLE_MC1_E2_Z=$(awk "BEGIN {print $TRAY_E2_Z + $SINGLE_MC1_OFFSET_Z}")
-
-SINGLE_MC2_E2_X=$(awk "BEGIN {print $TRAY_E2_X + $SINGLE_MC2_OFFSET_X}")
-SINGLE_MC2_E2_Y=$(awk "BEGIN {print $TRAY_E2_Y + $SINGLE_MC2_OFFSET_Y}")
-SINGLE_MC2_E2_Z=$(awk "BEGIN {print $TRAY_E2_Z + $SINGLE_MC2_OFFSET_Z}")
-
-SINGLE_MC3_E2_X=$(awk "BEGIN {print $TRAY_E2_X + $SINGLE_MC3_OFFSET_X}")
-SINGLE_MC3_E2_Y=$(awk "BEGIN {print $TRAY_E2_Y + $SINGLE_MC3_OFFSET_Y}")
-SINGLE_MC3_E2_Z=$(awk "BEGIN {print $TRAY_E2_Z + $SINGLE_MC3_OFFSET_Z}")
-
-SMPS_E2_X=$(awk "BEGIN {print $TRAY_E2_X + $SMPS_OFFSET_X}")
-SMPS_E2_Y=$(awk "BEGIN {print $TRAY_E2_Y + $SMPS_OFFSET_Y}")
-SMPS_E2_Z=$(awk "BEGIN {print $TRAY_E2_Z + $SMPS_OFFSET_Z}")
-
-# Calculate positions for E5 tray components
-SINGLE_MC1_E5_X=$(awk "BEGIN {print $TRAY_E5_X + $SINGLE_MC1_OFFSET_X}")
-SINGLE_MC1_E5_Y=$(awk "BEGIN {print $TRAY_E5_Y + $SINGLE_MC1_OFFSET_Y}")
-SINGLE_MC1_E5_Z=$(awk "BEGIN {print $TRAY_E5_Z + $SINGLE_MC1_OFFSET_Z}")
-
-SINGLE_MC2_E5_X=$(awk "BEGIN {print $TRAY_E5_X + $SINGLE_MC2_OFFSET_X}")
-SINGLE_MC2_E5_Y=$(awk "BEGIN {print $TRAY_E5_Y + $SINGLE_MC2_OFFSET_Y}")
-SINGLE_MC2_E5_Z=$(awk "BEGIN {print $TRAY_E5_Z + $SINGLE_MC2_OFFSET_Z}")
-
-SINGLE_MC3_E5_X=$(awk "BEGIN {print $TRAY_E5_X + $SINGLE_MC3_OFFSET_X}")
-SINGLE_MC3_E5_Y=$(awk "BEGIN {print $TRAY_E5_Y + $SINGLE_MC3_OFFSET_Y}")
-SINGLE_MC3_E5_Z=$(awk "BEGIN {print $TRAY_E5_Z + $SINGLE_MC3_OFFSET_Z}")
-
-SMPS_E5_X=$(awk "BEGIN {print $TRAY_E5_X + $SMPS_OFFSET_X}")
-SMPS_E5_Y=$(awk "BEGIN {print $TRAY_E5_Y + $SMPS_OFFSET_Y}")
-SMPS_E5_Z=$(awk "BEGIN {print $TRAY_E5_Z + $SMPS_OFFSET_Z}")
-
+# Components inherit feeder yaw so they sit correctly on rotated trays
 # Spawn electrical components on E1 and E4 trays in parallel
 echo "Spawning electrical components on E1 and E4 trays in parallel..."
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mccb_abe_32b_30a.sdf" -entity mccb_abe_32b_30a_e1 -x $MCCB_E1_X -y $MCCB_E1_Y -z $MCCB_E1_Z &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/pdu_sps25_m66xm4.sdf" -entity pdu_sps25_m66xm4_e1_1 -x $PDU1_E1_X -y $PDU1_E1_Y -z $PDU1_E1_Z &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/pdu_sps25_m66xm4.sdf" -entity pdu_sps25_m66xm4_e1_2 -x $PDU2_E1_X -y $PDU2_E1_Y -z $PDU2_E1_Z &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/noise_filter_rms_2030_din.sdf" -entity noise_filter_rms_2030_din_e1 -x $NOISE_FILTER_E1_X -y $NOISE_FILTER_E1_Y -z $NOISE_FILTER_E1_Z &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/plug_socket_drc_220v_16a.sdf" -entity plug_socket_drc_220v_16a_e1 -x $PLUG_SOCKET_E1_X -y $PLUG_SOCKET_E1_Y -z $PLUG_SOCKET_E1_Z &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/busbar_6p.sdf" -entity busbar_6p_e1 -x $BUSBAR_E1_X -y $BUSBAR_E1_Y -z $BUSBAR_E1_Z &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mccb_abe_32b_30a.sdf" -entity mccb_abe_32b_30a_e4 -x $MCCB_E4_X -y $MCCB_E4_Y -z $MCCB_E4_Z &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/pdu_sps25_m66xm4.sdf" -entity pdu_sps25_m66xm4_e4_1 -x $PDU1_E4_X -y $PDU1_E4_Y -z $PDU1_E4_Z &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/pdu_sps25_m66xm4.sdf" -entity pdu_sps25_m66xm4_e4_2 -x $PDU2_E4_X -y $PDU2_E4_Y -z $PDU2_E4_Z &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/noise_filter_rms_2030_din.sdf" -entity noise_filter_rms_2030_din_e4 -x $NOISE_FILTER_E4_X -y $NOISE_FILTER_E4_Y -z $NOISE_FILTER_E4_Z &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/plug_socket_drc_220v_16a.sdf" -entity plug_socket_drc_220v_16a_e4 -x $PLUG_SOCKET_E4_X -y $PLUG_SOCKET_E4_Y -z $PLUG_SOCKET_E4_Z &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/busbar_6p.sdf" -entity busbar_6p_e4 -x $BUSBAR_E4_X -y $BUSBAR_E4_Y -z $BUSBAR_E4_Z &
+ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mccb_abe_32b_30a.sdf" -entity mccb_abe_32b_30a_e1 -x $MCCB_E1_X -y $MCCB_E1_Y -z $MCCB_E1_Z -R 0 -P 0 -Y $FEEDER_YAW &
+ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/pdu_sps25_m66xm4.sdf" -entity pdu_sps25_m66xm4_e1_1 -x $PDU1_E1_X -y $PDU1_E1_Y -z $PDU1_E1_Z -R 0 -P 0 -Y $FEEDER_YAW &
+ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/pdu_sps25_m66xm4.sdf" -entity pdu_sps25_m66xm4_e1_2 -x $PDU2_E1_X -y $PDU2_E1_Y -z $PDU2_E1_Z -R 0 -P 0 -Y $FEEDER_YAW &
+ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/noise_filter_rms_2030_din.sdf" -entity noise_filter_rms_2030_din_e1 -x $NOISE_FILTER_E1_X -y $NOISE_FILTER_E1_Y -z $NOISE_FILTER_E1_Z -R 0 -P 0 -Y $FEEDER_YAW &
+ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/plug_socket_drc_220v_16a.sdf" -entity plug_socket_drc_220v_16a_e1 -x $PLUG_SOCKET_E1_X -y $PLUG_SOCKET_E1_Y -z $PLUG_SOCKET_E1_Z -R 0 -P 0 -Y $FEEDER_YAW &
+ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/busbar_6p.sdf" -entity busbar_6p_e1 -x $BUSBAR_E1_X -y $BUSBAR_E1_Y -z $BUSBAR_E1_Z -R 0 -P 0 -Y $FEEDER_YAW &
+ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mccb_abe_32b_30a.sdf" -entity mccb_abe_32b_30a_e4 -x $MCCB_E4_X -y $MCCB_E4_Y -z $MCCB_E4_Z -R 0 -P 0 -Y $FEEDER_YAW &
+ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/pdu_sps25_m66xm4.sdf" -entity pdu_sps25_m66xm4_e4_1 -x $PDU1_E4_X -y $PDU1_E4_Y -z $PDU1_E4_Z -R 0 -P 0 -Y $FEEDER_YAW &
+ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/pdu_sps25_m66xm4.sdf" -entity pdu_sps25_m66xm4_e4_2 -x $PDU2_E4_X -y $PDU2_E4_Y -z $PDU2_E4_Z -R 0 -P 0 -Y $FEEDER_YAW &
+ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/noise_filter_rms_2030_din.sdf" -entity noise_filter_rms_2030_din_e4 -x $NOISE_FILTER_E4_X -y $NOISE_FILTER_E4_Y -z $NOISE_FILTER_E4_Z -R 0 -P 0 -Y $FEEDER_YAW &
+ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/plug_socket_drc_220v_16a.sdf" -entity plug_socket_drc_220v_16a_e4 -x $PLUG_SOCKET_E4_X -y $PLUG_SOCKET_E4_Y -z $PLUG_SOCKET_E4_Z -R 0 -P 0 -Y $FEEDER_YAW &
+ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/busbar_6p.sdf" -entity busbar_6p_e4 -x $BUSBAR_E4_X -y $BUSBAR_E4_Y -z $BUSBAR_E4_Z -R 0 -P 0 -Y $FEEDER_YAW &
 wait
 echo "E1 and E4 components spawned."
 
 # Spawn electrical components on E2 and E5 trays in parallel
 echo "Spawning electrical components on E2 and E5 trays in parallel..."
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" -entity single_mc_gmc_e2_1 -x $SINGLE_MC1_E2_X -y $SINGLE_MC1_E2_Y -z $SINGLE_MC1_E2_Z &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" -entity single_mc_gmc_e2_2 -x $SINGLE_MC2_E2_X -y $SINGLE_MC2_E2_Y -z $SINGLE_MC2_E2_Z &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" -entity single_mc_gmc_e2_3 -x $SINGLE_MC3_E2_X -y $SINGLE_MC3_E2_Y -z $SINGLE_MC3_E2_Z &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/smps_wdr_120_24v.sdf" -entity smps_wdr_120_24v_e2 -x $SMPS_E2_X -y $SMPS_E2_Y -z $SMPS_E2_Z &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" -entity single_mc_gmc_e5_1 -x $SINGLE_MC1_E5_X -y $SINGLE_MC1_E5_Y -z $SINGLE_MC1_E5_Z &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" -entity single_mc_gmc_e5_2 -x $SINGLE_MC2_E5_X -y $SINGLE_MC2_E5_Y -z $SINGLE_MC2_E5_Z &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" -entity single_mc_gmc_e5_3 -x $SINGLE_MC3_E5_X -y $SINGLE_MC3_E5_Y -z $SINGLE_MC3_E5_Z &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/smps_wdr_120_24v.sdf" -entity smps_wdr_120_24v_e5 -x $SMPS_E5_X -y $SMPS_E5_Y -z $SMPS_E5_Z &
+ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" -entity single_mc_gmc_e2_1 -x $SINGLE_MC1_E2_X -y $SINGLE_MC1_E2_Y -z $SINGLE_MC1_E2_Z -R 0 -P 0 -Y $FEEDER_YAW &
+ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" -entity single_mc_gmc_e2_2 -x $SINGLE_MC2_E2_X -y $SINGLE_MC2_E2_Y -z $SINGLE_MC2_E2_Z -R 0 -P 0 -Y $FEEDER_YAW &
+ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" -entity single_mc_gmc_e2_3 -x $SINGLE_MC3_E2_X -y $SINGLE_MC3_E2_Y -z $SINGLE_MC3_E2_Z -R 0 -P 0 -Y $FEEDER_YAW &
+ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/smps_wdr_120_24v.sdf" -entity smps_wdr_120_24v_e2 -x $SMPS_E2_X -y $SMPS_E2_Y -z $SMPS_E2_Z -R 0 -P 0 -Y $FEEDER_YAW &
+ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" -entity single_mc_gmc_e5_1 -x $SINGLE_MC1_E5_X -y $SINGLE_MC1_E5_Y -z $SINGLE_MC1_E5_Z -R 0 -P 0 -Y $FEEDER_YAW &
+ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" -entity single_mc_gmc_e5_2 -x $SINGLE_MC2_E5_X -y $SINGLE_MC2_E5_Y -z $SINGLE_MC2_E5_Z -R 0 -P 0 -Y $FEEDER_YAW &
+ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" -entity single_mc_gmc_e5_3 -x $SINGLE_MC3_E5_X -y $SINGLE_MC3_E5_Y -z $SINGLE_MC3_E5_Z -R 0 -P 0 -Y $FEEDER_YAW &
+ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/smps_wdr_120_24v.sdf" -entity smps_wdr_120_24v_e5 -x $SMPS_E5_X -y $SMPS_E5_Y -z $SMPS_E5_Z -R 0 -P 0 -Y $FEEDER_YAW &
 wait
 echo "E2 and E5 components spawned."
 
@@ -246,27 +208,23 @@ echo "Spawning TB_JOTN-15A grid on E3 tray (2x8 = 16 units)..."
 # Row 1 (Y = -67.5mm)
 for i in 1 2 3 4 5 6 7 8; do
     eval "TB_X=\$TB_X$i"
-    TB_POS_X=$(awk "BEGIN {print $TRAY_E3_X + $TB_X}")
-    TB_POS_Y=$(awk "BEGIN {print $TRAY_E3_Y + $TB_Y1}")
-    TB_POS_Z=$(awk "BEGIN {print $TRAY_E3_Z + $TB_OFFSET_Z}")
+    read TB_POS_X TB_POS_Y TB_POS_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E3_Z $TB_X $TB_Y1 $TB_OFFSET_Z)"
     echo "  - TB_JOTN-15A_${i}_1 at ($TB_POS_X, $TB_POS_Y, $TB_POS_Z)"
     ros2 run gazebo_ros spawn_entity.py \
         -file "$OBJECTS_DIR/tb_jotn_15a.sdf" \
         -entity tb_jotn_15a_e3_${i}_1 \
-        -x $TB_POS_X -y $TB_POS_Y -z $TB_POS_Z
+        -x $TB_POS_X -y $TB_POS_Y -z $TB_POS_Z -R 0 -P 0 -Y $FEEDER_YAW
 done
 
 # Row 2 (Y = 7.5mm)
 for i in 1 2 3 4 5 6 7 8; do
     eval "TB_X=\$TB_X$i"
-    TB_POS_X=$(awk "BEGIN {print $TRAY_E3_X + $TB_X}")
-    TB_POS_Y=$(awk "BEGIN {print $TRAY_E3_Y + $TB_Y2}")
-    TB_POS_Z=$(awk "BEGIN {print $TRAY_E3_Z + $TB_OFFSET_Z}")
+    read TB_POS_X TB_POS_Y TB_POS_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E3_Z $TB_X $TB_Y2 $TB_OFFSET_Z)"
     echo "  - TB_JOTN-15A_${i}_2 at ($TB_POS_X, $TB_POS_Y, $TB_POS_Z)"
     ros2 run gazebo_ros spawn_entity.py \
         -file "$OBJECTS_DIR/tb_jotn_15a.sdf" \
         -entity tb_jotn_15a_e3_${i}_2 \
-        -x $TB_POS_X -y $TB_POS_Y -z $TB_POS_Z
+        -x $TB_POS_X -y $TB_POS_Y -z $TB_POS_Z -R 0 -P 0 -Y $FEEDER_YAW
 done
 
 echo "E3 TB_JOTN-15A spawned."
@@ -278,30 +236,79 @@ echo "Spawning TB_JOTN-15A grid on E6 tray (2x8 = 16 units)..."
 # Row 1 (Y = -67.5mm)
 for i in 1 2 3 4 5 6 7 8; do
     eval "TB_X=\$TB_X$i"
-    TB_POS_X=$(awk "BEGIN {print $TRAY_E6_X + $TB_X}")
-    TB_POS_Y=$(awk "BEGIN {print $TRAY_E6_Y + $TB_Y1}")
-    TB_POS_Z=$(awk "BEGIN {print $TRAY_E6_Z + $TB_OFFSET_Z}")
+    read TB_POS_X TB_POS_Y TB_POS_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E6_Z $TB_X $TB_Y1 $TB_OFFSET_Z)"
     echo "  - TB_JOTN-15A_${i}_1 at ($TB_POS_X, $TB_POS_Y, $TB_POS_Z)"
     ros2 run gazebo_ros spawn_entity.py \
         -file "$OBJECTS_DIR/tb_jotn_15a.sdf" \
         -entity tb_jotn_15a_e6_${i}_1 \
-        -x $TB_POS_X -y $TB_POS_Y -z $TB_POS_Z
+        -x $TB_POS_X -y $TB_POS_Y -z $TB_POS_Z -R 0 -P 0 -Y $FEEDER_YAW
 done
 
 # Row 2 (Y = 7.5mm)
 for i in 1 2 3 4 5 6 7 8; do
     eval "TB_X=\$TB_X$i"
-    TB_POS_X=$(awk "BEGIN {print $TRAY_E6_X + $TB_X}")
-    TB_POS_Y=$(awk "BEGIN {print $TRAY_E6_Y + $TB_Y2}")
-    TB_POS_Z=$(awk "BEGIN {print $TRAY_E6_Z + $TB_OFFSET_Z}")
+    read TB_POS_X TB_POS_Y TB_POS_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E6_Z $TB_X $TB_Y2 $TB_OFFSET_Z)"
     echo "  - TB_JOTN-15A_${i}_2 at ($TB_POS_X, $TB_POS_Y, $TB_POS_Z)"
     ros2 run gazebo_ros spawn_entity.py \
         -file "$OBJECTS_DIR/tb_jotn_15a.sdf" \
         -entity tb_jotn_15a_e6_${i}_2 \
-        -x $TB_POS_X -y $TB_POS_Y -z $TB_POS_Z
+        -x $TB_POS_X -y $TB_POS_Y -z $TB_POS_Z -R 0 -P 0 -Y $FEEDER_YAW
 done
 
 echo "E6 TB_JOTN-15A spawned."
 
 echo ""
 echo "All E trays and electrical components spawned successfully!"
+
+# Wait for physics to settle before attaching
+echo "Waiting for physics to settle before attaching objects to trays..."
+sleep 2
+
+attach_to_tray() {
+    local obj="$1"
+    local tray="$2"
+    echo "Attaching $obj to $tray..."
+    ros2 service call /ATTACHLINK linkattacher_msgs/srv/AttachLink \
+        "{model1_name: '$tray', link1_name: 'link', model2_name: '$obj', link2_name: 'link'}" \
+        > /dev/null
+}
+
+# E1 tray components
+attach_to_tray mccb_abe_32b_30a_e1 mobile_tray_e1
+attach_to_tray pdu_sps25_m66xm4_e1_1 mobile_tray_e1
+attach_to_tray pdu_sps25_m66xm4_e1_2 mobile_tray_e1
+attach_to_tray noise_filter_rms_2030_din_e1 mobile_tray_e1
+attach_to_tray plug_socket_drc_220v_16a_e1 mobile_tray_e1
+attach_to_tray busbar_6p_e1 mobile_tray_e1
+
+# E4 tray components
+attach_to_tray mccb_abe_32b_30a_e4 mobile_tray_e4
+attach_to_tray pdu_sps25_m66xm4_e4_1 mobile_tray_e4
+attach_to_tray pdu_sps25_m66xm4_e4_2 mobile_tray_e4
+attach_to_tray noise_filter_rms_2030_din_e4 mobile_tray_e4
+attach_to_tray plug_socket_drc_220v_16a_e4 mobile_tray_e4
+attach_to_tray busbar_6p_e4 mobile_tray_e4
+
+# E2 tray components
+attach_to_tray single_mc_gmc_e2_1 mobile_tray_e2
+attach_to_tray single_mc_gmc_e2_2 mobile_tray_e2
+attach_to_tray single_mc_gmc_e2_3 mobile_tray_e2
+attach_to_tray smps_wdr_120_24v_e2 mobile_tray_e2
+
+# E5 tray components
+attach_to_tray single_mc_gmc_e5_1 mobile_tray_e5
+attach_to_tray single_mc_gmc_e5_2 mobile_tray_e5
+attach_to_tray single_mc_gmc_e5_3 mobile_tray_e5
+attach_to_tray smps_wdr_120_24v_e5 mobile_tray_e5
+
+# E3 and E6 terminal blocks
+for i in 1 2 3 4 5 6 7 8; do
+    attach_to_tray tb_jotn_15a_e3_${i}_1 mobile_tray_e3
+    attach_to_tray tb_jotn_15a_e3_${i}_2 mobile_tray_e3
+done
+for i in 1 2 3 4 5 6 7 8; do
+    attach_to_tray tb_jotn_15a_e6_${i}_1 mobile_tray_e6
+    attach_to_tray tb_jotn_15a_e6_${i}_2 mobile_tray_e6
+done
+
+echo "All elec objects attached to trays."

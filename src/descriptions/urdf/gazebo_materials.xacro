@@ -17,6 +17,10 @@
     <material>Gazebo/Grey</material>
   </gazebo>
 
+  <gazebo reference="ur10_slider_jig_link">
+    <material>Gazebo/Grey</material>
+  </gazebo>
+
   <!-- UR Joint Components-->
   <gazebo reference="ur10_feeder_joint">
     <preserveFixedJoint>true</preserveFixedJoint>
@@ -47,6 +51,10 @@
   </gazebo>
 
   <gazebo reference="ur10_plate_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="ur10_slider_jig_joint">
     <preserveFixedJoint>true</preserveFixedJoint>
   </gazebo>
   

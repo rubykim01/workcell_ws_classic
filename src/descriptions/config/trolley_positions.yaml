@@ -1,41 +1,41 @@
 trolley_positions:
   ur:
     x: 0.0
-    y: 0.0
+    y: 0.8
     z: 0.86
     roll: 0.0
     pitch: 0.0
     yaw: 0.0
   denso:
     x: -0.8
-    y: 0.8
+    y: 1.6
     z: 0.86
     roll: 0.0
     pitch: 0.0
     yaw: 0.0
   vision:
+    x: 0.8
+    y: 0.8
+    z: 0.86
+    roll: 0.0
+    pitch: 0.0
+    yaw: 0.0
+  arf:
     x: 0.0
     y: 1.6
     z: 0.86
     roll: 0.0
     pitch: 0.0
     yaw: 0.0
-  toolchanger:
-    x: -0.8
-    y: 0.0
-    z: 0.86
-    roll: 0.0
-    pitch: 0.0
-    yaw: 0.0
   feeder:
-    x: 1.0
-    y: 0.0
+    x: -0.7255
+    y: 0.215
     z: 0.92
     roll: 0.0
     pitch: 0.0
-    yaw: 0.0
-  arf:
-    x: 0.0
+    yaw: -1.5708
+  toolchanger:
+    x: -0.8
     y: 0.8
     z: 0.86
     roll: 0.0

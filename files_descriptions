@@ -3,7 +3,7 @@ workcell_ws_classic > src > descriptions
 1. config 
 1) yaml files for each component: 
 stl file path
-colour(used in URDF)
+colour(used in URDF) --> only for rviz gazebo overridden
 collsion mesh 
 
 2) initial joint positions of the robots, initial trolley positions
