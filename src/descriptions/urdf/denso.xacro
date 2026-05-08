@@ -110,16 +110,16 @@
       <visual>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find descriptions)/meshes/denso/denso_base_link.STL" scale="1 1 1"/>
+          <xacro:get_mesh name="denso_base_link" type="visual"/>
         </geometry>
-        <material name="">
-          <color rgba="0.7 0.7 0.7 1.0"/>
+        <material name="${sec_mesh_files['denso_base_link']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['denso_base_link']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find descriptions)/meshes/denso/denso_base_link.STL" scale="1 1 1"/>
+          <xacro:get_mesh name="denso_base_link" type="collision"/>
         </geometry>
       </collision>
       <inertial>
@@ -132,7 +132,7 @@
     <joint name="denso_axis_joint" type="prismatic">
       <parent link="denso_slider_jig_link"/>
       <child link="denso_base_link"/>
-      <origin rpy="0 0 -1.57" xyz="0.01 0 0.084"/>
+      <origin rpy="0 0 0" xyz="0.01 0 0.084"/>
       <axis xyz="1 0 0"/>
       <limit lower="-0.5" upper="0.5" effort="100" velocity="0.5" />
       <dynamics damping="0.5" friction="0.1"/>
@@ -157,16 +157,16 @@
       <visual>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find descriptions)/meshes/denso/denso_link1.STL" scale="1 1 1"/>
+          <xacro:get_mesh name="denso_J1" type="visual"/>
         </geometry>
-        <material name="">
-          <color rgba="0.7 0.7 0.7 1.0"/>
+        <material name="${sec_mesh_files['denso_J1']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['denso_J1']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find descriptions)/meshes/denso/denso_link1.STL" scale="1 1 1"/>
+          <xacro:get_mesh name="denso_J1" type="collision"/>
         </geometry>
       </collision>
       <inertial>
@@ -180,7 +180,7 @@
       <child link="denso_J1"/>
       <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.4135"/>
       <axis xyz="0.0 0.0 1.0"/>
-      <limit effort="50" lower="-2.87979" upper="2.87979" velocity="3.08615226990019"/>
+      <limit effort="50" lower="-2.26892802759263" upper="2.26892802759263" velocity="3.08615226990019"/>
       <dynamics damping="0.1" friction="0.01"/>
     </joint>
 
@@ -188,16 +188,16 @@
       <visual>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find descriptions)/meshes/denso/denso_link2.STL" scale="1 1 1"/>
+          <xacro:get_mesh name="denso_J2" type="visual"/>
         </geometry>
-        <material name="">
-          <color rgba="0.7 0.7 0.7 1.0"/>
+        <material name="${sec_mesh_files['denso_J2']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['denso_J2']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find descriptions)/meshes/denso/denso_link2.STL" scale="1 1 1"/>
+          <xacro:get_mesh name="denso_J2" type="collision"/>
         </geometry>
       </collision>
       <inertial>
@@ -211,7 +211,7 @@
       <child link="denso_J2"/>
       <origin rpy="0.0 0.0 0.0" xyz="0.5 0.0 0.105"/>
       <axis xyz="0.0 0.0 1.0"/>
-      <limit effort="50" lower="-2.35619" upper="2.35619" velocity="5.41357500737341"/>
+      <limit effort="50" lower="-2.61799387799149" upper="2.61799387799149" velocity="5.41357500737341"/>
       <dynamics damping="0.1" friction="0.01"/>
     </joint>
 
@@ -219,16 +219,16 @@
       <visual>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find descriptions)/meshes/denso/denso_link3.STL" scale="1 1 1"/>
+          <xacro:get_mesh name="denso_J3" type="visual"/>
         </geometry>
-        <material name="">
-          <color rgba="0.7 0.7 0.7 1.0"/>
+        <material name="${sec_mesh_files['denso_J3']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['denso_J3']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find descriptions)/meshes/denso/denso_link3.STL" scale="1 1 1"/>
+          <xacro:get_mesh name="denso_J3" type="collision"/>
         </geometry>
       </collision>
       <inertial>
@@ -250,16 +250,16 @@
       <visual>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <cylinder radius="0.02" length="0.04"/>
+          <cylinder radius="${sec_mesh_files['denso_J4']['visual']['cylinder']['radius']}" length="${sec_mesh_files['denso_J4']['visual']['cylinder']['length']}"/>
         </geometry>
-        <material name="">
-          <color rgba="0.7 0.7 0.7 1.0"/>
+        <material name="${sec_mesh_files['denso_J4']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['denso_J4']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <cylinder radius="0.02" length="0.04"/>
+          <cylinder radius="${sec_mesh_files['denso_J4']['collision']['cylinder']['radius']}" length="${sec_mesh_files['denso_J4']['collision']['cylinder']['length']}"/>
         </geometry>
       </collision>
       <inertial>
@@ -311,16 +311,16 @@
       <visual>
         <origin rpy="0 0 -1.57" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find descriptions)/meshes/denso/denso_screwdriver.STL" scale="1 1 1"/>
+          <xacro:get_mesh name="denso_screwdriver" type="visual"/>
         </geometry>
-        <material name="">
-          <color rgba="0.7 0.7 0.7 1.0"/>
+        <material name="${sec_mesh_files['denso_screwdriver']['visual']['material']['name']}">
+          <color rgba="${sec_mesh_files['denso_screwdriver']['visual']['material']['color']}"/>
         </material>
       </visual>
       <collision>
         <origin rpy="0 0 -1.57" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="file://$(find descriptions)/meshes/denso/denso_screwdriver.STL" scale="1 1 1"/>
+          <xacro:get_mesh name="denso_screwdriver" type="collision"/>
         </geometry>
       </collision>
       <inertial>
