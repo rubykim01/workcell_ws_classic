@@ -207,11 +207,11 @@ def launch_setup(context, *args, **kwargs):
         arguments=["arf_elec_gripper_trajectory_controller", "-c", "/controller_manager"],
         output="screen"
     )
-    # Denso Axis Controller 
-    denso_axis_controller_spawner = Node(
+    # UR Axis Controller 
+    ur_axis_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["denso_axis_trajectory_controller", "-c", "/controller_manager"],
+        arguments=["ur_axis_trajectory_controller", "-c", "/controller_manager"],
         output="screen"
     )
     #Supply x-axis mobile base Controller
@@ -286,7 +286,7 @@ def launch_setup(context, *args, **kwargs):
         arf_gripper_controller_spawner,
         arf_elec_axis_controller_spawner,
         arf_elec_gripper_controller_spawner,
-        denso_axis_controller_spawner,
+        ur_axis_controller_spawner,
         feeder_x_axis_mobile_base_controller_spawner,
         feeder_y_axis_plate_controller_spawner,
         feeder_arm_base_controller_spawner,

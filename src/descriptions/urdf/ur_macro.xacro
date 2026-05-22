@@ -408,10 +408,13 @@
     </link>
 
     <!-- slider jig to UR plate joint -->
-    <joint name="${tf_prefix}ur10_plate_joint" type="fixed">
+    <joint name="${tf_prefix}ur_axis_joint" type="prismatic">
       <parent link="${tf_prefix}ur10_slider_jig_link" />
       <child link="${tf_prefix}ur10_plate_link" />
       <origin xyz="-0.2 0 0.135" rpy="0 0 0"/>
+      <axis xyz="1 0 0"/>
+      <limit lower="-0.5" upper="0.5" effort="100" velocity="0.5" />
+      <dynamics damping="0.5" friction="0.1"/>
     </joint>
 
     <!-- ur robot base link -->

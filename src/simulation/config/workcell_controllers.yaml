@@ -35,6 +35,9 @@ controller_manager:
     tooltip_trajectory_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
+    #UR Axis Controller 
+    ur_axis_trajectory_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
 
 
     #ARF Axis Joints
@@ -55,10 +58,6 @@ controller_manager:
 
     #Denso Robot Controller
     denso_joint_trajectory_controller:
-      type: joint_trajectory_controller/JointTrajectoryController
-
-    #Denso Axis Controller 
-    denso_axis_trajectory_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
     #Supply x-axis mobile base Controller
@@ -178,6 +177,26 @@ tooltip_trajectory_controller:
       # tooltip_adapter1_joint: { trajectory: 0.05, goal: 0.01 }
       # tooltip_adapter2_joint: { trajectory: 0.05, goal: 0.01 }
 
+# UR Axis Controller 
+ur_axis_trajectory_controller:
+  ros__parameters:
+    joints:
+      - ur_axis_joint
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity
+    state_publish_rate: 125.0
+    action_monitor_rate: 25.0
+    allow_partial_joints_goal: true
+    open_loop_control: false
+    allow_nonzero_velocity_at_trajectory_end: true
+    constraints:
+      stopped_velocity_tolerance: 0.01
+      goal_time: 2.0
+      ur_axis_joint: { trajectory: 0.1, goal: 0.05 }
+
 # ARF Axis Joints
 arf_axis_trajectory_controller:
   ros__parameters:
@@ -273,25 +292,6 @@ denso_joint_trajectory_controller:
       stopped_velocity_tolerance: 0.1
       goal_time: 0.5
 
-# Denso Axis Controller 
-denso_axis_trajectory_controller:
-  ros__parameters:
-    joints:
-      - denso_axis_joint
-    command_interfaces:
-      - position
-    state_interfaces:
-      - position
-      - velocity
-    state_publish_rate: 125.0
-    action_monitor_rate: 25.0
-    allow_partial_joints_goal: true
-    open_loop_control: false
-    allow_nonzero_velocity_at_trajectory_end: true
-    constraints:
-      stopped_velocity_tolerance: 0.01
-      goal_time: 2.0
-      denso_axis_joint: { trajectory: 0.1, goal: 0.05 }
 
 # Supply x-axis mobile base Controller
 feeder_x_axis_mobile_base_trajectory_controller:
