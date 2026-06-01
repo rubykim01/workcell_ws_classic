@@ -481,48 +481,72 @@ class MainWindow(QMainWindow):
 
         QMessageBox.information(self, "Reset", "All positions reset to default assignments")
 
+    # Entities spawned by spawn_feeder_heater.sh / spawn_feeder_elec.sh. Switching
+    # feeder type deletes the current set (these are free objects, not attached)
+    # before spawning the new one.
+    HEATER_ENTITIES = (
+        [f"mobile_tray_h{i}" for i in range(1, 6)]
+        + ["heating_plate_cover_t1_1st", "heating_plate_cover_t1_2nd",
+           "heating_plate_cover_t4_1st", "heating_plate_cover_t4_2nd",
+           "heating_plate_t2_1st", "heating_plate_t2_2nd",
+           "heating_plate_t5_1st", "heating_plate_t5_2nd",
+           "heating_plate_cover3_1_t3_1", "heating_plate_cover3_2_t3_2",
+           "heating_plate_cover3_1_t3_3", "heating_plate_cover3_2_t3_4",
+           "heating_plate_cover3_1_t3_5", "heating_plate_cover3_2_t3_6"]
+    )
+
+    ELEC_ENTITIES = (
+        [f"mobile_tray_e{i}" for i in range(1, 7)]
+        + [f"mccb_abe_32b_30a_e{t}" for t in (1, 4)]
+        + [f"pdu_sps25_m66xm4_e{t}_{n}" for t in (1, 4) for n in (1, 2)]
+        + [f"noise_filter_rms_2030_din_e{t}" for t in (1, 4)]
+        + [f"plug_socket_drc_220v_16a_e{t}" for t in (1, 4)]
+        + [f"busbar_6p_e{t}" for t in (1, 4)]
+        + [f"single_mc_gmc_e{t}_{n}" for t in (2, 5) for n in (1, 2, 3)]
+        + [f"smps_wdr_120_24v_e{t}" for t in (2, 5)]
+        + [f"tb_jotn_15a_e{t}_{i}_{r}" for t in (3, 6) for i in range(1, 9) for r in (1, 2)]
+    )
+
+    def _despawn_current_feeder(self):
+        """Delete the currently spawned feeder object set so the other feeder type
+        can be spawned in its place."""
+        if self.feeder_spawned is None:
+            return
+        print(f"Removing current feeder set ({self.feeder_spawned})...")
+        entities = self.HEATER_ENTITIES if self.feeder_spawned == "heater" else self.ELEC_ENTITIES
+        for entity in entities:
+            self._delete_entity(entity)
+        time.sleep(0.5)
+        self.feeder_spawned = None
+
     def spawn_feeder_heater(self):
         """Run the spawn_feeder_heater.sh script"""
-        if self.feeder_spawned is not None:
-            QMessageBox.warning(self, "Already Spawned", f"Feeder objects already spawned ({self.feeder_spawned}). Cannot spawn another feeder type.")
-            return
-        
-        script_path = self.scripts_dir / "spawn_feeder_heater.sh"
-        
-        if not script_path.exists():
-            QMessageBox.critical(self, "Error", f"Script not found: {script_path}")
-            return
-        
-        try:    
-            print(f"Running: {script_path}")
-            # Run the script and wait for completion
-            process = subprocess.Popen(
-                ['bash', str(script_path)],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                cwd=str(self.scripts_dir)
-            )
-            process.wait()  # Wait for all objects to spawn
-            self.feeder_spawned = "heater"
-            QMessageBox.information(self, "Spawn Complete", "All Feeder Heater objects spawned successfully")
-            print("Spawned Objects: Feeder Heater")
-        except Exception as e:
-            error_msg = f"Error running script: {str(e)}"
-            print(error_msg)
-            QMessageBox.critical(self, "Error", error_msg)
+        self._spawn_feeder("spawn_feeder_heater.sh", "Feeder Heater", "heater")
 
     def spawn_feeder_elec(self):
         """Run the spawn_feeder_elec.sh script"""
-        if self.feeder_spawned is not None:
-            QMessageBox.warning(self, "Already Spawned", f"Feeder objects already spawned ({self.feeder_spawned}). Cannot spawn another feeder type.")
+        self._spawn_feeder("spawn_feeder_elec.sh", "Feeder Elec", "elec")
+
+    def _spawn_feeder(self, script_name, label, feeder_id):
+        """Run a feeder spawn script.
+
+        If that feeder type is already spawned, do nothing. If the other type is
+        spawned, replace it: remove the current set first, then spawn the new one."""
+        if self.feeder_spawned == feeder_id:
+            QMessageBox.information(self, "Already Spawned", f"{label} objects are already spawned.")
             return
-        
-        script_path = self.scripts_dir / "spawn_feeder_elec.sh"
-        
+
+        replacing = self.feeder_spawned is not None
+        if replacing:
+            previous = self.feeder_spawned
+            self._despawn_current_feeder()
+
+        script_path = self.scripts_dir / script_name
+
         if not script_path.exists():
             QMessageBox.critical(self, "Error", f"Script not found: {script_path}")
             return
-        
+
         try:
             print(f"Running: {script_path}")
             # Run the script and wait for completion
@@ -533,9 +557,13 @@ class MainWindow(QMainWindow):
                 cwd=str(self.scripts_dir)
             )
             process.wait()  # Wait for all objects to spawn
-            self.feeder_spawned = "elec"
-            QMessageBox.information(self, "Spawn Complete", "All Feeder Elec objects spawned successfully")
-            print("Spawned Objects: Feeder Elec")
+            self.feeder_spawned = feeder_id
+            if replacing:
+                complete_msg = f"Replaced {previous.capitalize()} with {label} objects"
+            else:
+                complete_msg = f"All {label} objects spawned successfully"
+            QMessageBox.information(self, "Spawn Complete", complete_msg)
+            print(f"Spawned Objects: {label}")
         except Exception as e:
             error_msg = f"Error running script: {str(e)}"
             print(error_msg)
