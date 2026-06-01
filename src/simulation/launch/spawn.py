@@ -543,24 +543,75 @@ class MainWindow(QMainWindow):
 
     def spawn_tooltip1(self):
         """Run spawn_ur_tooltip1.sh and spawn_toolchanger_tools.sh"""
-        if self.tooltip_spawned is not None:
-            QMessageBox.warning(self, "Already Spawned", f"Tooltip already spawned ({self.tooltip_spawned}). Cannot spawn another tooltip.")
-            return
         self._spawn_tooltip_and_tools("spawn_ur_tooltip1.sh", "Tooltip 1", "tooltip1")
 
     def spawn_tooltip2(self):
         """Run spawn_ur_tooltip2.sh and spawn_toolchanger_tools.sh"""
-        if self.tooltip_spawned is not None:
-            QMessageBox.warning(self, "Already Spawned", f"Tooltip already spawned ({self.tooltip_spawned}). Cannot spawn another tooltip.")
-            return
         self._spawn_tooltip_and_tools("spawn_ur_tooltip2.sh", "Tooltip 2", "tooltip2")
 
     def spawn_tooltip3(self):
         """Run spawn_ur_tooltip3.sh and spawn_toolchanger_tools.sh"""
-        if self.tooltip_spawned is not None:
-            QMessageBox.warning(self, "Already Spawned", f"Tooltip already spawned ({self.tooltip_spawned}). Cannot spawn another tooltip.")
-            return
         self._spawn_tooltip_and_tools("spawn_ur_tooltip3.sh", "Tooltip 3", "tooltip3")
+
+    # All entities spawned by a tooltip click: the per-tooltip script puts the
+    # selected pair (+ krvg) on the UR arm, and spawn_toolchanger_tools.sh spawns
+    # the full tool set on the rack. Re-spawning needs a clean slate, so a replace
+    # deletes this whole set before spawning the new selection.
+    TOOLTIP_ENTITIES = [
+        "krvg", "koras_2f100",
+        "tooltip_01", "tooltip_01_2",
+        "tooltip_02", "tooltip_02_2",
+        "tooltip_03", "tooltip_03_2",
+    ]
+
+    def _detach_link(self, ur_link, entity_name):
+        """Detach an entity's 'link' from the given UR link. Failures are ignored
+        (the entity may not be attached)."""
+        try:
+            subprocess.run(
+                ['ros2', 'service', 'call', '/DETACHLINK',
+                 'linkattacher_msgs/srv/DetachLink',
+                 f"{{model1_name: 'ur', link1_name: '{ur_link}', "
+                 f"model2_name: '{entity_name}', link2_name: 'link'}}"],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=3
+            )
+        except Exception as e:
+            print(f"Detach {entity_name} from {ur_link} failed/ignored: {e}")
+
+    def _delete_entity(self, entity_name):
+        """Delete a spawned entity from Gazebo via the /delete_entity service."""
+        try:
+            result = subprocess.run(
+                ['ros2', 'service', 'call', '/delete_entity',
+                 'gazebo_msgs/srv/DeleteEntity', f"{{name: '{entity_name}'}}"],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=5
+            )
+            if result.returncode == 0:
+                print(f"Deleted entity {entity_name}")
+            else:
+                print(f"Could not delete {entity_name} (may not exist): {result.stdout}")
+        except subprocess.TimeoutExpired:
+            print(f"Delete service call timed out for {entity_name}")
+        except Exception as e:
+            print(f"Error deleting {entity_name}: {e}")
+
+    def _despawn_current_tooltip(self):
+        """Detach and delete the currently spawned tooltip/toolchanger tool set so
+        a different tooltip can be spawned in its place."""
+        if self.tooltip_spawned is None:
+            return
+        print(f"Removing current tooltip set ({self.tooltip_spawned})...")
+        suffix = self.tooltip_spawned[-1]  # "1", "2" or "3"
+        # Detach the pair currently held on the toolchanger adapters and krvg from
+        # the quickchanger before deleting, so no dangling attachment joints remain.
+        self._detach_link("tooltip_adapter_1_link", f"tooltip_0{suffix}")
+        self._detach_link("tooltip_adapter_2_link", f"tooltip_0{suffix}_2")
+        self._detach_link("quickchanger_link", "krvg")
+        time.sleep(0.3)
+        for entity in self.TOOLTIP_ENTITIES:
+            self._delete_entity(entity)
+        time.sleep(0.5)
+        self.tooltip_spawned = None
 
     def attach_tooltip_to_adapter(self, tooltip_entity, adapter_link):
         """Attach a tooltip to a tooltip adapter using ROS2 service"""
@@ -625,10 +676,23 @@ class MainWindow(QMainWindow):
             return False
 
     def _spawn_tooltip_and_tools(self, tooltip_script, tooltip_name, tooltip_id):
-        """Run tooltip script first, then toolchanger_tools script"""
+        """Run tooltip script first, then toolchanger_tools script.
+
+        If the requested tooltip is already spawned, do nothing. If a different
+        tooltip is spawned, replace it: remove the current set first, then spawn
+        the new selection."""
+        if self.tooltip_spawned == tooltip_id:
+            QMessageBox.information(self, "Already Spawned", f"{tooltip_name} is already spawned.")
+            return
+
+        replacing = self.tooltip_spawned is not None
+        if replacing:
+            previous = self.tooltip_spawned
+            self._despawn_current_tooltip()
+
         tooltip_path = self.scripts_dir / tooltip_script
         tools_path = self.scripts_dir / "spawn_toolchanger_tools.sh"
-        
+
         if not tooltip_path.exists():
             QMessageBox.critical(self, "Error", f"Script not found: {tooltip_path}")
             return
@@ -664,8 +728,12 @@ class MainWindow(QMainWindow):
             
             # Set flag only after successful spawn
             self.tooltip_spawned = tooltip_id
-            
-            QMessageBox.information(self, "Spawn Complete", f"All {tooltip_name} + Toolchanger Tools spawned successfully")
+
+            if replacing:
+                complete_msg = f"Replaced {previous.capitalize()} with {tooltip_name} + Toolchanger Tools"
+            else:
+                complete_msg = f"All {tooltip_name} + Toolchanger Tools spawned successfully"
+            QMessageBox.information(self, "Spawn Complete", complete_msg)
             print(f"Spawned Objects: {tooltip_name} + Toolchanger Tools")
             
             # Automatically attach tooltips to adapters
