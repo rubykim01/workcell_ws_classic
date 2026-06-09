@@ -228,9 +228,15 @@ class MainWindow(QMainWindow):
         spawn_elec_button.clicked.connect(self.spawn_feeder_elec)
         spawn_elec_button.setStyleSheet("font-size: 16px; padding: 10px; background-color: #e8e8e8; color: black; border: 1px solid #aaaaaa; border-radius: 5px;")
         feeder_button_layout.addWidget(spawn_elec_button)
-        
+
+        # None button: delete whichever feeder objects (heater or elec) are spawned
+        delete_feeder_button = QPushButton("None")
+        delete_feeder_button.clicked.connect(self.delete_feeder_objects)
+        delete_feeder_button.setStyleSheet("font-size: 16px; padding: 10px; background-color: #e8e8e8; color: black; border: 1px solid #aaaaaa; border-radius: 5px;")
+        feeder_button_layout.addWidget(delete_feeder_button)
+
         main_layout.addLayout(feeder_button_layout)
-        
+
         # Tooltip spawn buttons section
         main_layout.addSpacing(10)
         tooltip_label = QLabel("Spawn Tooltip + Toolchanger Tools")
@@ -258,9 +264,15 @@ class MainWindow(QMainWindow):
         tooltip3_button.clicked.connect(self.spawn_tooltip3)
         tooltip3_button.setStyleSheet("font-size: 16px; padding: 10px; background-color: #e8e8e8; color: black; border: 1px solid #aaaaaa; border-radius: 5px;")
         tooltip_button_layout.addWidget(tooltip3_button)
-        
+
+        # None button: delete whichever tooltip + toolchanger tools are spawned
+        delete_tooltip_button = QPushButton("None")
+        delete_tooltip_button.clicked.connect(self.delete_tooltips)
+        delete_tooltip_button.setStyleSheet("font-size: 16px; padding: 10px; background-color: #e8e8e8; color: black; border: 1px solid #aaaaaa; border-radius: 5px;")
+        tooltip_button_layout.addWidget(delete_tooltip_button)
+
         main_layout.addLayout(tooltip_button_layout)
-        
+
         # Path to shell scripts
         self.scripts_dir = workspace_root / "src" / "descriptions" / "urdf" / "objects"
         
@@ -519,6 +531,16 @@ class MainWindow(QMainWindow):
         time.sleep(0.5)
         self.feeder_spawned = None
 
+    def delete_feeder_objects(self):
+        """Delete whichever feeder object set (heater or elec) is currently spawned."""
+        if self.feeder_spawned is None:
+            QMessageBox.information(self, "Nothing to Delete", "No feeder objects are currently spawned.")
+            return
+        removed = self.feeder_spawned
+        self._despawn_current_feeder()
+        QMessageBox.information(self, "Deleted", f"All {removed.capitalize()} feeder objects deleted.")
+        print(f"Deleted feeder objects: {removed}")
+
     def spawn_feeder_heater(self):
         """Run the spawn_feeder_heater.sh script"""
         self._spawn_feeder("spawn_feeder_heater.sh", "Feeder Heater", "heater")
@@ -568,6 +590,16 @@ class MainWindow(QMainWindow):
             error_msg = f"Error running script: {str(e)}"
             print(error_msg)
             QMessageBox.critical(self, "Error", error_msg)
+
+    def delete_tooltips(self):
+        """Delete whichever tooltip + toolchanger tool set is currently spawned."""
+        if self.tooltip_spawned is None:
+            QMessageBox.information(self, "Nothing to Delete", "No tooltips are currently spawned.")
+            return
+        removed = self.tooltip_spawned
+        self._despawn_current_tooltip()
+        QMessageBox.information(self, "Deleted", f"All {removed.capitalize()} + Toolchanger Tools deleted.")
+        print(f"Deleted tooltip objects: {removed}")
 
     def spawn_tooltip1(self):
         """Run spawn_ur_tooltip1.sh and spawn_toolchanger_tools.sh"""
