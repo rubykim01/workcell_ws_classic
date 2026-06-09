@@ -526,9 +526,7 @@ class MainWindow(QMainWindow):
             return
         print(f"Removing current feeder set ({self.feeder_spawned})...")
         entities = self.HEATER_ENTITIES if self.feeder_spawned == "heater" else self.ELEC_ENTITIES
-        for entity in entities:
-            self._delete_entity(entity)
-        time.sleep(0.5)
+        self._delete_entities(entities)
         self.feeder_spawned = None
 
     def delete_feeder_objects(self):
@@ -655,6 +653,45 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print(f"Error deleting {entity_name}: {e}")
 
+    def _delete_entities(self, entity_names):
+        """Delete many entities in one process (batch_delete.py) instead of a
+        separate `ros2 service call` per entity, which was slow for large sets."""
+        names = list(entity_names)
+        if not names:
+            return
+        script_path = self.scripts_dir / "batch_delete.py"
+        try:
+            result = subprocess.run(
+                ['python3', str(script_path), *names],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=120
+            )
+            if result.stdout:
+                print(result.stdout, end="")
+            if result.returncode != 0 and result.stderr:
+                print(result.stderr, end="")
+        except Exception as e:
+            print(f"Batch delete failed: {e}")
+
+    def _detach_links(self, pairs):
+        """Detach many (ur_link, entity) pairs from model 'ur' in one process
+        (batch_detach.py). Failures are non-fatal."""
+        pairs = list(pairs)
+        if not pairs:
+            return
+        args = []
+        for ur_link, entity in pairs:
+            args += ['--detach', 'ur', ur_link, entity, 'link']
+        script_path = self.scripts_dir / "batch_detach.py"
+        try:
+            result = subprocess.run(
+                ['python3', str(script_path), *args],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=60
+            )
+            if result.stdout:
+                print(result.stdout, end="")
+        except Exception as e:
+            print(f"Batch detach failed/ignored: {e}")
+
     def _despawn_current_tooltip(self):
         """Detach and delete the currently spawned tooltip/toolchanger tool set so
         a different tooltip can be spawned in its place."""
@@ -664,13 +701,12 @@ class MainWindow(QMainWindow):
         suffix = self.tooltip_spawned[-1]  # "1", "2" or "3"
         # Detach the pair currently held on the toolchanger adapters and krvg from
         # the quickchanger before deleting, so no dangling attachment joints remain.
-        self._detach_link("tooltip_adapter_1_link", f"tooltip_0{suffix}")
-        self._detach_link("tooltip_adapter_2_link", f"tooltip_0{suffix}_2")
-        self._detach_link("quickchanger_link", "krvg")
-        time.sleep(0.3)
-        for entity in self.TOOLTIP_ENTITIES:
-            self._delete_entity(entity)
-        time.sleep(0.5)
+        self._detach_links([
+            ("tooltip_adapter_1_link", f"tooltip_0{suffix}"),
+            ("tooltip_adapter_2_link", f"tooltip_0{suffix}_2"),
+            ("quickchanger_link", "krvg"),
+        ])
+        self._delete_entities(self.TOOLTIP_ENTITIES)
         self.tooltip_spawned = None
 
     def attach_tooltip_to_adapter(self, tooltip_entity, adapter_link):
@@ -695,8 +731,9 @@ class MainWindow(QMainWindow):
             if detach_result.returncode == 0:
                 print(f"Detached {tooltip_entity} from quickchanger_link")
             
-            # Small delay to ensure detach completes and physics settles
-            time.sleep(0.5)
+            # Brief delay to ensure detach completes before re-attaching
+            # (tools have gravity disabled, so no settling is needed).
+            time.sleep(0.2)
             
             # Now attach to adapter link
             print(f"Attaching {tooltip_entity} to {adapter_link}...")
@@ -782,9 +819,10 @@ class MainWindow(QMainWindow):
             )
             tools_process.wait()  # Wait for all tools to spawn
             
-            # Wait for physics to settle before attaching
-            print("Waiting for physics to settle before attaching tooltips...")
-            time.sleep(1.0)
+            # Brief pause to let the spawned tools register before attaching
+            # (they have gravity disabled, so no settling is needed).
+            print("Preparing to attach tooltips...")
+            time.sleep(0.3)
             
             # Set flag only after successful spawn
             self.tooltip_spawned = tooltip_id
@@ -812,9 +850,8 @@ class MainWindow(QMainWindow):
             else:
                 print(f"Successfully attached {tooltip1_entity} to tooltip_adapter_1_link")
 
-            # Longer delay between attachments to ensure first attachment completes
-            print("Waiting before attaching second tooltip...")
-            time.sleep(1.0)
+            # Brief delay between attachments to ensure the first completes
+            time.sleep(0.3)
 
             # Attach second tooltip to adapter 2
             print(f"Attaching {tooltip2_entity} to tooltip_adapter_2_link...")

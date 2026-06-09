@@ -84,15 +84,15 @@ if [ ! -f "$OBJECTS_DIR/mobile_tray_h1.sdf" ]; then
     exit 1
 fi
 
-# Spawn all trays in parallel (each tray inherits feeder yaw)
-echo "Spawning trays in parallel..."
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mobile_tray_h1.sdf" -entity mobile_tray_h1 -x $TRAY_H1_X -y $TRAY_H1_Y -z $TRAY_H1_Z -R 0 -P 0 -Y $FEEDER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mobile_tray_h2.sdf" -entity mobile_tray_h2 -x $TRAY_H2_X -y $TRAY_H2_Y -z $TRAY_H2_Z -R 0 -P 0 -Y $FEEDER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mobile_tray_h3.sdf" -entity mobile_tray_h3 -x $TRAY_H3_X -y $TRAY_H3_Y -z $TRAY_H3_Z -R 0 -P 0 -Y $FEEDER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mobile_tray_h4.sdf" -entity mobile_tray_h4 -x $TRAY_H4_X -y $TRAY_H4_Y -z $TRAY_H4_Z -R 0 -P 0 -Y $FEEDER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mobile_tray_h5.sdf" -entity mobile_tray_h5 -x $TRAY_H5_X -y $TRAY_H5_Y -z $TRAY_H5_Z -R 0 -P 0 -Y $FEEDER_YAW &
-wait
-echo "All trays spawned."
+# Collect every object into one batch_spawn.py call (built up across the phases
+# below, spawned once at the end) instead of launching a process per object.
+# Args per object: FILE ENTITY X Y Z R P Y.
+SPAWN_ARGS=()
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_h1.sdf" mobile_tray_h1 $TRAY_H1_X $TRAY_H1_Y $TRAY_H1_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_h2.sdf" mobile_tray_h2 $TRAY_H2_X $TRAY_H2_Y $TRAY_H2_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_h3.sdf" mobile_tray_h3 $TRAY_H3_X $TRAY_H3_Y $TRAY_H3_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_h4.sdf" mobile_tray_h4 $TRAY_H4_X $TRAY_H4_Y $TRAY_H4_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_h5.sdf" mobile_tray_h5 $TRAY_H5_X $TRAY_H5_Y $TRAY_H5_Z 0 0 $FEEDER_YAW)
 
 # Cover positions for Tray 1 and Tray 4 (combine in feeder-local frame, then rotate)
 read COVER_T1_1ST_X COVER_T1_1ST_Y COVER_T1_1ST_Z <<< "$(world_xyz \
@@ -134,42 +134,39 @@ COVER3_YAW=$(world_yaw -1.5708)
 # Plates have no local yaw; they inherit the feeder yaw in world frame
 PLATE_YAW=$FEEDER_YAW
 
-# Spawn all covers and plates in parallel
-echo "Spawning covers and plates in parallel..."
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/heating_plate_cover2.sdf" -entity heating_plate_cover_t1_1st -x $COVER_T1_1ST_X -y $COVER_T1_1ST_Y -z $COVER_T1_1ST_Z -R 0 -P 0 -Y $COVER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/heating_plate_cover1.sdf" -entity heating_plate_cover_t1_2nd -x $COVER_T1_2ND_X -y $COVER_T1_2ND_Y -z $COVER_T1_2ND_Z -R 0 -P 0 -Y $COVER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/heating_plate_cover1.sdf" -entity heating_plate_cover_t4_1st -x $COVER_T4_1ST_X -y $COVER_T4_1ST_Y -z $COVER_T4_1ST_Z -R 0 -P 0 -Y $COVER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/heating_plate_cover2.sdf" -entity heating_plate_cover_t4_2nd -x $COVER_T4_2ND_X -y $COVER_T4_2ND_Y -z $COVER_T4_2ND_Z -R 0 -P 0 -Y $COVER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/heating_plate1.sdf" -entity heating_plate_t2_1st -x $Plate_T2_X_1ST -y $Plate_T2_Y_1ST -z $Plate_T2_Z_1ST -R 0 -P 0 -Y $PLATE_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/heating_plate2.sdf" -entity heating_plate_t2_2nd -x $Plate_T2_X_2ND -y $Plate_T2_Y_2ND -z $Plate_T2_Z_2ND -R 0 -P 0 -Y $PLATE_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/heating_plate1.sdf" -entity heating_plate_t5_1st -x $Plate_T5_X_1ST -y $Plate_T5_Y_1ST -z $Plate_T5_Z_1ST -R 0 -P 0 -Y $PLATE_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/heating_plate2.sdf" -entity heating_plate_t5_2nd -x $Plate_T5_X_2ND -y $Plate_T5_Y_2ND -z $Plate_T5_Z_2ND -R 0 -P 0 -Y $PLATE_YAW &
-wait
-echo "All covers and plates spawned."
+# Covers and plates
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover2.sdf" heating_plate_cover_t1_1st $COVER_T1_1ST_X $COVER_T1_1ST_Y $COVER_T1_1ST_Z 0 0 $COVER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover1.sdf" heating_plate_cover_t1_2nd $COVER_T1_2ND_X $COVER_T1_2ND_Y $COVER_T1_2ND_Z 0 0 $COVER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover1.sdf" heating_plate_cover_t4_1st $COVER_T4_1ST_X $COVER_T4_1ST_Y $COVER_T4_1ST_Z 0 0 $COVER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover2.sdf" heating_plate_cover_t4_2nd $COVER_T4_2ND_X $COVER_T4_2ND_Y $COVER_T4_2ND_Z 0 0 $COVER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate1.sdf" heating_plate_t2_1st $Plate_T2_X_1ST $Plate_T2_Y_1ST $Plate_T2_Z_1ST 0 0 $PLATE_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate2.sdf" heating_plate_t2_2nd $Plate_T2_X_2ND $Plate_T2_Y_2ND $Plate_T2_Z_2ND 0 0 $PLATE_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate1.sdf" heating_plate_t5_1st $Plate_T5_X_1ST $Plate_T5_Y_1ST $Plate_T5_Z_1ST 0 0 $PLATE_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate2.sdf" heating_plate_t5_2nd $Plate_T5_X_2ND $Plate_T5_Y_2ND $Plate_T5_Z_2ND 0 0 $PLATE_YAW)
 
-# Spawn cover3 on Tray 3 in parallel
-echo "Spawning cover3 on Tray 3 in parallel..."
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/heating_plate_cover3-1.sdf" -entity heating_plate_cover3_1_t3_1 -x $COVER3_T3_X_1 -y $COVER3_T3_Y_1 -z $COVER3_T3_Z_1 -R 0 -P 0 -Y $COVER3_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/heating_plate_cover3-2.sdf" -entity heating_plate_cover3_2_t3_2 -x $COVER3_T3_X_2 -y $COVER3_T3_Y_2 -z $COVER3_T3_Z_2 -R 0 -P 0 -Y $COVER3_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/heating_plate_cover3-1.sdf" -entity heating_plate_cover3_1_t3_3 -x $COVER3_T3_X_3 -y $COVER3_T3_Y_3 -z $COVER3_T3_Z_3 -R 0 -P 0 -Y $COVER3_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/heating_plate_cover3-2.sdf" -entity heating_plate_cover3_2_t3_4 -x $COVER3_T3_X_4 -y $COVER3_T3_Y_4 -z $COVER3_T3_Z_4 -R 0 -P 0 -Y $COVER3_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/heating_plate_cover3-1.sdf" -entity heating_plate_cover3_1_t3_5 -x $COVER3_T3_X_5 -y $COVER3_T3_Y_5 -z $COVER3_T3_Z_5 -R 0 -P 0 -Y $COVER3_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/heating_plate_cover3-2.sdf" -entity heating_plate_cover3_2_t3_6 -x $COVER3_T3_X_6 -y $COVER3_T3_Y_6 -z $COVER3_T3_Z_6 -R 0 -P 0 -Y $COVER3_YAW &
-wait
+# Cover3 on Tray 3
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover3-1.sdf" heating_plate_cover3_1_t3_1 $COVER3_T3_X_1 $COVER3_T3_Y_1 $COVER3_T3_Z_1 0 0 $COVER3_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover3-2.sdf" heating_plate_cover3_2_t3_2 $COVER3_T3_X_2 $COVER3_T3_Y_2 $COVER3_T3_Z_2 0 0 $COVER3_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover3-1.sdf" heating_plate_cover3_1_t3_3 $COVER3_T3_X_3 $COVER3_T3_Y_3 $COVER3_T3_Z_3 0 0 $COVER3_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover3-2.sdf" heating_plate_cover3_2_t3_4 $COVER3_T3_X_4 $COVER3_T3_Y_4 $COVER3_T3_Z_4 0 0 $COVER3_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover3-1.sdf" heating_plate_cover3_1_t3_5 $COVER3_T3_X_5 $COVER3_T3_Y_5 $COVER3_T3_Z_5 0 0 $COVER3_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover3-2.sdf" heating_plate_cover3_2_t3_6 $COVER3_T3_X_6 $COVER3_T3_Y_6 $COVER3_T3_Z_6 0 0 $COVER3_YAW)
+
+# Spawn all 19 objects from a single process
+echo "Spawning all heater objects (single batch)..."
+python3 "$OBJECTS_DIR/batch_spawn.py" "${SPAWN_ARGS[@]}"
 
 echo "All mobile trays and covers spawned successfully!"
 
-# Wait for physics to settle before attaching
-echo "Waiting for physics to settle before attaching objects to trays..."
-sleep 2
+# Objects have gravity disabled, so they don't fall after spawn; a brief pause
+# just lets the new models register before the link_attacher references them.
+sleep 0.3
 
-attach_to_tray() {
-    local obj="$1"
-    local tray="$2"
-    echo "Attaching $obj to $tray..."
-    ros2 service call /ATTACHLINK linkattacher_msgs/srv/AttachLink \
-        "{model1_name: '$tray', link1_name: 'link', model2_name: '$obj', link2_name: 'link'}" \
-        > /dev/null
+# Queue all attachments, then run them from one batch_attach.py process instead
+# of a separate `ros2 service call` per object.
+ATTACH_ARGS=()
+attach_to_tray() {  # $1 = object, $2 = tray (both attach via their 'link')
+    ATTACH_ARGS+=(--attach "$2" link "$1" link)
 }
 
 # Tray 1 covers
@@ -192,4 +189,6 @@ attach_to_tray heating_plate_cover_t4_2nd mobile_tray_h4
 attach_to_tray heating_plate_t5_1st mobile_tray_h5
 attach_to_tray heating_plate_t5_2nd mobile_tray_h5
 
+echo "Attaching all heater objects to trays (single batch)..."
+python3 "$OBJECTS_DIR/batch_attach.py" "${ATTACH_ARGS[@]}"
 echo "All heater objects attached to trays."

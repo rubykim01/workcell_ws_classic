@@ -127,71 +127,19 @@ KRVG_WYAW=$(awk -v sy="$STAND_WORLD_YAW" -v ly="-1.570796" 'BEGIN { printf "%.6f
 KORAS_WYAW=$(awk -v sy="$STAND_WORLD_YAW" -v ly="-1.570796" 'BEGIN { printf "%.6f\n", sy + ly }')
 TT_WYAW=$(awk -v sy="$STAND_WORLD_YAW" -v ly="0" 'BEGIN { printf "%.6f\n", sy + ly }')
 
-echo "Spawning tools on Tool Changer Stand..."
+echo "Spawning tools on Tool Changer Stand (single batch)..."
 
-# KRVG
-echo "Spawning KRVG..."
-ros2 run gazebo_ros spawn_entity.py \
-    -file "$OBJECTS_DIR/krvg.sdf" \
-    -entity krvg \
-    -x $KRVG_WX -y $KRVG_WY -z $KRVG_WZ \
-    -R 3.141592 -P 0.785398 -Y $KRVG_WYAW
-
-# Koras_2F100
-echo "Spawning Koras_2F100..."
-ros2 run gazebo_ros spawn_entity.py \
-    -file "$OBJECTS_DIR/koras_2f100.sdf" \
-    -entity koras_2f100 \
-    -x $KORAS_WX -y $KORAS_WY -z $KORAS_WZ \
-    -R 3.141592 -P 0.785398 -Y $KORAS_WYAW
-
-# Tooltip_01
-echo "Spawning Tooltip_01..."
-ros2 run gazebo_ros spawn_entity.py \
-    -file "$OBJECTS_DIR/tooltip_01.sdf" \
-    -entity tooltip_01 \
-    -x $TT01_WX -y $TT01_WY -z $TT01_WZ \
-    -R 0 -P -2.356194 -Y $TT_WYAW
-
-# Tooltip_01-2
-echo "Spawning Tooltip_01_2..."
-ros2 run gazebo_ros spawn_entity.py \
-    -file "$OBJECTS_DIR/tooltip_01_2.sdf" \
-    -entity tooltip_01_2 \
-    -x $TT01_2_WX -y $TT01_2_WY -z $TT01_2_WZ \
-    -R 0 -P -2.356194 -Y $TT_WYAW
-
-# Tooltip_02
-echo "Spawning Tooltip_02..."
-ros2 run gazebo_ros spawn_entity.py \
-    -file "$OBJECTS_DIR/tooltip_02.sdf" \
-    -entity tooltip_02 \
-    -x $TT02_WX -y $TT02_WY -z $TT02_WZ \
-    -R 0 -P -2.356194 -Y $TT_WYAW
-
-# Tooltip_02-2
-echo "Spawning Tooltip_02_2..."
-ros2 run gazebo_ros spawn_entity.py \
-    -file "$OBJECTS_DIR/tooltip_02_2.sdf" \
-    -entity tooltip_02_2 \
-    -x $TT02_2_WX -y $TT02_2_WY -z $TT02_2_WZ \
-    -R 0 -P -2.356194 -Y $TT_WYAW
-
-# Tooltip_03
-echo "Spawning Tooltip_03..."
-ros2 run gazebo_ros spawn_entity.py \
-    -file "$OBJECTS_DIR/tooltip_03.sdf" \
-    -entity tooltip_03 \
-    -x $TT03_WX -y $TT03_WY -z $TT03_WZ \
-    -R 0 -P -2.356194 -Y $TT_WYAW
-
-# Tooltip_03-2
-echo "Spawning Tooltip_03_2..."
-ros2 run gazebo_ros spawn_entity.py \
-    -file "$OBJECTS_DIR/tooltip_03_2.sdf" \
-    -entity tooltip_03_2 \
-    -x $TT03_2_WX -y $TT03_2_WY -z $TT03_2_WZ \
-    -R 0 -P -2.356194 -Y $TT_WYAW
+# All 8 tools spawn from one batch_spawn.py process instead of 8 separate
+# `ros2 run spawn_entity.py` invocations. Args per object: FILE ENTITY X Y Z R P Y.
+python3 "$OBJECTS_DIR/batch_spawn.py" \
+    --obj "$OBJECTS_DIR/krvg.sdf"         krvg         $KRVG_WX   $KRVG_WY   $KRVG_WZ   3.141592 0.785398  $KRVG_WYAW \
+    --obj "$OBJECTS_DIR/koras_2f100.sdf"  koras_2f100  $KORAS_WX  $KORAS_WY  $KORAS_WZ  3.141592 0.785398  $KORAS_WYAW \
+    --obj "$OBJECTS_DIR/tooltip_01.sdf"   tooltip_01   $TT01_WX   $TT01_WY   $TT01_WZ   0        -2.356194 $TT_WYAW \
+    --obj "$OBJECTS_DIR/tooltip_01_2.sdf" tooltip_01_2 $TT01_2_WX $TT01_2_WY $TT01_2_WZ 0        -2.356194 $TT_WYAW \
+    --obj "$OBJECTS_DIR/tooltip_02.sdf"   tooltip_02   $TT02_WX   $TT02_WY   $TT02_WZ   0        -2.356194 $TT_WYAW \
+    --obj "$OBJECTS_DIR/tooltip_02_2.sdf" tooltip_02_2 $TT02_2_WX $TT02_2_WY $TT02_2_WZ 0        -2.356194 $TT_WYAW \
+    --obj "$OBJECTS_DIR/tooltip_03.sdf"   tooltip_03   $TT03_WX   $TT03_WY   $TT03_WZ   0        -2.356194 $TT_WYAW \
+    --obj "$OBJECTS_DIR/tooltip_03_2.sdf" tooltip_03_2 $TT03_2_WX $TT03_2_WY $TT03_2_WZ 0        -2.356194 $TT_WYAW
 
 echo "Done!"
 

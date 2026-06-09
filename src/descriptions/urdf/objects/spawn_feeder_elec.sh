@@ -64,16 +64,16 @@ if [ ! -f "$OBJECTS_DIR/mobile_tray_e1.sdf" ]; then
     exit 1
 fi
 
-# Spawn all trays in parallel (each tray inherits feeder yaw)
-echo "Spawning E trays in parallel..."
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mobile_tray_e1.sdf" -entity mobile_tray_e1 -x $TRAY_E1_X -y $TRAY_E1_Y -z $TRAY_E1_Z -R 0 -P 0 -Y $FEEDER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mobile_tray_e2.sdf" -entity mobile_tray_e2 -x $TRAY_E2_X -y $TRAY_E2_Y -z $TRAY_E2_Z -R 0 -P 0 -Y $FEEDER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mobile_tray_e3.sdf" -entity mobile_tray_e3 -x $TRAY_E3_X -y $TRAY_E3_Y -z $TRAY_E3_Z -R 0 -P 0 -Y $FEEDER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mobile_tray_e4.sdf" -entity mobile_tray_e4 -x $TRAY_E4_X -y $TRAY_E4_Y -z $TRAY_E4_Z -R 0 -P 0 -Y $FEEDER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mobile_tray_e5.sdf" -entity mobile_tray_e5 -x $TRAY_E5_X -y $TRAY_E5_Y -z $TRAY_E5_Z -R 0 -P 0 -Y $FEEDER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mobile_tray_e6.sdf" -entity mobile_tray_e6 -x $TRAY_E6_X -y $TRAY_E6_Y -z $TRAY_E6_Z -R 0 -P 0 -Y $FEEDER_YAW &
-wait
-echo "All E trays spawned."
+# Collect every object into one batch_spawn.py call (built up across the phases
+# below, including the TB_JOTN loops, spawned once at the end) instead of
+# launching a process per object. Args per object: FILE ENTITY X Y Z R P Y.
+SPAWN_ARGS=()
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_e1.sdf" mobile_tray_e1 $TRAY_E1_X $TRAY_E1_Y $TRAY_E1_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_e2.sdf" mobile_tray_e2 $TRAY_E2_X $TRAY_E2_Y $TRAY_E2_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_e3.sdf" mobile_tray_e3 $TRAY_E3_X $TRAY_E3_Y $TRAY_E3_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_e4.sdf" mobile_tray_e4 $TRAY_E4_X $TRAY_E4_Y $TRAY_E4_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_e5.sdf" mobile_tray_e5 $TRAY_E5_X $TRAY_E5_Y $TRAY_E5_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_e6.sdf" mobile_tray_e6 $TRAY_E6_X $TRAY_E6_Y $TRAY_E6_Z 0 0 $FEEDER_YAW)
 
 # Electrical components offsets from tray origin (in meters, converted from mm)
 MCCB_OFFSET_X=-0.0885
@@ -154,35 +154,29 @@ read SINGLE_MC3_E5_X SINGLE_MC3_E5_Y SINGLE_MC3_E5_Z <<< "$(world_from_tray $OFF
 read SMPS_E5_X SMPS_E5_Y SMPS_E5_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E5_Z $SMPS_OFFSET_X $SMPS_OFFSET_Y $SMPS_OFFSET_Z)"
 
 # Components inherit feeder yaw so they sit correctly on rotated trays
-# Spawn electrical components on E1 and E4 trays in parallel
-echo "Spawning electrical components on E1 and E4 trays in parallel..."
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mccb_abe_32b_30a.sdf" -entity mccb_abe_32b_30a_e1 -x $MCCB_E1_X -y $MCCB_E1_Y -z $MCCB_E1_Z -R 0 -P 0 -Y $FEEDER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/pdu_sps25_m66xm4.sdf" -entity pdu_sps25_m66xm4_e1_1 -x $PDU1_E1_X -y $PDU1_E1_Y -z $PDU1_E1_Z -R 0 -P 0 -Y $FEEDER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/pdu_sps25_m66xm4.sdf" -entity pdu_sps25_m66xm4_e1_2 -x $PDU2_E1_X -y $PDU2_E1_Y -z $PDU2_E1_Z -R 0 -P 0 -Y $FEEDER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/noise_filter_rms_2030_din.sdf" -entity noise_filter_rms_2030_din_e1 -x $NOISE_FILTER_E1_X -y $NOISE_FILTER_E1_Y -z $NOISE_FILTER_E1_Z -R 0 -P 0 -Y $FEEDER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/plug_socket_drc_220v_16a.sdf" -entity plug_socket_drc_220v_16a_e1 -x $PLUG_SOCKET_E1_X -y $PLUG_SOCKET_E1_Y -z $PLUG_SOCKET_E1_Z -R 0 -P 0 -Y $FEEDER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/busbar_6p.sdf" -entity busbar_6p_e1 -x $BUSBAR_E1_X -y $BUSBAR_E1_Y -z $BUSBAR_E1_Z -R 0 -P 0 -Y $FEEDER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/mccb_abe_32b_30a.sdf" -entity mccb_abe_32b_30a_e4 -x $MCCB_E4_X -y $MCCB_E4_Y -z $MCCB_E4_Z -R 0 -P 0 -Y $FEEDER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/pdu_sps25_m66xm4.sdf" -entity pdu_sps25_m66xm4_e4_1 -x $PDU1_E4_X -y $PDU1_E4_Y -z $PDU1_E4_Z -R 0 -P 0 -Y $FEEDER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/pdu_sps25_m66xm4.sdf" -entity pdu_sps25_m66xm4_e4_2 -x $PDU2_E4_X -y $PDU2_E4_Y -z $PDU2_E4_Z -R 0 -P 0 -Y $FEEDER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/noise_filter_rms_2030_din.sdf" -entity noise_filter_rms_2030_din_e4 -x $NOISE_FILTER_E4_X -y $NOISE_FILTER_E4_Y -z $NOISE_FILTER_E4_Z -R 0 -P 0 -Y $FEEDER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/plug_socket_drc_220v_16a.sdf" -entity plug_socket_drc_220v_16a_e4 -x $PLUG_SOCKET_E4_X -y $PLUG_SOCKET_E4_Y -z $PLUG_SOCKET_E4_Z -R 0 -P 0 -Y $FEEDER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/busbar_6p.sdf" -entity busbar_6p_e4 -x $BUSBAR_E4_X -y $BUSBAR_E4_Y -z $BUSBAR_E4_Z -R 0 -P 0 -Y $FEEDER_YAW &
-wait
-echo "E1 and E4 components spawned."
+# E1 and E4 tray components
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mccb_abe_32b_30a.sdf" mccb_abe_32b_30a_e1 $MCCB_E1_X $MCCB_E1_Y $MCCB_E1_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/pdu_sps25_m66xm4.sdf" pdu_sps25_m66xm4_e1_1 $PDU1_E1_X $PDU1_E1_Y $PDU1_E1_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/pdu_sps25_m66xm4.sdf" pdu_sps25_m66xm4_e1_2 $PDU2_E1_X $PDU2_E1_Y $PDU2_E1_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/noise_filter_rms_2030_din.sdf" noise_filter_rms_2030_din_e1 $NOISE_FILTER_E1_X $NOISE_FILTER_E1_Y $NOISE_FILTER_E1_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/plug_socket_drc_220v_16a.sdf" plug_socket_drc_220v_16a_e1 $PLUG_SOCKET_E1_X $PLUG_SOCKET_E1_Y $PLUG_SOCKET_E1_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/busbar_6p.sdf" busbar_6p_e1 $BUSBAR_E1_X $BUSBAR_E1_Y $BUSBAR_E1_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mccb_abe_32b_30a.sdf" mccb_abe_32b_30a_e4 $MCCB_E4_X $MCCB_E4_Y $MCCB_E4_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/pdu_sps25_m66xm4.sdf" pdu_sps25_m66xm4_e4_1 $PDU1_E4_X $PDU1_E4_Y $PDU1_E4_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/pdu_sps25_m66xm4.sdf" pdu_sps25_m66xm4_e4_2 $PDU2_E4_X $PDU2_E4_Y $PDU2_E4_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/noise_filter_rms_2030_din.sdf" noise_filter_rms_2030_din_e4 $NOISE_FILTER_E4_X $NOISE_FILTER_E4_Y $NOISE_FILTER_E4_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/plug_socket_drc_220v_16a.sdf" plug_socket_drc_220v_16a_e4 $PLUG_SOCKET_E4_X $PLUG_SOCKET_E4_Y $PLUG_SOCKET_E4_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/busbar_6p.sdf" busbar_6p_e4 $BUSBAR_E4_X $BUSBAR_E4_Y $BUSBAR_E4_Z 0 0 $FEEDER_YAW)
 
-# Spawn electrical components on E2 and E5 trays in parallel
-echo "Spawning electrical components on E2 and E5 trays in parallel..."
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" -entity single_mc_gmc_e2_1 -x $SINGLE_MC1_E2_X -y $SINGLE_MC1_E2_Y -z $SINGLE_MC1_E2_Z -R 0 -P 0 -Y $FEEDER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" -entity single_mc_gmc_e2_2 -x $SINGLE_MC2_E2_X -y $SINGLE_MC2_E2_Y -z $SINGLE_MC2_E2_Z -R 0 -P 0 -Y $FEEDER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" -entity single_mc_gmc_e2_3 -x $SINGLE_MC3_E2_X -y $SINGLE_MC3_E2_Y -z $SINGLE_MC3_E2_Z -R 0 -P 0 -Y $FEEDER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/smps_wdr_120_24v.sdf" -entity smps_wdr_120_24v_e2 -x $SMPS_E2_X -y $SMPS_E2_Y -z $SMPS_E2_Z -R 0 -P 0 -Y $FEEDER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" -entity single_mc_gmc_e5_1 -x $SINGLE_MC1_E5_X -y $SINGLE_MC1_E5_Y -z $SINGLE_MC1_E5_Z -R 0 -P 0 -Y $FEEDER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" -entity single_mc_gmc_e5_2 -x $SINGLE_MC2_E5_X -y $SINGLE_MC2_E5_Y -z $SINGLE_MC2_E5_Z -R 0 -P 0 -Y $FEEDER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" -entity single_mc_gmc_e5_3 -x $SINGLE_MC3_E5_X -y $SINGLE_MC3_E5_Y -z $SINGLE_MC3_E5_Z -R 0 -P 0 -Y $FEEDER_YAW &
-ros2 run gazebo_ros spawn_entity.py -file "$OBJECTS_DIR/smps_wdr_120_24v.sdf" -entity smps_wdr_120_24v_e5 -x $SMPS_E5_X -y $SMPS_E5_Y -z $SMPS_E5_Z -R 0 -P 0 -Y $FEEDER_YAW &
-wait
-echo "E2 and E5 components spawned."
+# E2 and E5 tray components
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" single_mc_gmc_e2_1 $SINGLE_MC1_E2_X $SINGLE_MC1_E2_Y $SINGLE_MC1_E2_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" single_mc_gmc_e2_2 $SINGLE_MC2_E2_X $SINGLE_MC2_E2_Y $SINGLE_MC2_E2_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" single_mc_gmc_e2_3 $SINGLE_MC3_E2_X $SINGLE_MC3_E2_Y $SINGLE_MC3_E2_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/smps_wdr_120_24v.sdf" smps_wdr_120_24v_e2 $SMPS_E2_X $SMPS_E2_Y $SMPS_E2_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" single_mc_gmc_e5_1 $SINGLE_MC1_E5_X $SINGLE_MC1_E5_Y $SINGLE_MC1_E5_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" single_mc_gmc_e5_2 $SINGLE_MC2_E5_X $SINGLE_MC2_E5_Y $SINGLE_MC2_E5_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" single_mc_gmc_e5_3 $SINGLE_MC3_E5_X $SINGLE_MC3_E5_Y $SINGLE_MC3_E5_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/smps_wdr_120_24v.sdf" smps_wdr_120_24v_e5 $SMPS_E5_X $SMPS_E5_Y $SMPS_E5_Z 0 0 $FEEDER_YAW)
 
 # TB_JOTN-15A grid for E3 and E6 trays
 TB_OFFSET_Z=0.002
@@ -209,68 +203,49 @@ echo "Spawning TB_JOTN-15A grid on E3 tray (2x8 = 16 units)..."
 for i in 1 2 3 4 5 6 7 8; do
     eval "TB_X=\$TB_X$i"
     read TB_POS_X TB_POS_Y TB_POS_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E3_Z $TB_X $TB_Y1 $TB_OFFSET_Z)"
-    echo "  - TB_JOTN-15A_${i}_1 at ($TB_POS_X, $TB_POS_Y, $TB_POS_Z)"
-    ros2 run gazebo_ros spawn_entity.py \
-        -file "$OBJECTS_DIR/tb_jotn_15a.sdf" \
-        -entity tb_jotn_15a_e3_${i}_1 \
-        -x $TB_POS_X -y $TB_POS_Y -z $TB_POS_Z -R 0 -P 0 -Y $FEEDER_YAW
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/tb_jotn_15a.sdf" tb_jotn_15a_e3_${i}_1 $TB_POS_X $TB_POS_Y $TB_POS_Z 0 0 $FEEDER_YAW)
 done
 
 # Row 2 (Y = 7.5mm)
 for i in 1 2 3 4 5 6 7 8; do
     eval "TB_X=\$TB_X$i"
     read TB_POS_X TB_POS_Y TB_POS_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E3_Z $TB_X $TB_Y2 $TB_OFFSET_Z)"
-    echo "  - TB_JOTN-15A_${i}_2 at ($TB_POS_X, $TB_POS_Y, $TB_POS_Z)"
-    ros2 run gazebo_ros spawn_entity.py \
-        -file "$OBJECTS_DIR/tb_jotn_15a.sdf" \
-        -entity tb_jotn_15a_e3_${i}_2 \
-        -x $TB_POS_X -y $TB_POS_Y -z $TB_POS_Z -R 0 -P 0 -Y $FEEDER_YAW
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/tb_jotn_15a.sdf" tb_jotn_15a_e3_${i}_2 $TB_POS_X $TB_POS_Y $TB_POS_Z 0 0 $FEEDER_YAW)
 done
 
-echo "E3 TB_JOTN-15A spawned."
-
 # Spawn TB_JOTN-15A on E6 tray (16 units)
-echo ""
-echo "Spawning TB_JOTN-15A grid on E6 tray (2x8 = 16 units)..."
+echo "Queueing TB_JOTN-15A grid on E6 tray (2x8 = 16 units)..."
 
 # Row 1 (Y = -67.5mm)
 for i in 1 2 3 4 5 6 7 8; do
     eval "TB_X=\$TB_X$i"
     read TB_POS_X TB_POS_Y TB_POS_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E6_Z $TB_X $TB_Y1 $TB_OFFSET_Z)"
-    echo "  - TB_JOTN-15A_${i}_1 at ($TB_POS_X, $TB_POS_Y, $TB_POS_Z)"
-    ros2 run gazebo_ros spawn_entity.py \
-        -file "$OBJECTS_DIR/tb_jotn_15a.sdf" \
-        -entity tb_jotn_15a_e6_${i}_1 \
-        -x $TB_POS_X -y $TB_POS_Y -z $TB_POS_Z -R 0 -P 0 -Y $FEEDER_YAW
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/tb_jotn_15a.sdf" tb_jotn_15a_e6_${i}_1 $TB_POS_X $TB_POS_Y $TB_POS_Z 0 0 $FEEDER_YAW)
 done
 
 # Row 2 (Y = 7.5mm)
 for i in 1 2 3 4 5 6 7 8; do
     eval "TB_X=\$TB_X$i"
     read TB_POS_X TB_POS_Y TB_POS_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E6_Z $TB_X $TB_Y2 $TB_OFFSET_Z)"
-    echo "  - TB_JOTN-15A_${i}_2 at ($TB_POS_X, $TB_POS_Y, $TB_POS_Z)"
-    ros2 run gazebo_ros spawn_entity.py \
-        -file "$OBJECTS_DIR/tb_jotn_15a.sdf" \
-        -entity tb_jotn_15a_e6_${i}_2 \
-        -x $TB_POS_X -y $TB_POS_Y -z $TB_POS_Z -R 0 -P 0 -Y $FEEDER_YAW
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/tb_jotn_15a.sdf" tb_jotn_15a_e6_${i}_2 $TB_POS_X $TB_POS_Y $TB_POS_Z 0 0 $FEEDER_YAW)
 done
 
-echo "E6 TB_JOTN-15A spawned."
+# Spawn all 58 objects from a single process
+echo "Spawning all elec objects (single batch)..."
+python3 "$OBJECTS_DIR/batch_spawn.py" "${SPAWN_ARGS[@]}"
 
 echo ""
 echo "All E trays and electrical components spawned successfully!"
 
-# Wait for physics to settle before attaching
-echo "Waiting for physics to settle before attaching objects to trays..."
-sleep 2
+# Objects have gravity disabled, so they don't fall after spawn; a brief pause
+# just lets the new models register before the link_attacher references them.
+sleep 0.3
 
-attach_to_tray() {
-    local obj="$1"
-    local tray="$2"
-    echo "Attaching $obj to $tray..."
-    ros2 service call /ATTACHLINK linkattacher_msgs/srv/AttachLink \
-        "{model1_name: '$tray', link1_name: 'link', model2_name: '$obj', link2_name: 'link'}" \
-        > /dev/null
+# Queue all attachments, then run them from one batch_attach.py process instead
+# of a separate `ros2 service call` per object.
+ATTACH_ARGS=()
+attach_to_tray() {  # $1 = object, $2 = tray (both attach via their 'link')
+    ATTACH_ARGS+=(--attach "$2" link "$1" link)
 }
 
 # E1 tray components
@@ -311,4 +286,6 @@ for i in 1 2 3 4 5 6 7 8; do
     attach_to_tray tb_jotn_15a_e6_${i}_2 mobile_tray_e6
 done
 
+echo "Attaching all elec objects to trays (single batch)..."
+python3 "$OBJECTS_DIR/batch_attach.py" "${ATTACH_ARGS[@]}"
 echo "All elec objects attached to trays."

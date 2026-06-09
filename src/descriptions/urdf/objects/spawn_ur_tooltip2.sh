@@ -43,45 +43,21 @@ TOOL_YAW=$(awk "BEGIN {print $TF_YAW + 3.141592}")
 
 echo "  Adjusted (RPY): R=$TOOL_ROLL, P=$TOOL_PITCH, Y=$TOOL_YAW"
 
-# Spawn Tooltip 02 
+# Spawn all three tools (tooltip_02, tooltip_02_2, krvg) in one batch process,
+# then attach each to the quickchanger.
 echo ""
-echo "Spawning Tooltip 02 at ($TOOL_X, $TOOL_Y, $TOOL_Z) with rotation ($TOOL_ROLL, $TOOL_PITCH, $TOOL_YAW)"
-ros2 run gazebo_ros spawn_entity.py \
-    -file "$OBJECTS_DIR/tooltip_02.sdf" \
-    -entity tooltip_02 \
-    -x $TOOL_X -y $TOOL_Y -z $TOOL_Z \
-    -R $TOOL_ROLL -P $TOOL_PITCH -Y $TOOL_YAW
+echo "Spawning tooltip_02, tooltip_02_2, krvg at ($TOOL_X, $TOOL_Y, $TOOL_Z) rot ($TOOL_ROLL, $TOOL_PITCH, $TOOL_YAW)"
+python3 "$OBJECTS_DIR/batch_spawn.py" \
+    --obj "$OBJECTS_DIR/tooltip_02.sdf"   tooltip_02   $TOOL_X $TOOL_Y $TOOL_Z $TOOL_ROLL $TOOL_PITCH $TOOL_YAW \
+    --obj "$OBJECTS_DIR/tooltip_02_2.sdf" tooltip_02_2 $TOOL_X $TOOL_Y $TOOL_Z $TOOL_ROLL $TOOL_PITCH $TOOL_YAW \
+    --obj "$OBJECTS_DIR/krvg.sdf"         krvg         $TOOL_X $TOOL_Y $TOOL_Z $TOOL_ROLL $TOOL_PITCH $TOOL_YAW
 
-# Attach Tooltip 02 to quickchanger
-echo "Attaching tooltip_02 to quickchanger_link..."
-ros2 service call /ATTACHLINK linkattacher_msgs/srv/AttachLink "{model1_name: 'ur', link1_name: 'quickchanger_link', model2_name: 'tooltip_02', link2_name: 'link'}"
-
-
-# Spawn Tooltip 02_2 
-echo ""
-echo "Spawning Tooltip 02_2 at ($TOOL_X, $TOOL_Y, $TOOL_Z) with rotation ($TOOL_ROLL, $TOOL_PITCH, $TOOL_YAW)"
-ros2 run gazebo_ros spawn_entity.py \
-    -file "$OBJECTS_DIR/tooltip_02_2.sdf" \
-    -entity tooltip_02_2 \
-    -x $TOOL_X -y $TOOL_Y -z $TOOL_Z \
-    -R $TOOL_ROLL -P $TOOL_PITCH -Y $TOOL_YAW
-
-# Attach Tooltip 02_2 to quickchanger
-echo "Attaching tooltip_02_2 to quickchanger_link..."
-ros2 service call /ATTACHLINK linkattacher_msgs/srv/AttachLink "{model1_name: 'ur', link1_name: 'quickchanger_link', model2_name: 'tooltip_02_2', link2_name: 'link'}"
-
-# Spawn KRVG 
-echo ""
-echo "Spawning KRVG at ($TOOL_X, $TOOL_Y, $TOOL_Z) with rotation ($TOOL_ROLL, $TOOL_PITCH, $TOOL_YAW)"
-ros2 run gazebo_ros spawn_entity.py \
-    -file "$OBJECTS_DIR/krvg.sdf" \
-    -entity krvg \
-    -x $TOOL_X -y $TOOL_Y -z $TOOL_Z \
-    -R $TOOL_ROLL -P $TOOL_PITCH -Y $TOOL_YAW
-
-# Attach KRVG (suction) to quickchanger
-echo "Attaching krvg to quickchanger_link..."
-ros2 service call /ATTACHLINK linkattacher_msgs/srv/AttachLink "{model1_name: 'ur', link1_name: 'quickchanger_link', model2_name: 'krvg', link2_name: 'link'}"
+# Attach all three tools to quickchanger from one batch_attach.py process
+echo "Attaching tooltip_02, tooltip_02_2, krvg to quickchanger_link..."
+python3 "$OBJECTS_DIR/batch_attach.py" \
+    --attach ur quickchanger_link tooltip_02   link \
+    --attach ur quickchanger_link tooltip_02_2 link \
+    --attach ur quickchanger_link krvg         link
 
 echo ""
 echo "Tools spawned successfully!"
