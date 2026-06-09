@@ -788,14 +788,8 @@ class MainWindow(QMainWindow):
             
             # Set flag only after successful spawn
             self.tooltip_spawned = tooltip_id
-
-            if replacing:
-                complete_msg = f"Replaced {previous.capitalize()} with {tooltip_name} + Toolchanger Tools"
-            else:
-                complete_msg = f"All {tooltip_name} + Toolchanger Tools spawned successfully"
-            QMessageBox.information(self, "Spawn Complete", complete_msg)
             print(f"Spawned Objects: {tooltip_name} + Toolchanger Tools")
-            
+
             # Automatically attach tooltips to adapters
             # Determine which tooltips were spawned based on tooltip_name
             if "1" in tooltip_name:
@@ -809,7 +803,7 @@ class MainWindow(QMainWindow):
                 tooltip2_entity = "tooltip_03_2"
             else:
                 return  # Unknown tooltip name
-            
+
             # Attach first tooltip to adapter 1
             print(f"Attaching {tooltip1_entity} to tooltip_adapter_1_link...")
             success1 = self.attach_tooltip_to_adapter(tooltip1_entity, "tooltip_adapter_1_link")
@@ -817,11 +811,11 @@ class MainWindow(QMainWindow):
                 print(f"Warning: Failed to attach {tooltip1_entity} to tooltip_adapter_1_link")
             else:
                 print(f"Successfully attached {tooltip1_entity} to tooltip_adapter_1_link")
-            
+
             # Longer delay between attachments to ensure first attachment completes
             print("Waiting before attaching second tooltip...")
             time.sleep(1.0)
-            
+
             # Attach second tooltip to adapter 2
             print(f"Attaching {tooltip2_entity} to tooltip_adapter_2_link...")
             success2 = self.attach_tooltip_to_adapter(tooltip2_entity, "tooltip_adapter_2_link")
@@ -829,6 +823,26 @@ class MainWindow(QMainWindow):
                 print(f"Warning: Failed to attach {tooltip2_entity} to tooltip_adapter_2_link")
             else:
                 print(f"Successfully attached {tooltip2_entity} to tooltip_adapter_2_link")
+
+            # Now that spawning AND attaching are done, report the final result.
+            action = "Replaced" if replacing else "Spawned"
+            prefix = f"{action} {previous.capitalize()} with {tooltip_name}" if replacing else f"{tooltip_name}"
+            if success1 and success2:
+                QMessageBox.information(
+                    self, "Spawn Complete",
+                    f"{prefix} + Toolchanger Tools spawned and both tooltips attached to adapters."
+                )
+            else:
+                failed = []
+                if not success1:
+                    failed.append(f"{tooltip1_entity} → adapter 1")
+                if not success2:
+                    failed.append(f"{tooltip2_entity} → adapter 2")
+                QMessageBox.warning(
+                    self, "Spawned, Attach Incomplete",
+                    f"{prefix} + Toolchanger Tools spawned, but failed to attach:\n"
+                    + "\n".join(failed)
+                )
         except Exception as e:
             error_msg = f"Error running scripts: {str(e)}"
             print(error_msg)
