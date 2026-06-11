@@ -68,12 +68,12 @@ fi
 # below, including the TB_JOTN loops, spawned once at the end) instead of
 # launching a process per object. Args per object: FILE ENTITY X Y Z R P Y.
 SPAWN_ARGS=()
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_e1.sdf" mobile_tray_e1 $TRAY_E1_X $TRAY_E1_Y $TRAY_E1_Z 0 0 $FEEDER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_e2.sdf" mobile_tray_e2 $TRAY_E2_X $TRAY_E2_Y $TRAY_E2_Z 0 0 $FEEDER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_e3.sdf" mobile_tray_e3 $TRAY_E3_X $TRAY_E3_Y $TRAY_E3_Z 0 0 $FEEDER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_e4.sdf" mobile_tray_e4 $TRAY_E4_X $TRAY_E4_Y $TRAY_E4_Z 0 0 $FEEDER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_e5.sdf" mobile_tray_e5 $TRAY_E5_X $TRAY_E5_Y $TRAY_E5_Z 0 0 $FEEDER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_e6.sdf" mobile_tray_e6 $TRAY_E6_X $TRAY_E6_Y $TRAY_E6_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_e1.sdf" mobile_tray1 $TRAY_E1_X $TRAY_E1_Y $TRAY_E1_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_e2.sdf" mobile_tray2 $TRAY_E2_X $TRAY_E2_Y $TRAY_E2_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_e3.sdf" mobile_tray3 $TRAY_E3_X $TRAY_E3_Y $TRAY_E3_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_e4.sdf" mobile_tray4 $TRAY_E4_X $TRAY_E4_Y $TRAY_E4_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_e5.sdf" mobile_tray5 $TRAY_E5_X $TRAY_E5_Y $TRAY_E5_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_e6.sdf" mobile_tray6 $TRAY_E6_X $TRAY_E6_Y $TRAY_E6_Z 0 0 $FEEDER_YAW)
 
 # Electrical components offsets from tray origin (in meters, converted from mm)
 MCCB_OFFSET_X=-0.0885
@@ -249,41 +249,41 @@ attach_to_tray() {  # $1 = object, $2 = tray (both attach via their 'link')
 }
 
 # E1 tray components
-attach_to_tray mccb_abe_32b_30a_e1 mobile_tray_e1
-attach_to_tray pdu_sps25_m66xm4_e1_1 mobile_tray_e1
-attach_to_tray pdu_sps25_m66xm4_e1_2 mobile_tray_e1
-attach_to_tray noise_filter_rms_2030_din_e1 mobile_tray_e1
-attach_to_tray plug_socket_drc_220v_16a_e1 mobile_tray_e1
-attach_to_tray busbar_6p_e1 mobile_tray_e1
+attach_to_tray mccb_abe_32b_30a_e1 mobile_tray1
+attach_to_tray pdu_sps25_m66xm4_e1_1 mobile_tray1
+attach_to_tray pdu_sps25_m66xm4_e1_2 mobile_tray1
+attach_to_tray noise_filter_rms_2030_din_e1 mobile_tray1
+attach_to_tray plug_socket_drc_220v_16a_e1 mobile_tray1
+attach_to_tray busbar_6p_e1 mobile_tray1
 
 # E4 tray components
-attach_to_tray mccb_abe_32b_30a_e4 mobile_tray_e4
-attach_to_tray pdu_sps25_m66xm4_e4_1 mobile_tray_e4
-attach_to_tray pdu_sps25_m66xm4_e4_2 mobile_tray_e4
-attach_to_tray noise_filter_rms_2030_din_e4 mobile_tray_e4
-attach_to_tray plug_socket_drc_220v_16a_e4 mobile_tray_e4
-attach_to_tray busbar_6p_e4 mobile_tray_e4
+attach_to_tray mccb_abe_32b_30a_e4 mobile_tray4
+attach_to_tray pdu_sps25_m66xm4_e4_1 mobile_tray4
+attach_to_tray pdu_sps25_m66xm4_e4_2 mobile_tray4
+attach_to_tray noise_filter_rms_2030_din_e4 mobile_tray4
+attach_to_tray plug_socket_drc_220v_16a_e4 mobile_tray4
+attach_to_tray busbar_6p_e4 mobile_tray4
 
 # E2 tray components
-attach_to_tray single_mc_gmc_e2_1 mobile_tray_e2
-attach_to_tray single_mc_gmc_e2_2 mobile_tray_e2
-attach_to_tray single_mc_gmc_e2_3 mobile_tray_e2
-attach_to_tray smps_wdr_120_24v_e2 mobile_tray_e2
+attach_to_tray single_mc_gmc_e2_1 mobile_tray2
+attach_to_tray single_mc_gmc_e2_2 mobile_tray2
+attach_to_tray single_mc_gmc_e2_3 mobile_tray2
+attach_to_tray smps_wdr_120_24v_e2 mobile_tray2
 
 # E5 tray components
-attach_to_tray single_mc_gmc_e5_1 mobile_tray_e5
-attach_to_tray single_mc_gmc_e5_2 mobile_tray_e5
-attach_to_tray single_mc_gmc_e5_3 mobile_tray_e5
-attach_to_tray smps_wdr_120_24v_e5 mobile_tray_e5
+attach_to_tray single_mc_gmc_e5_1 mobile_tray5
+attach_to_tray single_mc_gmc_e5_2 mobile_tray5
+attach_to_tray single_mc_gmc_e5_3 mobile_tray5
+attach_to_tray smps_wdr_120_24v_e5 mobile_tray5
 
 # E3 and E6 terminal blocks
 for i in 1 2 3 4 5 6 7 8; do
-    attach_to_tray tb_jotn_15a_e3_${i}_1 mobile_tray_e3
-    attach_to_tray tb_jotn_15a_e3_${i}_2 mobile_tray_e3
+    attach_to_tray tb_jotn_15a_e3_${i}_1 mobile_tray3
+    attach_to_tray tb_jotn_15a_e3_${i}_2 mobile_tray3
 done
 for i in 1 2 3 4 5 6 7 8; do
-    attach_to_tray tb_jotn_15a_e6_${i}_1 mobile_tray_e6
-    attach_to_tray tb_jotn_15a_e6_${i}_2 mobile_tray_e6
+    attach_to_tray tb_jotn_15a_e6_${i}_1 mobile_tray6
+    attach_to_tray tb_jotn_15a_e6_${i}_2 mobile_tray6
 done
 
 echo "Attaching all elec objects to trays (single batch)..."

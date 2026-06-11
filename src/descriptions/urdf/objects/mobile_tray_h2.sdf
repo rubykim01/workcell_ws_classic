@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <sdf version="1.6">
-  <model name="mobile_tray_h2">
+  <model name="mobile_tray2">
     <link name="link">
       <gravity>false</gravity>
       <visual name="visual">

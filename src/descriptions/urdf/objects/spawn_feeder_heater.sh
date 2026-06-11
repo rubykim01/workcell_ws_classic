@@ -88,11 +88,11 @@ fi
 # below, spawned once at the end) instead of launching a process per object.
 # Args per object: FILE ENTITY X Y Z R P Y.
 SPAWN_ARGS=()
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_h1.sdf" mobile_tray_h1 $TRAY_H1_X $TRAY_H1_Y $TRAY_H1_Z 0 0 $FEEDER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_h2.sdf" mobile_tray_h2 $TRAY_H2_X $TRAY_H2_Y $TRAY_H2_Z 0 0 $FEEDER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_h3.sdf" mobile_tray_h3 $TRAY_H3_X $TRAY_H3_Y $TRAY_H3_Z 0 0 $FEEDER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_h4.sdf" mobile_tray_h4 $TRAY_H4_X $TRAY_H4_Y $TRAY_H4_Z 0 0 $FEEDER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_h5.sdf" mobile_tray_h5 $TRAY_H5_X $TRAY_H5_Y $TRAY_H5_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_h1.sdf" mobile_tray1 $TRAY_H1_X $TRAY_H1_Y $TRAY_H1_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_h2.sdf" mobile_tray2 $TRAY_H2_X $TRAY_H2_Y $TRAY_H2_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_h3.sdf" mobile_tray3 $TRAY_H3_X $TRAY_H3_Y $TRAY_H3_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_h4.sdf" mobile_tray4 $TRAY_H4_X $TRAY_H4_Y $TRAY_H4_Z 0 0 $FEEDER_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mobile_tray_h5.sdf" mobile_tray5 $TRAY_H5_X $TRAY_H5_Y $TRAY_H5_Z 0 0 $FEEDER_YAW)
 
 # Cover positions for Tray 1 and Tray 4 (combine in feeder-local frame, then rotate)
 read COVER_T1_1ST_X COVER_T1_1ST_Y COVER_T1_1ST_Z <<< "$(world_xyz \
@@ -170,24 +170,24 @@ attach_to_tray() {  # $1 = object, $2 = tray (both attach via their 'link')
 }
 
 # Tray 1 covers
-attach_to_tray heating_plate_cover_t1_1st mobile_tray_h1
-attach_to_tray heating_plate_cover_t1_2nd mobile_tray_h1
+attach_to_tray heating_plate_cover_t1_1st mobile_tray1
+attach_to_tray heating_plate_cover_t1_2nd mobile_tray1
 # Tray 2 plates
-attach_to_tray heating_plate_t2_1st mobile_tray_h2
-attach_to_tray heating_plate_t2_2nd mobile_tray_h2
+attach_to_tray heating_plate_t2_1st mobile_tray2
+attach_to_tray heating_plate_t2_2nd mobile_tray2
 # Tray 3 cover3
-attach_to_tray heating_plate_cover3_1_t3_1 mobile_tray_h3
-attach_to_tray heating_plate_cover3_2_t3_2 mobile_tray_h3
-attach_to_tray heating_plate_cover3_1_t3_3 mobile_tray_h3
-attach_to_tray heating_plate_cover3_2_t3_4 mobile_tray_h3
-attach_to_tray heating_plate_cover3_1_t3_5 mobile_tray_h3
-attach_to_tray heating_plate_cover3_2_t3_6 mobile_tray_h3
+attach_to_tray heating_plate_cover3_1_t3_1 mobile_tray3
+attach_to_tray heating_plate_cover3_2_t3_2 mobile_tray3
+attach_to_tray heating_plate_cover3_1_t3_3 mobile_tray3
+attach_to_tray heating_plate_cover3_2_t3_4 mobile_tray3
+attach_to_tray heating_plate_cover3_1_t3_5 mobile_tray3
+attach_to_tray heating_plate_cover3_2_t3_6 mobile_tray3
 # Tray 4 covers
-attach_to_tray heating_plate_cover_t4_1st mobile_tray_h4
-attach_to_tray heating_plate_cover_t4_2nd mobile_tray_h4
+attach_to_tray heating_plate_cover_t4_1st mobile_tray4
+attach_to_tray heating_plate_cover_t4_2nd mobile_tray4
 # Tray 5 plates
-attach_to_tray heating_plate_t5_1st mobile_tray_h5
-attach_to_tray heating_plate_t5_2nd mobile_tray_h5
+attach_to_tray heating_plate_t5_1st mobile_tray5
+attach_to_tray heating_plate_t5_2nd mobile_tray5
 
 echo "Attaching all heater objects to trays (single batch)..."
 python3 "$OBJECTS_DIR/batch_attach.py" "${ATTACH_ARGS[@]}"

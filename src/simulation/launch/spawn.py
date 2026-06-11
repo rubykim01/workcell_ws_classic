@@ -497,7 +497,7 @@ class MainWindow(QMainWindow):
     # feeder type deletes the current set (these are free objects, not attached)
     # before spawning the new one.
     HEATER_ENTITIES = (
-        [f"mobile_tray_h{i}" for i in range(1, 6)]
+        [f"mobile_tray{i}" for i in range(1, 6)]
         + ["heating_plate_cover_t1_1st", "heating_plate_cover_t1_2nd",
            "heating_plate_cover_t4_1st", "heating_plate_cover_t4_2nd",
            "heating_plate_t2_1st", "heating_plate_t2_2nd",
@@ -508,7 +508,7 @@ class MainWindow(QMainWindow):
     )
 
     ELEC_ENTITIES = (
-        [f"mobile_tray_e{i}" for i in range(1, 7)]
+        [f"mobile_tray{i}" for i in range(1, 7)]
         + [f"mccb_abe_32b_30a_e{t}" for t in (1, 4)]
         + [f"pdu_sps25_m66xm4_e{t}_{n}" for t in (1, 4) for n in (1, 2)]
         + [f"noise_filter_rms_2030_din_e{t}" for t in (1, 4)]
