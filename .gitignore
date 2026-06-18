@@ -4,3 +4,7 @@
 build/
 install/
 log/
+
+# Python bytecode
+__pycache__/
+*.pyc
