@@ -1,7 +1,17 @@
 #!/bin/bash
 
 # Script to spawn mobile trays E1-E6 on feeder base (for electronics)
-# Usage: ./spawn_feeder_elec.sh
+# Usage: ./spawn_feeder_elec.sh [CYCLE]
+#   CYCLE 1 (default): trays 1,2,3 are loaded with objects; trays 4,5,6 are bare.
+#   CYCLE 2          : trays 4,5,6 are loaded with objects; trays 1,2,3 are bare.
+# All 6 trays are always spawned either way; only the object set differs.
+
+CYCLE="${1:-1}"
+if [ "$CYCLE" != "1" ] && [ "$CYCLE" != "2" ]; then
+    echo "Error: CYCLE must be 1 or 2 (got '$CYCLE')"
+    exit 1
+fi
+echo "Elec cycle: $CYCLE"
 
 # Get the current workspace directory dynamically
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -153,30 +163,36 @@ read SINGLE_MC2_E5_X SINGLE_MC2_E5_Y SINGLE_MC2_E5_Z <<< "$(world_from_tray $OFF
 read SINGLE_MC3_E5_X SINGLE_MC3_E5_Y SINGLE_MC3_E5_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E5_Z $SINGLE_MC3_OFFSET_X $SINGLE_MC3_OFFSET_Y $SINGLE_MC3_OFFSET_Z)"
 read SMPS_E5_X SMPS_E5_Y SMPS_E5_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E5_Z $SMPS_OFFSET_X $SMPS_OFFSET_Y $SMPS_OFFSET_Z)"
 
-# Components inherit feeder yaw so they sit correctly on rotated trays
-# E1 and E4 tray components
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mccb_abe_32b_30a.sdf" mccb_abe_32b_30a_e1 $MCCB_E1_X $MCCB_E1_Y $MCCB_E1_Z 0 0 $FEEDER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/pdu_sps25_m66xm4.sdf" pdu_sps25_m66xm4_e1_1 $PDU1_E1_X $PDU1_E1_Y $PDU1_E1_Z 0 0 $FEEDER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/pdu_sps25_m66xm4.sdf" pdu_sps25_m66xm4_e1_2 $PDU2_E1_X $PDU2_E1_Y $PDU2_E1_Z 0 0 $FEEDER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/noise_filter_rms_2030_din.sdf" noise_filter_rms_2030_din_e1 $NOISE_FILTER_E1_X $NOISE_FILTER_E1_Y $NOISE_FILTER_E1_Z 0 0 $FEEDER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/plug_socket_drc_220v_16a.sdf" plug_socket_drc_220v_16a_e1 $PLUG_SOCKET_E1_X $PLUG_SOCKET_E1_Y $PLUG_SOCKET_E1_Z 0 0 $FEEDER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/busbar_6p.sdf" busbar_6p_e1 $BUSBAR_E1_X $BUSBAR_E1_Y $BUSBAR_E1_Z 0 0 $FEEDER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mccb_abe_32b_30a.sdf" mccb_abe_32b_30a_e4 $MCCB_E4_X $MCCB_E4_Y $MCCB_E4_Z 0 0 $FEEDER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/pdu_sps25_m66xm4.sdf" pdu_sps25_m66xm4_e4_1 $PDU1_E4_X $PDU1_E4_Y $PDU1_E4_Z 0 0 $FEEDER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/pdu_sps25_m66xm4.sdf" pdu_sps25_m66xm4_e4_2 $PDU2_E4_X $PDU2_E4_Y $PDU2_E4_Z 0 0 $FEEDER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/noise_filter_rms_2030_din.sdf" noise_filter_rms_2030_din_e4 $NOISE_FILTER_E4_X $NOISE_FILTER_E4_Y $NOISE_FILTER_E4_Z 0 0 $FEEDER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/plug_socket_drc_220v_16a.sdf" plug_socket_drc_220v_16a_e4 $PLUG_SOCKET_E4_X $PLUG_SOCKET_E4_Y $PLUG_SOCKET_E4_Z 0 0 $FEEDER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/busbar_6p.sdf" busbar_6p_e4 $BUSBAR_E4_X $BUSBAR_E4_Y $BUSBAR_E4_Z 0 0 $FEEDER_YAW)
-
-# E2 and E5 tray components
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" single_mc_gmc_e2_1 $SINGLE_MC1_E2_X $SINGLE_MC1_E2_Y $SINGLE_MC1_E2_Z 0 0 $FEEDER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" single_mc_gmc_e2_2 $SINGLE_MC2_E2_X $SINGLE_MC2_E2_Y $SINGLE_MC2_E2_Z 0 0 $FEEDER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" single_mc_gmc_e2_3 $SINGLE_MC3_E2_X $SINGLE_MC3_E2_Y $SINGLE_MC3_E2_Z 0 0 $FEEDER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/smps_wdr_120_24v.sdf" smps_wdr_120_24v_e2 $SMPS_E2_X $SMPS_E2_Y $SMPS_E2_Z 0 0 $FEEDER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" single_mc_gmc_e5_1 $SINGLE_MC1_E5_X $SINGLE_MC1_E5_Y $SINGLE_MC1_E5_Z 0 0 $FEEDER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" single_mc_gmc_e5_2 $SINGLE_MC2_E5_X $SINGLE_MC2_E5_Y $SINGLE_MC2_E5_Z 0 0 $FEEDER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" single_mc_gmc_e5_3 $SINGLE_MC3_E5_X $SINGLE_MC3_E5_Y $SINGLE_MC3_E5_Z 0 0 $FEEDER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/smps_wdr_120_24v.sdf" smps_wdr_120_24v_e5 $SMPS_E5_X $SMPS_E5_Y $SMPS_E5_Z 0 0 $FEEDER_YAW)
+# Components inherit feeder yaw so they sit correctly on rotated trays.
+# Only the selected cycle's trays are loaded: cycle 1 loads trays 1,2,3 and
+# cycle 2 loads trays 4,5,6. Unloaded trays remain spawned but bare.
+if [ "$CYCLE" = "1" ]; then
+    # E1 tray components
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mccb_abe_32b_30a.sdf" mccb_abe_32b_30a $MCCB_E1_X $MCCB_E1_Y $MCCB_E1_Z 0 0 $FEEDER_YAW)
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/pdu_sps25_m66xm4.sdf" pdu_sps25_m66xm4_1 $PDU1_E1_X $PDU1_E1_Y $PDU1_E1_Z 0 0 $FEEDER_YAW)
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/pdu_sps25_m66xm4.sdf" pdu_sps25_m66xm4_2 $PDU2_E1_X $PDU2_E1_Y $PDU2_E1_Z 0 0 $FEEDER_YAW)
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/noise_filter_rms_2030_din.sdf" noise_filter_rms_2030_din $NOISE_FILTER_E1_X $NOISE_FILTER_E1_Y $NOISE_FILTER_E1_Z 0 0 $FEEDER_YAW)
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/plug_socket_drc_220v_16a.sdf" plug_socket_drc_220v_16a $PLUG_SOCKET_E1_X $PLUG_SOCKET_E1_Y $PLUG_SOCKET_E1_Z 0 0 $FEEDER_YAW)
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/busbar_6p.sdf" busbar_6p $BUSBAR_E1_X $BUSBAR_E1_Y $BUSBAR_E1_Z 0 0 $FEEDER_YAW)
+    # E2 tray components
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" single_mc_gmc_1 $SINGLE_MC1_E2_X $SINGLE_MC1_E2_Y $SINGLE_MC1_E2_Z 0 0 $FEEDER_YAW)
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" single_mc_gmc_2 $SINGLE_MC2_E2_X $SINGLE_MC2_E2_Y $SINGLE_MC2_E2_Z 0 0 $FEEDER_YAW)
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" single_mc_gmc_3 $SINGLE_MC3_E2_X $SINGLE_MC3_E2_Y $SINGLE_MC3_E2_Z 0 0 $FEEDER_YAW)
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/smps_wdr_120_24v.sdf" smps_wdr_120_24v $SMPS_E2_X $SMPS_E2_Y $SMPS_E2_Z 0 0 $FEEDER_YAW)
+else
+    # E4 tray components
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/mccb_abe_32b_30a.sdf" mccb_abe_32b_30a $MCCB_E4_X $MCCB_E4_Y $MCCB_E4_Z 0 0 $FEEDER_YAW)
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/pdu_sps25_m66xm4.sdf" pdu_sps25_m66xm4_1 $PDU1_E4_X $PDU1_E4_Y $PDU1_E4_Z 0 0 $FEEDER_YAW)
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/pdu_sps25_m66xm4.sdf" pdu_sps25_m66xm4_2 $PDU2_E4_X $PDU2_E4_Y $PDU2_E4_Z 0 0 $FEEDER_YAW)
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/noise_filter_rms_2030_din.sdf" noise_filter_rms_2030_din $NOISE_FILTER_E4_X $NOISE_FILTER_E4_Y $NOISE_FILTER_E4_Z 0 0 $FEEDER_YAW)
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/plug_socket_drc_220v_16a.sdf" plug_socket_drc_220v_16a $PLUG_SOCKET_E4_X $PLUG_SOCKET_E4_Y $PLUG_SOCKET_E4_Z 0 0 $FEEDER_YAW)
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/busbar_6p.sdf" busbar_6p $BUSBAR_E4_X $BUSBAR_E4_Y $BUSBAR_E4_Z 0 0 $FEEDER_YAW)
+    # E5 tray components
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" single_mc_gmc_1 $SINGLE_MC1_E5_X $SINGLE_MC1_E5_Y $SINGLE_MC1_E5_Z 0 0 $FEEDER_YAW)
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" single_mc_gmc_2 $SINGLE_MC2_E5_X $SINGLE_MC2_E5_Y $SINGLE_MC2_E5_Z 0 0 $FEEDER_YAW)
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/single_mc_gmc_30p2_ac220v.sdf" single_mc_gmc_3 $SINGLE_MC3_E5_X $SINGLE_MC3_E5_Y $SINGLE_MC3_E5_Z 0 0 $FEEDER_YAW)
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/smps_wdr_120_24v.sdf" smps_wdr_120_24v $SMPS_E5_X $SMPS_E5_Y $SMPS_E5_Z 0 0 $FEEDER_YAW)
+fi
 
 # TB_JOTN-15A grid for E3 and E6 trays
 TB_OFFSET_Z=0.002
@@ -195,40 +211,38 @@ TB_X8=0.13475
 TB_Y1=-0.0675
 TB_Y2=0.0075
 
-# Spawn TB_JOTN-15A on E3 tray (16 units)
-echo ""
-echo "Spawning TB_JOTN-15A grid on E3 tray (2x8 = 16 units)..."
-
-# Row 1 (Y = -67.5mm)
-for i in 1 2 3 4 5 6 7 8; do
-    eval "TB_X=\$TB_X$i"
-    read TB_POS_X TB_POS_Y TB_POS_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E3_Z $TB_X $TB_Y1 $TB_OFFSET_Z)"
-    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/tb_jotn_15a.sdf" tb_jotn_15a_e3_${i}_1 $TB_POS_X $TB_POS_Y $TB_POS_Z 0 0 $FEEDER_YAW)
-done
-
-# Row 2 (Y = 7.5mm)
-for i in 1 2 3 4 5 6 7 8; do
-    eval "TB_X=\$TB_X$i"
-    read TB_POS_X TB_POS_Y TB_POS_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E3_Z $TB_X $TB_Y2 $TB_OFFSET_Z)"
-    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/tb_jotn_15a.sdf" tb_jotn_15a_e3_${i}_2 $TB_POS_X $TB_POS_Y $TB_POS_Z 0 0 $FEEDER_YAW)
-done
-
-# Spawn TB_JOTN-15A on E6 tray (16 units)
-echo "Queueing TB_JOTN-15A grid on E6 tray (2x8 = 16 units)..."
-
-# Row 1 (Y = -67.5mm)
-for i in 1 2 3 4 5 6 7 8; do
-    eval "TB_X=\$TB_X$i"
-    read TB_POS_X TB_POS_Y TB_POS_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E6_Z $TB_X $TB_Y1 $TB_OFFSET_Z)"
-    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/tb_jotn_15a.sdf" tb_jotn_15a_e6_${i}_1 $TB_POS_X $TB_POS_Y $TB_POS_Z 0 0 $FEEDER_YAW)
-done
-
-# Row 2 (Y = 7.5mm)
-for i in 1 2 3 4 5 6 7 8; do
-    eval "TB_X=\$TB_X$i"
-    read TB_POS_X TB_POS_Y TB_POS_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E6_Z $TB_X $TB_Y2 $TB_OFFSET_Z)"
-    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/tb_jotn_15a.sdf" tb_jotn_15a_e6_${i}_2 $TB_POS_X $TB_POS_Y $TB_POS_Z 0 0 $FEEDER_YAW)
-done
+# TB_JOTN-15A grid: E3 belongs to cycle 1, E6 to cycle 2 (16 units each).
+if [ "$CYCLE" = "1" ]; then
+    echo ""
+    echo "Spawning TB_JOTN-15A grid on E3 tray (2x8 = 16 units)..."
+    # Row 1 (Y = -67.5mm)
+    for i in 1 2 3 4 5 6 7 8; do
+        eval "TB_X=\$TB_X$i"
+        read TB_POS_X TB_POS_Y TB_POS_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E3_Z $TB_X $TB_Y1 $TB_OFFSET_Z)"
+        SPAWN_ARGS+=(--obj "$OBJECTS_DIR/tb_jotn_15a.sdf" tb_jotn_15a_${i}_1 $TB_POS_X $TB_POS_Y $TB_POS_Z 0 0 $FEEDER_YAW)
+    done
+    # Row 2 (Y = 7.5mm)
+    for i in 1 2 3 4 5 6 7 8; do
+        eval "TB_X=\$TB_X$i"
+        read TB_POS_X TB_POS_Y TB_POS_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E3_Z $TB_X $TB_Y2 $TB_OFFSET_Z)"
+        SPAWN_ARGS+=(--obj "$OBJECTS_DIR/tb_jotn_15a.sdf" tb_jotn_15a_${i}_2 $TB_POS_X $TB_POS_Y $TB_POS_Z 0 0 $FEEDER_YAW)
+    done
+else
+    echo ""
+    echo "Spawning TB_JOTN-15A grid on E6 tray (2x8 = 16 units)..."
+    # Row 1 (Y = -67.5mm)
+    for i in 1 2 3 4 5 6 7 8; do
+        eval "TB_X=\$TB_X$i"
+        read TB_POS_X TB_POS_Y TB_POS_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E6_Z $TB_X $TB_Y1 $TB_OFFSET_Z)"
+        SPAWN_ARGS+=(--obj "$OBJECTS_DIR/tb_jotn_15a.sdf" tb_jotn_15a_${i}_1 $TB_POS_X $TB_POS_Y $TB_POS_Z 0 0 $FEEDER_YAW)
+    done
+    # Row 2 (Y = 7.5mm)
+    for i in 1 2 3 4 5 6 7 8; do
+        eval "TB_X=\$TB_X$i"
+        read TB_POS_X TB_POS_Y TB_POS_Z <<< "$(world_from_tray $OFFSET_X $OFFSET_Y $OFFSET_E6_Z $TB_X $TB_Y2 $TB_OFFSET_Z)"
+        SPAWN_ARGS+=(--obj "$OBJECTS_DIR/tb_jotn_15a.sdf" tb_jotn_15a_${i}_2 $TB_POS_X $TB_POS_Y $TB_POS_Z 0 0 $FEEDER_YAW)
+    done
+fi
 
 # Spawn all 58 objects from a single process
 echo "Spawning all elec objects (single batch)..."
@@ -248,43 +262,43 @@ attach_to_tray() {  # $1 = object, $2 = tray (both attach via their 'link')
     ATTACH_ARGS+=(--attach "$2" link "$1" link)
 }
 
-# E1 tray components
-attach_to_tray mccb_abe_32b_30a_e1 mobile_tray1
-attach_to_tray pdu_sps25_m66xm4_e1_1 mobile_tray1
-attach_to_tray pdu_sps25_m66xm4_e1_2 mobile_tray1
-attach_to_tray noise_filter_rms_2030_din_e1 mobile_tray1
-attach_to_tray plug_socket_drc_220v_16a_e1 mobile_tray1
-attach_to_tray busbar_6p_e1 mobile_tray1
-
-# E4 tray components
-attach_to_tray mccb_abe_32b_30a_e4 mobile_tray4
-attach_to_tray pdu_sps25_m66xm4_e4_1 mobile_tray4
-attach_to_tray pdu_sps25_m66xm4_e4_2 mobile_tray4
-attach_to_tray noise_filter_rms_2030_din_e4 mobile_tray4
-attach_to_tray plug_socket_drc_220v_16a_e4 mobile_tray4
-attach_to_tray busbar_6p_e4 mobile_tray4
-
-# E2 tray components
-attach_to_tray single_mc_gmc_e2_1 mobile_tray2
-attach_to_tray single_mc_gmc_e2_2 mobile_tray2
-attach_to_tray single_mc_gmc_e2_3 mobile_tray2
-attach_to_tray smps_wdr_120_24v_e2 mobile_tray2
-
-# E5 tray components
-attach_to_tray single_mc_gmc_e5_1 mobile_tray5
-attach_to_tray single_mc_gmc_e5_2 mobile_tray5
-attach_to_tray single_mc_gmc_e5_3 mobile_tray5
-attach_to_tray smps_wdr_120_24v_e5 mobile_tray5
-
-# E3 and E6 terminal blocks
-for i in 1 2 3 4 5 6 7 8; do
-    attach_to_tray tb_jotn_15a_e3_${i}_1 mobile_tray3
-    attach_to_tray tb_jotn_15a_e3_${i}_2 mobile_tray3
-done
-for i in 1 2 3 4 5 6 7 8; do
-    attach_to_tray tb_jotn_15a_e6_${i}_1 mobile_tray6
-    attach_to_tray tb_jotn_15a_e6_${i}_2 mobile_tray6
-done
+if [ "$CYCLE" = "1" ]; then
+    # E1 tray components
+    attach_to_tray mccb_abe_32b_30a mobile_tray1
+    attach_to_tray pdu_sps25_m66xm4_1 mobile_tray1
+    attach_to_tray pdu_sps25_m66xm4_2 mobile_tray1
+    attach_to_tray noise_filter_rms_2030_din mobile_tray1
+    attach_to_tray plug_socket_drc_220v_16a mobile_tray1
+    attach_to_tray busbar_6p mobile_tray1
+    # E2 tray components
+    attach_to_tray single_mc_gmc_1 mobile_tray2
+    attach_to_tray single_mc_gmc_2 mobile_tray2
+    attach_to_tray single_mc_gmc_3 mobile_tray2
+    attach_to_tray smps_wdr_120_24v mobile_tray2
+    # E3 terminal blocks
+    for i in 1 2 3 4 5 6 7 8; do
+        attach_to_tray tb_jotn_15a_${i}_1 mobile_tray3
+        attach_to_tray tb_jotn_15a_${i}_2 mobile_tray3
+    done
+else
+    # E4 tray components
+    attach_to_tray mccb_abe_32b_30a mobile_tray4
+    attach_to_tray pdu_sps25_m66xm4_1 mobile_tray4
+    attach_to_tray pdu_sps25_m66xm4_2 mobile_tray4
+    attach_to_tray noise_filter_rms_2030_din mobile_tray4
+    attach_to_tray plug_socket_drc_220v_16a mobile_tray4
+    attach_to_tray busbar_6p mobile_tray4
+    # E5 tray components
+    attach_to_tray single_mc_gmc_1 mobile_tray5
+    attach_to_tray single_mc_gmc_2 mobile_tray5
+    attach_to_tray single_mc_gmc_3 mobile_tray5
+    attach_to_tray smps_wdr_120_24v mobile_tray5
+    # E6 terminal blocks
+    for i in 1 2 3 4 5 6 7 8; do
+        attach_to_tray tb_jotn_15a_${i}_1 mobile_tray6
+        attach_to_tray tb_jotn_15a_${i}_2 mobile_tray6
+    done
+fi
 
 echo "Attaching all elec objects to trays (single batch)..."
 python3 "$OBJECTS_DIR/batch_attach.py" "${ATTACH_ARGS[@]}"

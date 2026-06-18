@@ -1,7 +1,16 @@
 #!/bin/bash
 
 # Script to spawn mobile trays on feeder base
-# Usage: ./spawn_feeder_trays.sh
+# Usage: ./spawn_feeder_heater.sh [CYCLE]
+#   CYCLE 1 (default): trays 1,2,3 are loaded with objects; trays 4,5 are bare.
+#   CYCLE 2          : trays 4,5 are loaded with objects; trays 1,2,3 are bare.
+
+CYCLE="${1:-1}"
+if [ "$CYCLE" != "1" ] && [ "$CYCLE" != "2" ]; then
+    echo "Error: CYCLE must be 1 or 2 (got '$CYCLE')"
+    exit 1
+fi
+echo "Heater cycle: $CYCLE"
 
 # Get the current workspace directory dynamically
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -134,23 +143,28 @@ COVER3_YAW=$(world_yaw -1.5708)
 # Plates have no local yaw; they inherit the feeder yaw in world frame
 PLATE_YAW=$FEEDER_YAW
 
-# Covers and plates
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover2.sdf" heating_plate_cover_t1_1st $COVER_T1_1ST_X $COVER_T1_1ST_Y $COVER_T1_1ST_Z 0 0 $COVER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover1.sdf" heating_plate_cover_t1_2nd $COVER_T1_2ND_X $COVER_T1_2ND_Y $COVER_T1_2ND_Z 0 0 $COVER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover1.sdf" heating_plate_cover_t4_1st $COVER_T4_1ST_X $COVER_T4_1ST_Y $COVER_T4_1ST_Z 0 0 $COVER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover2.sdf" heating_plate_cover_t4_2nd $COVER_T4_2ND_X $COVER_T4_2ND_Y $COVER_T4_2ND_Z 0 0 $COVER_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate1.sdf" heating_plate_t2_1st $Plate_T2_X_1ST $Plate_T2_Y_1ST $Plate_T2_Z_1ST 0 0 $PLATE_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate2.sdf" heating_plate_t2_2nd $Plate_T2_X_2ND $Plate_T2_Y_2ND $Plate_T2_Z_2ND 0 0 $PLATE_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate1.sdf" heating_plate_t5_1st $Plate_T5_X_1ST $Plate_T5_Y_1ST $Plate_T5_Z_1ST 0 0 $PLATE_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate2.sdf" heating_plate_t5_2nd $Plate_T5_X_2ND $Plate_T5_Y_2ND $Plate_T5_Z_2ND 0 0 $PLATE_YAW)
+# Tray 3 cover3 is loaded in both cycles
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover3-1.sdf" heating_plate_cover3_1_1 $COVER3_T3_X_1 $COVER3_T3_Y_1 $COVER3_T3_Z_1 0 0 $COVER3_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover3-2.sdf" heating_plate_cover3_2_2 $COVER3_T3_X_2 $COVER3_T3_Y_2 $COVER3_T3_Z_2 0 0 $COVER3_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover3-1.sdf" heating_plate_cover3_1_3 $COVER3_T3_X_3 $COVER3_T3_Y_3 $COVER3_T3_Z_3 0 0 $COVER3_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover3-2.sdf" heating_plate_cover3_2_4 $COVER3_T3_X_4 $COVER3_T3_Y_4 $COVER3_T3_Z_4 0 0 $COVER3_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover3-1.sdf" heating_plate_cover3_1_5 $COVER3_T3_X_5 $COVER3_T3_Y_5 $COVER3_T3_Z_5 0 0 $COVER3_YAW)
+SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover3-2.sdf" heating_plate_cover3_2_6 $COVER3_T3_X_6 $COVER3_T3_Y_6 $COVER3_T3_Z_6 0 0 $COVER3_YAW)
 
-# Cover3 on Tray 3
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover3-1.sdf" heating_plate_cover3_1_t3_1 $COVER3_T3_X_1 $COVER3_T3_Y_1 $COVER3_T3_Z_1 0 0 $COVER3_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover3-2.sdf" heating_plate_cover3_2_t3_2 $COVER3_T3_X_2 $COVER3_T3_Y_2 $COVER3_T3_Z_2 0 0 $COVER3_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover3-1.sdf" heating_plate_cover3_1_t3_3 $COVER3_T3_X_3 $COVER3_T3_Y_3 $COVER3_T3_Z_3 0 0 $COVER3_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover3-2.sdf" heating_plate_cover3_2_t3_4 $COVER3_T3_X_4 $COVER3_T3_Y_4 $COVER3_T3_Z_4 0 0 $COVER3_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover3-1.sdf" heating_plate_cover3_1_t3_5 $COVER3_T3_X_5 $COVER3_T3_Y_5 $COVER3_T3_Z_5 0 0 $COVER3_YAW)
-SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover3-2.sdf" heating_plate_cover3_2_t3_6 $COVER3_T3_X_6 $COVER3_T3_Y_6 $COVER3_T3_Z_6 0 0 $COVER3_YAW)
+# Covers and plates 
+# Cycle 1 loads trays 1 (covers) and 2 (plates); cycle 2 loads trays 4 (covers)
+# and 5 (plates). The unloaded trays remain spawned but bare.
+if [ "$CYCLE" = "1" ]; then
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover2.sdf" heating_plate_cover_1st $COVER_T1_1ST_X $COVER_T1_1ST_Y $COVER_T1_1ST_Z 0 0 $COVER_YAW)
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover1.sdf" heating_plate_cover_2nd $COVER_T1_2ND_X $COVER_T1_2ND_Y $COVER_T1_2ND_Z 0 0 $COVER_YAW)
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate1.sdf" heating_plate_1st $Plate_T2_X_1ST $Plate_T2_Y_1ST $Plate_T2_Z_1ST 0 0 $PLATE_YAW)
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate2.sdf" heating_plate_2nd $Plate_T2_X_2ND $Plate_T2_Y_2ND $Plate_T2_Z_2ND 0 0 $PLATE_YAW)
+else
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover1.sdf" heating_plate_cover_1st $COVER_T4_1ST_X $COVER_T4_1ST_Y $COVER_T4_1ST_Z 0 0 $COVER_YAW)
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate_cover2.sdf" heating_plate_cover_2nd $COVER_T4_2ND_X $COVER_T4_2ND_Y $COVER_T4_2ND_Z 0 0 $COVER_YAW)
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate1.sdf" heating_plate_1st $Plate_T5_X_1ST $Plate_T5_Y_1ST $Plate_T5_Z_1ST 0 0 $PLATE_YAW)
+    SPAWN_ARGS+=(--obj "$OBJECTS_DIR/heating_plate2.sdf" heating_plate_2nd $Plate_T5_X_2ND $Plate_T5_Y_2ND $Plate_T5_Z_2ND 0 0 $PLATE_YAW)
+fi
 
 # Spawn all 19 objects from a single process
 echo "Spawning all heater objects (single batch)..."
@@ -169,25 +183,29 @@ attach_to_tray() {  # $1 = object, $2 = tray (both attach via their 'link')
     ATTACH_ARGS+=(--attach "$2" link "$1" link)
 }
 
-# Tray 1 covers
-attach_to_tray heating_plate_cover_t1_1st mobile_tray1
-attach_to_tray heating_plate_cover_t1_2nd mobile_tray1
-# Tray 2 plates
-attach_to_tray heating_plate_t2_1st mobile_tray2
-attach_to_tray heating_plate_t2_2nd mobile_tray2
-# Tray 3 cover3
-attach_to_tray heating_plate_cover3_1_t3_1 mobile_tray3
-attach_to_tray heating_plate_cover3_2_t3_2 mobile_tray3
-attach_to_tray heating_plate_cover3_1_t3_3 mobile_tray3
-attach_to_tray heating_plate_cover3_2_t3_4 mobile_tray3
-attach_to_tray heating_plate_cover3_1_t3_5 mobile_tray3
-attach_to_tray heating_plate_cover3_2_t3_6 mobile_tray3
-# Tray 4 covers
-attach_to_tray heating_plate_cover_t4_1st mobile_tray4
-attach_to_tray heating_plate_cover_t4_2nd mobile_tray4
-# Tray 5 plates
-attach_to_tray heating_plate_t5_1st mobile_tray5
-attach_to_tray heating_plate_t5_2nd mobile_tray5
+# Tray 3 cover3 is loaded in both cycles
+attach_to_tray heating_plate_cover3_1_1 mobile_tray3
+attach_to_tray heating_plate_cover3_2_2 mobile_tray3
+attach_to_tray heating_plate_cover3_1_3 mobile_tray3
+attach_to_tray heating_plate_cover3_2_4 mobile_tray3
+attach_to_tray heating_plate_cover3_1_5 mobile_tray3
+attach_to_tray heating_plate_cover3_2_6 mobile_tray3
+
+if [ "$CYCLE" = "1" ]; then
+    # Tray 1 covers
+    attach_to_tray heating_plate_cover_1st mobile_tray1
+    attach_to_tray heating_plate_cover_2nd mobile_tray1
+    # Tray 2 plates
+    attach_to_tray heating_plate_1st mobile_tray2
+    attach_to_tray heating_plate_2nd mobile_tray2
+else
+    # Tray 4 covers
+    attach_to_tray heating_plate_cover_1st mobile_tray4
+    attach_to_tray heating_plate_cover_2nd mobile_tray4
+    # Tray 5 plates
+    attach_to_tray heating_plate_1st mobile_tray5
+    attach_to_tray heating_plate_2nd mobile_tray5
+fi
 
 echo "Attaching all heater objects to trays (single batch)..."
 python3 "$OBJECTS_DIR/batch_attach.py" "${ATTACH_ARGS[@]}"

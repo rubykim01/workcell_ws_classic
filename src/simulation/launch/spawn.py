@@ -216,23 +216,35 @@ class MainWindow(QMainWindow):
         
         feeder_button_layout = QHBoxLayout()
         feeder_button_layout.setSpacing(10)
-        
-        # Spawn Feeder Heater button
-        spawn_heater_button = QPushButton("Heater Objects")
-        spawn_heater_button.clicked.connect(self.spawn_feeder_heater)
-        spawn_heater_button.setStyleSheet("font-size: 16px; padding: 10px; background-color: #e8e8e8; color: black; border: 1px solid #aaaaaa; border-radius: 5px;")
-        feeder_button_layout.addWidget(spawn_heater_button)
-        
-        # Spawn Feeder Elec button
-        spawn_elec_button = QPushButton("Elec Objects")
-        spawn_elec_button.clicked.connect(self.spawn_feeder_elec)
-        spawn_elec_button.setStyleSheet("font-size: 16px; padding: 10px; background-color: #e8e8e8; color: black; border: 1px solid #aaaaaa; border-radius: 5px;")
-        feeder_button_layout.addWidget(spawn_elec_button)
 
-        # None button: delete whichever feeder objects (heater or elec) are spawned
+        feeder_button_style = "font-size: 16px; padding: 10px; background-color: #e8e8e8; color: black; border: 1px solid #aaaaaa; border-radius: 5px;"
+
+        # Each cycle loads 3 trays with objects and leaves the rest as bare trays:
+        # cycle 1 loads trays 1,2,3; cycle 2 loads trays 4,5,6 (heater has no tray 6).
+        heater_cycle1_button = QPushButton("Heater Cycle 1")
+        heater_cycle1_button.clicked.connect(self.spawn_heater_cycle1)
+        heater_cycle1_button.setStyleSheet(feeder_button_style)
+        feeder_button_layout.addWidget(heater_cycle1_button)
+
+        heater_cycle2_button = QPushButton("Heater Cycle 2")
+        heater_cycle2_button.clicked.connect(self.spawn_heater_cycle2)
+        heater_cycle2_button.setStyleSheet(feeder_button_style)
+        feeder_button_layout.addWidget(heater_cycle2_button)
+
+        elec_cycle1_button = QPushButton("Elec Cycle 1")
+        elec_cycle1_button.clicked.connect(self.spawn_elec_cycle1)
+        elec_cycle1_button.setStyleSheet(feeder_button_style)
+        feeder_button_layout.addWidget(elec_cycle1_button)
+
+        elec_cycle2_button = QPushButton("Elec Cycle 2")
+        elec_cycle2_button.clicked.connect(self.spawn_elec_cycle2)
+        elec_cycle2_button.setStyleSheet(feeder_button_style)
+        feeder_button_layout.addWidget(elec_cycle2_button)
+
+        # None button: delete whichever feeder cycle is currently spawned
         delete_feeder_button = QPushButton("None")
         delete_feeder_button.clicked.connect(self.delete_feeder_objects)
-        delete_feeder_button.setStyleSheet("font-size: 16px; padding: 10px; background-color: #e8e8e8; color: black; border: 1px solid #aaaaaa; border-radius: 5px;")
+        delete_feeder_button.setStyleSheet(feeder_button_style)
         feeder_button_layout.addWidget(delete_feeder_button)
 
         main_layout.addLayout(feeder_button_layout)
@@ -278,7 +290,7 @@ class MainWindow(QMainWindow):
         
         # Track spawned objects
         self.tooltip_spawned = None  # None, "tooltip1", "tooltip2", or "tooltip3"
-        self.feeder_spawned = None  # None, "heater", or "elec"
+        self.feeder_spawned = None  # None, "heater1", "heater2", "elec1", or "elec2"
         
         window.setLayout(main_layout)
         self.show()
@@ -493,72 +505,96 @@ class MainWindow(QMainWindow):
 
         QMessageBox.information(self, "Reset", "All positions reset to default assignments")
 
-    # Entities spawned by spawn_feeder_heater.sh / spawn_feeder_elec.sh. Switching
-    # feeder type deletes the current set (these are free objects, not attached)
-    # before spawning the new one.
-    HEATER_ENTITIES = (
-        [f"mobile_tray{i}" for i in range(1, 6)]
-        + ["heating_plate_cover_t1_1st", "heating_plate_cover_t1_2nd",
-           "heating_plate_cover_t4_1st", "heating_plate_cover_t4_2nd",
-           "heating_plate_t2_1st", "heating_plate_t2_2nd",
-           "heating_plate_t5_1st", "heating_plate_t5_2nd",
-           "heating_plate_cover3_1_t3_1", "heating_plate_cover3_2_t3_2",
-           "heating_plate_cover3_1_t3_3", "heating_plate_cover3_2_t3_4",
-           "heating_plate_cover3_1_t3_5", "heating_plate_cover3_2_t3_6"]
-    )
+    # Entities spawned per feeder cycle. 
+    HEATER_TRAYS = [f"mobile_tray{i}" for i in range(1, 6)]
+    ELEC_TRAYS = [f"mobile_tray{i}" for i in range(1, 7)]
 
-    ELEC_ENTITIES = (
-        [f"mobile_tray{i}" for i in range(1, 7)]
-        + [f"mccb_abe_32b_30a_e{t}" for t in (1, 4)]
-        + [f"pdu_sps25_m66xm4_e{t}_{n}" for t in (1, 4) for n in (1, 2)]
-        + [f"noise_filter_rms_2030_din_e{t}" for t in (1, 4)]
-        + [f"plug_socket_drc_220v_16a_e{t}" for t in (1, 4)]
-        + [f"busbar_6p_e{t}" for t in (1, 4)]
-        + [f"single_mc_gmc_e{t}_{n}" for t in (2, 5) for n in (1, 2, 3)]
-        + [f"smps_wdr_120_24v_e{t}" for t in (2, 5)]
-        + [f"tb_jotn_15a_e{t}_{i}_{r}" for t in (3, 6) for i in range(1, 9) for r in (1, 2)]
+    HEATER_CYCLE3_OBJECTS = [
+        "heating_plate_cover3_1_1", "heating_plate_cover3_2_2",
+        "heating_plate_cover3_1_3", "heating_plate_cover3_2_4",
+        "heating_plate_cover3_1_5", "heating_plate_cover3_2_6",
+    ]
+    HEATER_CYCLE1_OBJECTS = HEATER_CYCLE3_OBJECTS + [
+        "heating_plate_cover_1st", "heating_plate_cover_2nd",
+        "heating_plate_1st", "heating_plate_2nd",
+    ]
+    HEATER_CYCLE2_OBJECTS = HEATER_CYCLE3_OBJECTS + [
+        "heating_plate_cover_1st", "heating_plate_cover_2nd",
+        "heating_plate_1st", "heating_plate_2nd",
+    ]
+
+    # Elec object names also carry no tray marker, so both cycles share the set.
+    ELEC_CYCLE1_OBJECTS = (
+        ["mccb_abe_32b_30a", "pdu_sps25_m66xm4_1", "pdu_sps25_m66xm4_2",
+         "noise_filter_rms_2030_din", "plug_socket_drc_220v_16a", "busbar_6p"]
+        + [f"single_mc_gmc_{n}" for n in (1, 2, 3)]
+        + ["smps_wdr_120_24v"]
+        + [f"tb_jotn_15a_{i}_{r}" for i in range(1, 9) for r in (1, 2)]
     )
+    ELEC_CYCLE2_OBJECTS = list(ELEC_CYCLE1_OBJECTS)
+
+    # feeder_spawned key -> entities that cycle puts in the world.
+    @property
+    def FEEDER_SETS(self):
+        return {
+            "heater1": self.HEATER_TRAYS + self.HEATER_CYCLE1_OBJECTS,
+            "heater2": self.HEATER_TRAYS + self.HEATER_CYCLE2_OBJECTS,
+            "elec1": self.ELEC_TRAYS + self.ELEC_CYCLE1_OBJECTS,
+            "elec2": self.ELEC_TRAYS + self.ELEC_CYCLE2_OBJECTS,
+        }
+
+    # Human-readable label for each feeder_spawned key.
+    FEEDER_LABELS = {
+        "heater1": "Heater Cycle 1",
+        "heater2": "Heater Cycle 2",
+        "elec1": "Elec Cycle 1",
+        "elec2": "Elec Cycle 2",
+    }
 
     def _despawn_current_feeder(self):
-        """Delete the currently spawned feeder object set so the other feeder type
+        """Delete the currently spawned feeder cycle's entities so another cycle
         can be spawned in its place."""
         if self.feeder_spawned is None:
             return
         print(f"Removing current feeder set ({self.feeder_spawned})...")
-        entities = self.HEATER_ENTITIES if self.feeder_spawned == "heater" else self.ELEC_ENTITIES
-        self._delete_entities(entities)
+        self._delete_entities(self.FEEDER_SETS[self.feeder_spawned])
         self.feeder_spawned = None
 
     def delete_feeder_objects(self):
-        """Delete whichever feeder object set (heater or elec) is currently spawned."""
+        """Delete whichever feeder cycle is currently spawned."""
         if self.feeder_spawned is None:
             QMessageBox.information(self, "Nothing to Delete", "No feeder objects are currently spawned.")
             return
-        removed = self.feeder_spawned
+        removed = self.FEEDER_LABELS[self.feeder_spawned]
         self._despawn_current_feeder()
-        QMessageBox.information(self, "Deleted", f"All {removed.capitalize()} feeder objects deleted.")
+        QMessageBox.information(self, "Deleted", f"All {removed} objects deleted.")
         print(f"Deleted feeder objects: {removed}")
 
-    def spawn_feeder_heater(self):
-        """Run the spawn_feeder_heater.sh script"""
-        self._spawn_feeder("spawn_feeder_heater.sh", "Feeder Heater", "heater")
+    def spawn_heater_cycle1(self):
+        self._spawn_feeder("spawn_feeder_heater.sh", "1", "heater1")
 
-    def spawn_feeder_elec(self):
-        """Run the spawn_feeder_elec.sh script"""
-        self._spawn_feeder("spawn_feeder_elec.sh", "Feeder Elec", "elec")
+    def spawn_heater_cycle2(self):
+        self._spawn_feeder("spawn_feeder_heater.sh", "2", "heater2")
 
-    def _spawn_feeder(self, script_name, label, feeder_id):
-        """Run a feeder spawn script.
+    def spawn_elec_cycle1(self):
+        self._spawn_feeder("spawn_feeder_elec.sh", "1", "elec1")
 
-        If that feeder type is already spawned, do nothing. If the other type is
+    def spawn_elec_cycle2(self):
+        self._spawn_feeder("spawn_feeder_elec.sh", "2", "elec2")
+
+    def _spawn_feeder(self, script_name, cycle, feeder_id):
+        """Run a feeder spawn script for the given cycle ("1" or "2").
+
+        If that cycle is already spawned, do nothing. If a different cycle/type is
         spawned, replace it: remove the current set first, then spawn the new one."""
+        label = self.FEEDER_LABELS[feeder_id]
         if self.feeder_spawned == feeder_id:
             QMessageBox.information(self, "Already Spawned", f"{label} objects are already spawned.")
             return
 
         replacing = self.feeder_spawned is not None
         if replacing:
-            previous = self.feeder_spawned
+            previous = self.FEEDER_LABELS[self.feeder_spawned]
             self._despawn_current_feeder()
 
         script_path = self.scripts_dir / script_name
@@ -568,10 +604,10 @@ class MainWindow(QMainWindow):
             return
 
         try:
-            print(f"Running: {script_path}")
+            print(f"Running: {script_path} {cycle}")
             # Run the script and wait for completion
             process = subprocess.Popen(
-                ['bash', str(script_path)],
+                ['bash', str(script_path), cycle],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 cwd=str(self.scripts_dir)
@@ -579,7 +615,7 @@ class MainWindow(QMainWindow):
             process.wait()  # Wait for all objects to spawn
             self.feeder_spawned = feeder_id
             if replacing:
-                complete_msg = f"Replaced {previous.capitalize()} with {label} objects"
+                complete_msg = f"Replaced {previous} with {label} objects"
             else:
                 complete_msg = f"All {label} objects spawned successfully"
             QMessageBox.information(self, "Spawn Complete", complete_msg)
