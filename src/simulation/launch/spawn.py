@@ -88,7 +88,7 @@ class MainWindow(QMainWindow):
 
         self._load_defaults_from_yaml()
         
-        combobox_label = QLabel("Configure Spawn Positions")
+        combobox_label = QLabel("[Configure Spawn Positions]")
         combobox_label.setAlignment(Qt.AlignCenter)
         combobox_label.setStyleSheet("font-weight: bold; font-size: 16px; margin-top: 15px; color: #333333;")
         main_layout.addWidget(combobox_label)
@@ -189,101 +189,107 @@ class MainWindow(QMainWindow):
             self._sync_rotation_combobox(pos)
 
         # Button layout
-        button_layout = QVBoxLayout()
-        button_layout.setSpacing(10)
-        
+        button_layout = QHBoxLayout()
+        button_layout.setSpacing(30)
+        # Stretch on both sides centers the two buttons horizontally.
+        button_layout.addStretch()
+
         # Configure button
         configure_button = QPushButton("Configure")
         configure_button.clicked.connect(self.configure_button_clicked)
-        configure_button.setStyleSheet("font-size: 18px; padding: 10px; background-color: #ccffcc; color: black; border: none; border-radius: 5px;")
+        configure_button.setStyleSheet("font-size: 18px; padding: 10px; background-color: #cce5ff; color: black; border: none; border-radius: 5px;")
+        configure_button.setFixedSize(300, 40)
         button_layout.addWidget(configure_button)
-        
+
         # Reset button
         reset_button = QPushButton("Reset to Default")
         reset_button.clicked.connect(self.reset_to_default)
         reset_button.setStyleSheet("font-size: 18px; padding: 10px; background-color: #ffcccc; color: black; border: none; border-radius: 5px;")
+        reset_button.setFixedSize(300, 40)
         button_layout.addWidget(reset_button)
+        button_layout.addStretch()
         
         main_layout.addSpacing(5)
         main_layout.addLayout(button_layout)
         main_layout.addSpacing(10)
         
-        # Feeder spawn buttons section
-        feeder_label = QLabel("Spawn Feeder Objects")
-        feeder_label.setAlignment(Qt.AlignCenter)
-        feeder_label.setStyleSheet("font-weight: bold; font-size: 16px; margin-top: 15px; color: #333333;")
-        main_layout.addWidget(feeder_label)
-        
-        feeder_button_layout = QHBoxLayout()
-        feeder_button_layout.setSpacing(10)
+        # Spawn Objects section: one header, then two columns side by side, each
+        # with its own title above a dropdown + Spawn button.
+        spawn_objects_label = QLabel("[Spawn Objects]")
+        spawn_objects_label.setAlignment(Qt.AlignCenter)
+        spawn_objects_label.setStyleSheet("font-weight: bold; font-size: 16px; margin-top: 15px; color: #333333;")
+        main_layout.addWidget(spawn_objects_label)
 
-        feeder_button_style = "font-size: 16px; padding: 10px; background-color: #e8e8e8; color: black; border: 1px solid #aaaaaa; border-radius: 5px;"
+        feeder_combo_style = "font-size: 16px; padding: 6px; max-width: 450px; background-color: #f0f0f0; color: black; border: 1px solid #aaaaaa; border-radius: 5px;"
+        spawn_button_style = "font-size: 16px; padding: 10px; background-color: #cce5ff; color: black; border: none; border-radius: 5px;"
+        column_title_style = "font-weight: bold; font-size: 15px; color: #333333;"
 
+        spawn_objects_layout = QHBoxLayout()
+        spawn_objects_layout.setSpacing(40)
+        spawn_objects_layout.setContentsMargins(0, 5, 0, 0)
+        # Stretch on both sides centers the two columns horizontally.
+        spawn_objects_layout.addStretch()
+
+        # --- Feeder column ---
         # Each cycle loads 3 trays with objects and leaves the rest as bare trays:
         # cycle 1 loads trays 1,2,3; cycle 2 loads trays 4,5,6 (heater has no tray 6).
-        heater_cycle1_button = QPushButton("Heater Cycle 1")
-        heater_cycle1_button.clicked.connect(self.spawn_heater_cycle1)
-        heater_cycle1_button.setStyleSheet(feeder_button_style)
-        feeder_button_layout.addWidget(heater_cycle1_button)
+        # Mutually exclusive -> one dropdown. "None" clears whatever is spawned.
+        feeder_column = QVBoxLayout()
+        feeder_column.setSpacing(5)
 
-        heater_cycle2_button = QPushButton("Heater Cycle 2")
-        heater_cycle2_button.clicked.connect(self.spawn_heater_cycle2)
-        heater_cycle2_button.setStyleSheet(feeder_button_style)
-        feeder_button_layout.addWidget(heater_cycle2_button)
+        feeder_title = QLabel("Feeder")
+        feeder_title.setAlignment(Qt.AlignCenter)
+        feeder_title.setStyleSheet(column_title_style)
+        feeder_column.addWidget(feeder_title)
 
-        elec_cycle1_button = QPushButton("Elec Cycle 1")
-        elec_cycle1_button.clicked.connect(self.spawn_elec_cycle1)
-        elec_cycle1_button.setStyleSheet(feeder_button_style)
-        feeder_button_layout.addWidget(elec_cycle1_button)
+        feeder_row = QHBoxLayout()
+        feeder_row.setSpacing(10)
 
-        elec_cycle2_button = QPushButton("Elec Cycle 2")
-        elec_cycle2_button.clicked.connect(self.spawn_elec_cycle2)
-        elec_cycle2_button.setStyleSheet(feeder_button_style)
-        feeder_button_layout.addWidget(elec_cycle2_button)
+        self.feeder_combobox = QComboBox()
+        self.feeder_combobox.addItems(["None", "Heater Cycle 1", "Heater Cycle 2", "Elec Cycle 1", "Elec Cycle 2"])
+        self.feeder_combobox.setStyleSheet(feeder_combo_style)
+        self.feeder_combobox.setFixedWidth(270)
+        feeder_row.addWidget(self.feeder_combobox)
 
-        # None button: delete whichever feeder cycle is currently spawned
-        delete_feeder_button = QPushButton("None")
-        delete_feeder_button.clicked.connect(self.delete_feeder_objects)
-        delete_feeder_button.setStyleSheet(feeder_button_style)
-        feeder_button_layout.addWidget(delete_feeder_button)
+        feeder_spawn_button = QPushButton("Spawn")
+        feeder_spawn_button.clicked.connect(self.spawn_selected_feeder)
+        feeder_spawn_button.setStyleSheet(spawn_button_style)
+        feeder_spawn_button.setFixedWidth(120)
+        feeder_row.addWidget(feeder_spawn_button)
 
-        main_layout.addLayout(feeder_button_layout)
+        feeder_column.addLayout(feeder_row)
+        spawn_objects_layout.addLayout(feeder_column)
 
-        # Tooltip spawn buttons section
-        main_layout.addSpacing(10)
-        tooltip_label = QLabel("Spawn Tooltip + Toolchanger Tools")
-        tooltip_label.setAlignment(Qt.AlignCenter)
-        tooltip_label.setStyleSheet("font-weight: bold; font-size: 16px; margin-top: 15px; color: #333333;")
-        main_layout.addWidget(tooltip_label)
-        
-        tooltip_button_layout = QHBoxLayout()
-        tooltip_button_layout.setSpacing(10)
-        
-        # Tooltip 1 button
-        tooltip1_button = QPushButton("Tooltip 1")
-        tooltip1_button.clicked.connect(self.spawn_tooltip1)
-        tooltip1_button.setStyleSheet("font-size: 16px; padding: 10px; background-color: #e8e8e8; color: black; border: 1px solid #aaaaaa; border-radius: 5px;")
-        tooltip_button_layout.addWidget(tooltip1_button)
-        
-        # Tooltip 2 button
-        tooltip2_button = QPushButton("Tooltip 2")
-        tooltip2_button.clicked.connect(self.spawn_tooltip2)
-        tooltip2_button.setStyleSheet("font-size: 16px; padding: 10px; background-color: #e8e8e8; color: black; border: 1px solid #aaaaaa; border-radius: 5px;")
-        tooltip_button_layout.addWidget(tooltip2_button)
-        
-        # Tooltip 3 button
-        tooltip3_button = QPushButton("Tooltip 3")
-        tooltip3_button.clicked.connect(self.spawn_tooltip3)
-        tooltip3_button.setStyleSheet("font-size: 16px; padding: 10px; background-color: #e8e8e8; color: black; border: 1px solid #aaaaaa; border-radius: 5px;")
-        tooltip_button_layout.addWidget(tooltip3_button)
+        # --- Tooltip + Toolchanger column ---
+        # Mutually exclusive -> one dropdown. "None" deletes whatever is spawned.
+        tooltip_column = QVBoxLayout()
+        tooltip_column.setSpacing(5)
 
-        # None button: delete whichever tooltip + toolchanger tools are spawned
-        delete_tooltip_button = QPushButton("None")
-        delete_tooltip_button.clicked.connect(self.delete_tooltips)
-        delete_tooltip_button.setStyleSheet("font-size: 16px; padding: 10px; background-color: #e8e8e8; color: black; border: 1px solid #aaaaaa; border-radius: 5px;")
-        tooltip_button_layout.addWidget(delete_tooltip_button)
+        tooltip_title = QLabel("Tooltip + Toolchanger")
+        tooltip_title.setAlignment(Qt.AlignCenter)
+        tooltip_title.setStyleSheet(column_title_style)
+        tooltip_column.addWidget(tooltip_title)
 
-        main_layout.addLayout(tooltip_button_layout)
+        tooltip_row = QHBoxLayout()
+        tooltip_row.setSpacing(10)
+
+        self.tooltip_combobox = QComboBox()
+        self.tooltip_combobox.addItems(["None", "Tooltip 1", "Tooltip 2", "Tooltip 3"])
+        self.tooltip_combobox.setStyleSheet(feeder_combo_style)
+        self.tooltip_combobox.setFixedWidth(270)
+        tooltip_row.addWidget(self.tooltip_combobox)
+
+        tooltip_spawn_button = QPushButton("Spawn")
+        tooltip_spawn_button.clicked.connect(self.spawn_selected_tooltip)
+        tooltip_spawn_button.setStyleSheet(spawn_button_style)
+        tooltip_spawn_button.setFixedWidth(120)
+        tooltip_row.addWidget(tooltip_spawn_button)
+
+        tooltip_column.addLayout(tooltip_row)
+        spawn_objects_layout.addLayout(tooltip_column)
+        spawn_objects_layout.addStretch()
+
+        main_layout.addLayout(spawn_objects_layout)
 
         # Path to shell scripts
         self.scripts_dir = workspace_root / "src" / "descriptions" / "urdf" / "objects"
@@ -582,6 +588,17 @@ class MainWindow(QMainWindow):
     def spawn_elec_cycle2(self):
         self._spawn_feeder("spawn_feeder_elec.sh", "2", "elec2")
 
+    def spawn_selected_feeder(self):
+        """Dispatch the feeder dropdown selection to the matching spawn/delete action."""
+        actions = {
+            "None": self.delete_feeder_objects,
+            "Heater Cycle 1": self.spawn_heater_cycle1,
+            "Heater Cycle 2": self.spawn_heater_cycle2,
+            "Elec Cycle 1": self.spawn_elec_cycle1,
+            "Elec Cycle 2": self.spawn_elec_cycle2,
+        }
+        actions[self.feeder_combobox.currentText()]()
+
     def _spawn_feeder(self, script_name, cycle, feeder_id):
         """Run a feeder spawn script for the given cycle ("1" or "2").
 
@@ -646,6 +663,16 @@ class MainWindow(QMainWindow):
     def spawn_tooltip3(self):
         """Run spawn_ur_tooltip3.sh and spawn_toolchanger_tools.sh"""
         self._spawn_tooltip_and_tools("spawn_ur_tooltip3.sh", "Tooltip 3", "tooltip3")
+
+    def spawn_selected_tooltip(self):
+        """Dispatch the tooltip dropdown selection to the matching spawn/delete action."""
+        actions = {
+            "None": self.delete_tooltips,
+            "Tooltip 1": self.spawn_tooltip1,
+            "Tooltip 2": self.spawn_tooltip2,
+            "Tooltip 3": self.spawn_tooltip3,
+        }
+        actions[self.tooltip_combobox.currentText()]()
 
     # All entities spawned by a tooltip click: the per-tooltip script puts the
     # selected pair (+ krvg) on the UR arm, and spawn_toolchanger_tools.sh spawns
