@@ -77,10 +77,10 @@ workcell_ws_classic/
    ros2 launch simulation workcell_sim_moveit.launch.py
    ```
 
-3. **Spawn pick objects**:
+3. **Spawn GUI**:
    ```bash
-   cd ~/workcell_ws_classic
-   ./src/descriptions/urdf/objects/spawn_all_heating_objects.sh 
+   cd ~/workcell_ws_classic/src/simulation/launch
+   python3 spawn.py
    ```
 
 ## Dependencies
