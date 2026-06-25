@@ -77,7 +77,7 @@ workcell_ws_classic/
    ros2 launch simulation workcell_sim_moveit.launch.py
    ```
 
-3. **Spawn GUI**:
+3. **Launch Spawn GUI**:
    ```bash
    cd ~/workcell_ws_classic/src/simulation/launch
    python3 spawn.py
