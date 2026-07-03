@@ -72,7 +72,7 @@ KRVG_Z=0.4994
 
 # Koras_2F100
 KORAS_X=-0.1208
-KORAS_Y=0.1615
+KORAS_Y=-0.287
 KORAS_Z=0.4994
 
 #Tooltip_01
@@ -91,10 +91,10 @@ TT02_2_Y=-0.116
 
 # Tooltip_03
 TT03_X=-0.1085
-TT03_Y=-0.3255
+TT03_Y=0.123
 TT03_Z=0.5532
 
-TT03_2_Y=-0.2655
+TT03_2_Y=0.183
 
 # Sum two scalars
 sum() {
