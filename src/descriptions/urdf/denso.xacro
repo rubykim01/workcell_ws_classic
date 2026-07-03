@@ -41,37 +41,6 @@
       <origin xyz="${denso_pos['x']} ${denso_pos['y']} ${denso_pos['z']}" rpy="${denso_pos['roll']} ${denso_pos['pitch']} ${denso_pos['yaw']}"/>
     </joint>
 
-  <!-- denso slider jig link -->
-    <link name="denso_slider_jig_link">
-      <visual>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <geometry>
-          <xacro:get_mesh name="denso_slider_jig" type="visual"/>
-        </geometry>
-        <material name="${sec_mesh_files['denso_slider_jig']['visual']['material']['name']}">
-          <color rgba="${sec_mesh_files['denso_slider_jig']['visual']['material']['color']}"/>
-        </material>
-      </visual>
-      <collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <geometry>
-          <xacro:get_mesh name="denso_slider_jig" type="collision"/>
-        </geometry>
-      </collision>
-      <inertial>
-        <mass value="2.0"/>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <inertia ixx="0.02" ixy="0" ixz="0" iyy="0.02" iyz="0" izz="0.02"/>
-      </inertial>
-    </link>
-
-    <!-- trolley to denso slider jig joint -->
-    <joint name="denso_slider_jig_joint" type="fixed">
-      <parent link="denso_trolley_link" />
-      <child link="denso_slider_jig_link" />
-      <origin xyz="0.025 0.175 0.0" rpy="0 0 0"/>
-    </joint>
-
   <!-- vision feeder link -->
     <link name="vision_feeder_link">
       <visual>
@@ -129,25 +98,10 @@
       </inertial>
     </link>
 
-    <joint name="denso_axis_joint" type="fixed">
-      <parent link="denso_slider_jig_link"/>
+    <joint name="denso_base_joint" type="fixed">
+      <parent link="denso_trolley_link"/>
       <child link="denso_base_link"/>
-      <origin rpy="0 0 0" xyz="0.01 0 0.084"/>
-    </joint>
-    
-    <link name="denso_dummy_link">
-      <inertial>
-        <mass value="0.001"/>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
-      </inertial>
-    </link>
-
-    <!-- slider to dummy link joint -->
-    <joint name="denso_dummy_joint" type="fixed">
-      <parent link="denso_base_link" />
-      <child link="denso_dummy_link" />
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin rpy="0 0 -1.5708" xyz="0.0 0.15 0.1545"/>
     </joint>
 
     <link name="denso_J1">
@@ -173,9 +127,9 @@
       </inertial>
     </link>
     <joint name="denso_joint_1" type="revolute">
-      <parent link="denso_dummy_link"/>
+      <parent link="denso_base_link"/>
       <child link="denso_J1"/>
-      <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.4135"/>
+      <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.343"/>
       <axis xyz="0.0 0.0 1.0"/>
       <limit effort="50" lower="-2.26892802759263" upper="2.26892802759263" velocity="3.08615226990019"/>
       <dynamics damping="0.1" friction="0.01"/>
@@ -206,7 +160,7 @@
     <joint name="denso_joint_2" type="revolute">
       <parent link="denso_J1"/>
       <child link="denso_J2"/>
-      <origin rpy="0.0 0.0 0.0" xyz="0.5 0.0 0.105"/>
+      <origin rpy="0.0 0.0 1.5708" xyz="0.0 0.5 0.105"/>
       <axis xyz="0.0 0.0 1.0"/>
       <limit effort="50" lower="-2.61799387799149" upper="2.61799387799149" velocity="5.41357500737341"/>
       <dynamics damping="0.1" friction="0.01"/>
@@ -237,7 +191,7 @@
     <joint name="denso_joint_3" type="prismatic">
       <parent link="denso_J2"/>
       <child link="denso_J3"/>
-      <origin rpy="0.0 0.0 0.0" xyz="0.5 0.0 0.0862"/>
+      <origin rpy="0.0 0.0 0.0" xyz="0.5 0.0 0.5067"/>
       <axis xyz="0.0 0.0 1.0"/>
       <limit effort="100" lower="-10" upper="10" velocity="1.9"/>
       <dynamics damping="0.2" friction="0.01"/>
@@ -268,7 +222,7 @@
     <joint name="denso_joint_4" type="revolute">
       <parent link="denso_J3"/>
       <child link="denso_J4"/>
-      <origin rpy="0.0 0 0" xyz="0.0 0.0 -0.5207"/>
+      <origin rpy="0.0 0 0" xyz="0.0 0.0 -0.6557"/>
       <axis xyz="0.0 0.0 1.0"/>
       <limit effort="10" lower="-6.28318530717959" upper="6.28318530717959" velocity="25.2968981715147"/>
       <dynamics damping="0.05" friction="0.005"/>
