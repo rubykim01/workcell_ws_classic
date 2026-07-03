@@ -69,7 +69,7 @@
     <joint name="arf_elec_x_axis_joint" type="fixed">
       <parent link="arf_elec_trolley_link" />
       <child link="arf_elec_x_axis_link" />
-      <origin xyz="-0.264 -0.025 0.014" rpy="0 0 0"/>
+      <origin xyz="-0.266 0.025 0.014" rpy="0 0 0"/>
     </joint>
 
     <!-- arf y axis link (slider) -->
