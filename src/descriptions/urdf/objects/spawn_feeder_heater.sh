@@ -56,11 +56,11 @@ sum() {
 # Feeder-local tray offsets (meters)
 OFFSET_X=-0.361
 OFFSET_Y=-0.9685
-OFFSET_H1_Z=0.544
-OFFSET_H2_Z=0.434
-OFFSET_H3_Z=0.324
-OFFSET_H4_Z=0.214
-OFFSET_H5_Z=0.104
+OFFSET_H1_Z=0.495
+OFFSET_H2_Z=0.356
+OFFSET_H3_Z=0.217
+OFFSET_H4_Z=0.078
+OFFSET_H5_Z=-0.061
 
 # Object offsets from tray origin (tray shares feeder yaw, so these are feeder-local too)
 COVER_OFFSET_X=0.0
