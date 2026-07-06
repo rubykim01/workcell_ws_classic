@@ -222,6 +222,8 @@ class MainWindow(QMainWindow):
 
         feeder_combo_style = "font-size: 16px; padding: 6px; max-width: 450px; background-color: #f0f0f0; color: black; border: 1px solid #aaaaaa; border-radius: 5px;"
         spawn_button_style = "font-size: 16px; padding: 10px; background-color: #cce5ff; color: black; border: none; border-radius: 5px;"
+        # Same red as the "Reset to Default" button, for Clear/delete actions.
+        clear_button_style = "font-size: 16px; padding: 10px; background-color: #ffcccc; color: black; border: none; border-radius: 5px;"
         column_title_style = "font-weight: bold; font-size: 15px; color: #333333;"
 
         spawn_objects_layout = QHBoxLayout()
@@ -231,9 +233,9 @@ class MainWindow(QMainWindow):
         spawn_objects_layout.addStretch()
 
         # --- Feeder column ---
-        # Each cycle loads 3 trays with objects and leaves the rest as bare trays:
-        # cycle 1 loads trays 1,2,3; cycle 2 loads trays 4,5,6 (heater has no tray 6).
-        # Mutually exclusive -> one dropdown. "None" clears whatever is spawned.
+        # One button spawns the full feeder load: 7 trays stacked from the top
+        # (heater 1-3, elec 1-3, kiro), each with its own components. "Clear"
+        # removes whatever was spawned. Re-spawning clears first automatically.
         feeder_column = QVBoxLayout()
         feeder_column.setSpacing(5)
 
@@ -245,23 +247,25 @@ class MainWindow(QMainWindow):
         feeder_row = QHBoxLayout()
         feeder_row.setSpacing(10)
 
-        self.feeder_combobox = QComboBox()
-        self.feeder_combobox.addItems(["None", "Heater Cycle 1", "Heater Cycle 2", "Elec Cycle 1", "Elec Cycle 2"])
-        self.feeder_combobox.setStyleSheet(feeder_combo_style)
-        self.feeder_combobox.setFixedWidth(270)
-        feeder_row.addWidget(self.feeder_combobox)
-
         feeder_spawn_button = QPushButton("Spawn")
-        feeder_spawn_button.clicked.connect(self.spawn_selected_feeder)
+        feeder_spawn_button.clicked.connect(self.spawn_all_feeder)
         feeder_spawn_button.setStyleSheet(spawn_button_style)
-        feeder_spawn_button.setFixedWidth(120)
+        feeder_spawn_button.setFixedWidth(180)
         feeder_row.addWidget(feeder_spawn_button)
+
+        feeder_clear_button = QPushButton("Clear")
+        feeder_clear_button.clicked.connect(self.delete_feeder_objects)
+        feeder_clear_button.setStyleSheet(clear_button_style)
+        feeder_clear_button.setFixedWidth(120)
+        feeder_row.addWidget(feeder_clear_button)
 
         feeder_column.addLayout(feeder_row)
         spawn_objects_layout.addLayout(feeder_column)
 
         # --- Tooltip + Toolchanger column ---
-        # Mutually exclusive -> one dropdown. "None" deletes whatever is spawned.
+        # Two comboboxes side by side: gripper (rides the UR quickchanger; the
+        # other gripper stays on the rack) and tooltip selection. Spawn/Clear
+        # buttons sit below. GRIPPER_ENTITY maps gripper labels to SDF/entity names.
         tooltip_column = QVBoxLayout()
         tooltip_column.setSpacing(5)
 
@@ -270,41 +274,41 @@ class MainWindow(QMainWindow):
         tooltip_title.setStyleSheet(column_title_style)
         tooltip_column.addWidget(tooltip_title)
 
-        # Gripper selector: which gripper rides on the UR quickchanger. Just sets
-        # state; the tooltip Spawn button below reads it. The other gripper stays
-        # on the rack. Labels map to SDF/entity names via GRIPPER_ENTITY.
-        gripper_row = QHBoxLayout()
-        gripper_row.setSpacing(10)
-
-        gripper_label = QLabel("Gripper")
-        gripper_label.setStyleSheet(column_title_style)
-        gripper_row.addWidget(gripper_label)
+        # Combobox row: gripper selector next to tooltip selector.
+        combo_row = QHBoxLayout()
+        combo_row.setSpacing(10)
 
         self.gripper_combobox = QComboBox()
         self.gripper_combobox.addItems(list(self.GRIPPER_ENTITY.keys()))
         self.gripper_combobox.setStyleSheet(feeder_combo_style)
-        self.gripper_combobox.setFixedWidth(180)
-        gripper_row.addWidget(self.gripper_combobox)
-        gripper_row.addStretch()
-
-        tooltip_column.addLayout(gripper_row)
-
-        tooltip_row = QHBoxLayout()
-        tooltip_row.setSpacing(10)
+        self.gripper_combobox.setFixedWidth(150)
+        combo_row.addWidget(self.gripper_combobox)
 
         self.tooltip_combobox = QComboBox()
-        self.tooltip_combobox.addItems(["None", "Tooltip 1", "Tooltip 2", "Tooltip 3"])
+        self.tooltip_combobox.addItems(["Tooltip 1", "Tooltip 2", "Tooltip 3"])
         self.tooltip_combobox.setStyleSheet(feeder_combo_style)
-        self.tooltip_combobox.setFixedWidth(270)
-        tooltip_row.addWidget(self.tooltip_combobox)
+        self.tooltip_combobox.setFixedWidth(200)
+        combo_row.addWidget(self.tooltip_combobox)
+
+        tooltip_column.addLayout(combo_row)
+
+        # Button row below the comboboxes: Spawn and Clear.
+        tooltip_button_row = QHBoxLayout()
+        tooltip_button_row.setSpacing(10)
 
         tooltip_spawn_button = QPushButton("Spawn")
         tooltip_spawn_button.clicked.connect(self.spawn_selected_tooltip)
         tooltip_spawn_button.setStyleSheet(spawn_button_style)
-        tooltip_spawn_button.setFixedWidth(120)
-        tooltip_row.addWidget(tooltip_spawn_button)
+        tooltip_spawn_button.setFixedWidth(180)
+        tooltip_button_row.addWidget(tooltip_spawn_button)
 
-        tooltip_column.addLayout(tooltip_row)
+        tooltip_clear_button = QPushButton("Clear")
+        tooltip_clear_button.clicked.connect(self.delete_tooltips)
+        tooltip_clear_button.setStyleSheet(clear_button_style)
+        tooltip_clear_button.setFixedWidth(120)
+        tooltip_button_row.addWidget(tooltip_clear_button)
+
+        tooltip_column.addLayout(tooltip_button_row)
         spawn_objects_layout.addLayout(tooltip_column)
         spawn_objects_layout.addStretch()
 
@@ -316,7 +320,7 @@ class MainWindow(QMainWindow):
         # Track spawned objects
         self.tooltip_spawned = None  # None, "tooltip1", "tooltip2", or "tooltip3"
         self.tooltip_gripper_spawned = None  # entity name of gripper mounted on the arm ("krvg"/"koras_2f100")
-        self.feeder_spawned = None  # None, "heater1", "heater2", "elec1", or "elec2"
+        self.feeder_spawned = False  # True once the full feeder load is spawned
         
         window.setLayout(main_layout)
         self.show()
@@ -531,132 +535,78 @@ class MainWindow(QMainWindow):
 
         QMessageBox.information(self, "Reset", "All positions reset to default assignments")
 
-    # Entities spawned per feeder cycle. 
-    HEATER_TRAYS = [f"mobile_tray{i}" for i in range(1, 6)]
-    ELEC_TRAYS = [f"mobile_tray{i}" for i in range(1, 7)]
-
-    HEATER_CYCLE3_OBJECTS = [
-        "heating_plate_cover3_1_1", "heating_plate_cover3_2_2",
-        "heating_plate_cover3_1_3", "heating_plate_cover3_2_4",
-        "heating_plate_cover3_1_5", "heating_plate_cover3_2_6",
-    ]
-    HEATER_CYCLE1_OBJECTS = HEATER_CYCLE3_OBJECTS + [
+    # All entities spawned by the single feeder load: 7 stacked trays
+    # (mobile_tray1..7) plus every component that rides on them. Kept in sync with
+    # spawn_feeder_all.sh so Clear/re-spawn can remove the whole set.
+    FEEDER_TRAYS = [f"mobile_tray{i}" for i in range(1, 8)]
+    FEEDER_HEATER_OBJECTS = [
         "heating_plate_cover_1st", "heating_plate_cover_2nd",
         "heating_plate_1st", "heating_plate_2nd",
+        "heating_plate_cover3",
     ]
-    HEATER_CYCLE2_OBJECTS = HEATER_CYCLE3_OBJECTS + [
-        "heating_plate_cover_1st", "heating_plate_cover_2nd",
-        "heating_plate_1st", "heating_plate_2nd",
-    ]
-
-    # Elec object names also carry no tray marker, so both cycles share the set.
-    ELEC_CYCLE1_OBJECTS = (
+    FEEDER_ELEC_OBJECTS = (
         ["mccb_abe_32b_30a", "pdu_sps25_m66xm4_1", "pdu_sps25_m66xm4_2",
          "noise_filter_rms_2030_din", "plug_socket_drc_220v_16a", "busbar_6p"]
         + [f"single_mc_gmc_{n}" for n in (1, 2, 3)]
         + ["smps_wdr_120_24v"]
-        + [f"tb_jotn_15a_{i}_{r}" for i in range(1, 9) for r in (1, 2)]
+        + ["tb_jotn_15a"]
     )
-    ELEC_CYCLE2_OBJECTS = list(ELEC_CYCLE1_OBJECTS)
+    FEEDER_KIRO_OBJECTS = [
+        "relay_part_01", "relay_part_02", "relay_part_02_2",
+        "relay_part_03", "relay_part_04", "relay_part_04_2",
+    ]
 
-    # feeder_spawned key -> entities that cycle puts in the world.
     @property
-    def FEEDER_SETS(self):
-        return {
-            "heater1": self.HEATER_TRAYS + self.HEATER_CYCLE1_OBJECTS,
-            "heater2": self.HEATER_TRAYS + self.HEATER_CYCLE2_OBJECTS,
-            "elec1": self.ELEC_TRAYS + self.ELEC_CYCLE1_OBJECTS,
-            "elec2": self.ELEC_TRAYS + self.ELEC_CYCLE2_OBJECTS,
-        }
-
-    # Human-readable label for each feeder_spawned key.
-    FEEDER_LABELS = {
-        "heater1": "Heater Cycle 1",
-        "heater2": "Heater Cycle 2",
-        "elec1": "Elec Cycle 1",
-        "elec2": "Elec Cycle 2",
-    }
+    def FEEDER_ENTITIES(self):
+        return (self.FEEDER_TRAYS + self.FEEDER_HEATER_OBJECTS
+                + self.FEEDER_ELEC_OBJECTS + self.FEEDER_KIRO_OBJECTS)
 
     def _despawn_current_feeder(self):
-        """Delete the currently spawned feeder cycle's entities so another cycle
-        can be spawned in its place."""
-        if self.feeder_spawned is None:
+        """Delete the full feeder load so it can be spawned again cleanly."""
+        if not self.feeder_spawned:
             return
-        print(f"Removing current feeder set ({self.feeder_spawned})...")
-        self._delete_entities(self.FEEDER_SETS[self.feeder_spawned])
-        self.feeder_spawned = None
+        print("Removing current feeder load...")
+        self._delete_entities(self.FEEDER_ENTITIES)
+        self.feeder_spawned = False
 
     def delete_feeder_objects(self):
-        """Delete whichever feeder cycle is currently spawned."""
-        if self.feeder_spawned is None:
+        """Delete the full feeder load if it is currently spawned."""
+        if not self.feeder_spawned:
             QMessageBox.information(self, "Nothing to Delete", "No feeder objects are currently spawned.")
             return
-        removed = self.FEEDER_LABELS[self.feeder_spawned]
         self._despawn_current_feeder()
-        QMessageBox.information(self, "Deleted", f"All {removed} objects deleted.")
-        print(f"Deleted feeder objects: {removed}")
+        QMessageBox.information(self, "Deleted", "All feeder objects deleted.")
+        print("Deleted all feeder objects")
 
-    def spawn_heater_cycle1(self):
-        self._spawn_feeder("spawn_feeder_heater.sh", "1", "heater1")
+    def spawn_all_feeder(self):
+        """Spawn the full feeder load (7 trays + components) via spawn_feeder_all.sh.
 
-    def spawn_heater_cycle2(self):
-        self._spawn_feeder("spawn_feeder_heater.sh", "2", "heater2")
-
-    def spawn_elec_cycle1(self):
-        self._spawn_feeder("spawn_feeder_elec.sh", "1", "elec1")
-
-    def spawn_elec_cycle2(self):
-        self._spawn_feeder("spawn_feeder_elec.sh", "2", "elec2")
-
-    def spawn_selected_feeder(self):
-        """Dispatch the feeder dropdown selection to the matching spawn/delete action."""
-        actions = {
-            "None": self.delete_feeder_objects,
-            "Heater Cycle 1": self.spawn_heater_cycle1,
-            "Heater Cycle 2": self.spawn_heater_cycle2,
-            "Elec Cycle 1": self.spawn_elec_cycle1,
-            "Elec Cycle 2": self.spawn_elec_cycle2,
-        }
-        actions[self.feeder_combobox.currentText()]()
-
-    def _spawn_feeder(self, script_name, cycle, feeder_id):
-        """Run a feeder spawn script for the given cycle ("1" or "2").
-
-        If that cycle is already spawned, do nothing. If a different cycle/type is
-        spawned, replace it: remove the current set first, then spawn the new one."""
-        label = self.FEEDER_LABELS[feeder_id]
-        if self.feeder_spawned == feeder_id:
-            QMessageBox.information(self, "Already Spawned", f"{label} objects are already spawned.")
-            return
-
-        replacing = self.feeder_spawned is not None
+        If a load is already spawned, remove it first so entity names don't collide,
+        then spawn a fresh one."""
+        replacing = self.feeder_spawned
         if replacing:
-            previous = self.FEEDER_LABELS[self.feeder_spawned]
             self._despawn_current_feeder()
 
-        script_path = self.scripts_dir / script_name
-
+        script_path = self.scripts_dir / "spawn_feeder_all.sh"
         if not script_path.exists():
             QMessageBox.critical(self, "Error", f"Script not found: {script_path}")
             return
 
         try:
-            print(f"Running: {script_path} {cycle}")
-            # Run the script and wait for completion
+            print(f"Running: {script_path}")
             process = subprocess.Popen(
-                ['bash', str(script_path), cycle],
+                ['bash', str(script_path)],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 cwd=str(self.scripts_dir)
             )
-            process.wait()  # Wait for all objects to spawn
-            self.feeder_spawned = feeder_id
-            if replacing:
-                complete_msg = f"Replaced {previous} with {label} objects"
-            else:
-                complete_msg = f"All {label} objects spawned successfully"
+            process.wait()  # Wait for all objects to spawn and attach
+            self.feeder_spawned = True
+            complete_msg = ("Re-spawned all feeder objects (7 trays + components)"
+                            if replacing else
+                            "All feeder objects spawned successfully (7 trays + components)")
             QMessageBox.information(self, "Spawn Complete", complete_msg)
-            print(f"Spawned Objects: {label}")
+            print("Spawned Objects: full feeder load")
         except Exception as e:
             error_msg = f"Error running script: {str(e)}"
             print(error_msg)
@@ -685,9 +635,9 @@ class MainWindow(QMainWindow):
         self._spawn_tooltip_and_tools("spawn_ur_tooltip3.sh", "Tooltip 3", "tooltip3")
 
     def spawn_selected_tooltip(self):
-        """Dispatch the tooltip dropdown selection to the matching spawn/delete action."""
+        """Dispatch the tooltip dropdown selection to the matching spawn action.
+        (Delete is handled by the separate Clear button -> delete_tooltips.)"""
         actions = {
-            "None": self.delete_tooltips,
             "Tooltip 1": self.spawn_tooltip1,
             "Tooltip 2": self.spawn_tooltip2,
             "Tooltip 3": self.spawn_tooltip3,
