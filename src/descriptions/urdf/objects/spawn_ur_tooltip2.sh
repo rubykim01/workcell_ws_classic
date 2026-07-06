@@ -57,12 +57,13 @@ python3 "$OBJECTS_DIR/batch_spawn.py" \
     --obj "$OBJECTS_DIR/tooltip_02_2.sdf" tooltip_02_2 $TOOL_X $TOOL_Y $TOOL_Z $TOOL_ROLL $TOOL_PITCH $TOOL_YAW \
     --obj "$OBJECTS_DIR/$GRIPPER.sdf"     $GRIPPER     $TOOL_X $TOOL_Y $TOOL_Z $TOOL_ROLL $TOOL_PITCH $TOOL_YAW
 
-# Attach all three tools to quickchanger from one batch_attach.py process
-echo "Attaching tooltip_02, tooltip_02_2, $GRIPPER to quickchanger_link..."
+# Attach only the gripper to the quickchanger. The two tooltips are spawned at
+# the quickchanger pose (gravity disabled, so they hold position) and are attached
+# directly to their tooltip adapters by the spawn GUI - no need to stage them on
+# the quickchanger and detach later.
+echo "Attaching $GRIPPER to quickchanger_link..."
 python3 "$OBJECTS_DIR/batch_attach.py" \
-    --attach ur quickchanger_link tooltip_02   link \
-    --attach ur quickchanger_link tooltip_02_2 link \
-    --attach ur quickchanger_link $GRIPPER     link
+    --attach ur quickchanger_link $GRIPPER link
 
 echo ""
 echo "Tools spawned successfully!"

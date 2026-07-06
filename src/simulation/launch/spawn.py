@@ -753,32 +753,13 @@ class MainWindow(QMainWindow):
         self.tooltip_gripper_spawned = None
 
     def attach_tooltip_to_adapter(self, tooltip_entity, adapter_link):
-        """Attach a tooltip to a tooltip adapter using ROS2 service"""
+        """Attach a tooltip directly to a tooltip adapter using ROS2 service.
+
+        The spawn scripts only attach the gripper to the quickchanger now; the
+        tooltips are spawned at the quickchanger pose (gravity disabled) and left
+        unattached, so we can attach them straight to their adapters here with no
+        prior detach."""
         try:
-            # First, detach from quickchanger_link if already attached (spawn scripts attach to quickchanger_link)
-            print(f"Detaching {tooltip_entity} from quickchanger_link (if attached)...")
-            detach_call = [
-                'ros2', 'service', 'call', '/DETACHLINK',
-                'linkattacher_msgs/srv/DetachLink',
-                f"{{model1_name: 'ur', link1_name: 'quickchanger_link', model2_name: '{tooltip_entity}', link2_name: 'link'}}"
-            ]
-            
-            detach_result = subprocess.run(
-                detach_call,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-                timeout=3
-            )
-            # Don't fail if detach fails (might not be attached)
-            if detach_result.returncode == 0:
-                print(f"Detached {tooltip_entity} from quickchanger_link")
-            
-            # Brief delay to ensure detach completes before re-attaching
-            # (tools have gravity disabled, so no settling is needed).
-            time.sleep(0.2)
-            
-            # Now attach to adapter link
             print(f"Attaching {tooltip_entity} to {adapter_link}...")
             attach_call = [
                 'ros2', 'service', 'call', '/ATTACHLINK',
