@@ -285,7 +285,7 @@ class MainWindow(QMainWindow):
         combo_row.addWidget(self.gripper_combobox)
 
         self.tooltip_combobox = QComboBox()
-        self.tooltip_combobox.addItems(["Tooltip Narrow", "Tooltip Medium", "Tooltip Wide"])
+        self.tooltip_combobox.addItems(["Zimmer Narrow", "Zimmer Medium", "Zimmer Wide"])
         self.tooltip_combobox.setStyleSheet(feeder_combo_style)
         self.tooltip_combobox.setFixedWidth(200)
         combo_row.addWidget(self.tooltip_combobox)
@@ -624,23 +624,23 @@ class MainWindow(QMainWindow):
 
     def spawn_tooltip1(self):
         """Run spawn_ur_tooltip1.sh and spawn_toolchanger_tools.sh"""
-        self._spawn_tooltip_and_tools("spawn_ur_tooltip1.sh", "Tooltip Narrow", "tooltip1")
+        self._spawn_tooltip_and_tools("spawn_ur_tooltip1.sh", "Zimmer Narrow", "tooltip1")
 
     def spawn_tooltip2(self):
         """Run spawn_ur_tooltip2.sh and spawn_toolchanger_tools.sh"""
-        self._spawn_tooltip_and_tools("spawn_ur_tooltip2.sh", "Tooltip Medium", "tooltip2")
+        self._spawn_tooltip_and_tools("spawn_ur_tooltip2.sh", "Zimmer Medium", "tooltip2")
 
     def spawn_tooltip3(self):
         """Run spawn_ur_tooltip3.sh and spawn_toolchanger_tools.sh"""
-        self._spawn_tooltip_and_tools("spawn_ur_tooltip3.sh", "Tooltip Wide", "tooltip3")
+        self._spawn_tooltip_and_tools("spawn_ur_tooltip3.sh", "Zimmer Wide", "tooltip3")
 
     def spawn_selected_tooltip(self):
         """Dispatch the tooltip dropdown selection to the matching spawn action.
         (Delete is handled by the separate Clear button -> delete_tooltips.)"""
         actions = {
-            "Tooltip Narrow": self.spawn_tooltip1,
-            "Tooltip Medium": self.spawn_tooltip2,
-            "Tooltip Wide": self.spawn_tooltip3,
+            "Zimmer Narrow": self.spawn_tooltip1,
+            "Zimmer Medium": self.spawn_tooltip2,
+            "Zimmer Wide": self.spawn_tooltip3,
         }
         actions[self.tooltip_combobox.currentText()]()
 
@@ -658,8 +658,8 @@ class MainWindow(QMainWindow):
     # Gripper dropdown label -> SDF/entity name. The selected gripper is mounted on
     # the UR quickchanger; the other one stays on the toolchanger rack.
     GRIPPER_ENTITY = {
-        "krvg": "krvg",
-        "koras": "koras_2f100",
+        "Suction": "krvg",
+        "Gripper": "koras_2f100",
     }
 
     def _detach_link(self, ur_link, entity_name):
