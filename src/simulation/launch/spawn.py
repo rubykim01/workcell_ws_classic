@@ -285,7 +285,7 @@ class MainWindow(QMainWindow):
         combo_row.addWidget(self.gripper_combobox)
 
         self.tooltip_combobox = QComboBox()
-        self.tooltip_combobox.addItems(["Tooltip 1", "Tooltip 2", "Tooltip 3"])
+        self.tooltip_combobox.addItems(["Tooltip Narrow", "Tooltip Medium", "Tooltip Wide"])
         self.tooltip_combobox.setStyleSheet(feeder_combo_style)
         self.tooltip_combobox.setFixedWidth(200)
         combo_row.addWidget(self.tooltip_combobox)
@@ -624,23 +624,23 @@ class MainWindow(QMainWindow):
 
     def spawn_tooltip1(self):
         """Run spawn_ur_tooltip1.sh and spawn_toolchanger_tools.sh"""
-        self._spawn_tooltip_and_tools("spawn_ur_tooltip1.sh", "Tooltip 1", "tooltip1")
+        self._spawn_tooltip_and_tools("spawn_ur_tooltip1.sh", "Tooltip Narrow", "tooltip1")
 
     def spawn_tooltip2(self):
         """Run spawn_ur_tooltip2.sh and spawn_toolchanger_tools.sh"""
-        self._spawn_tooltip_and_tools("spawn_ur_tooltip2.sh", "Tooltip 2", "tooltip2")
+        self._spawn_tooltip_and_tools("spawn_ur_tooltip2.sh", "Tooltip Medium", "tooltip2")
 
     def spawn_tooltip3(self):
         """Run spawn_ur_tooltip3.sh and spawn_toolchanger_tools.sh"""
-        self._spawn_tooltip_and_tools("spawn_ur_tooltip3.sh", "Tooltip 3", "tooltip3")
+        self._spawn_tooltip_and_tools("spawn_ur_tooltip3.sh", "Tooltip Wide", "tooltip3")
 
     def spawn_selected_tooltip(self):
         """Dispatch the tooltip dropdown selection to the matching spawn action.
         (Delete is handled by the separate Clear button -> delete_tooltips.)"""
         actions = {
-            "Tooltip 1": self.spawn_tooltip1,
-            "Tooltip 2": self.spawn_tooltip2,
-            "Tooltip 3": self.spawn_tooltip3,
+            "Tooltip Narrow": self.spawn_tooltip1,
+            "Tooltip Medium": self.spawn_tooltip2,
+            "Tooltip Wide": self.spawn_tooltip3,
         }
         actions[self.tooltip_combobox.currentText()]()
 
@@ -881,18 +881,20 @@ class MainWindow(QMainWindow):
             print(f"Spawned Objects: {tooltip_name} + {gripper_label} + Toolchanger Tools")
 
             # Automatically attach tooltips to adapters
-            # Determine which tooltips were spawned based on tooltip_name
-            if "1" in tooltip_name:
+            # Determine which tooltips were spawned based on tooltip_id
+            # ("tooltip1"/"tooltip2"/"tooltip3"), which stays stable regardless of
+            # the display name shown in the GUI.
+            if tooltip_id == "tooltip1":
                 tooltip1_entity = "tooltip_01"
                 tooltip2_entity = "tooltip_01_2"
-            elif "2" in tooltip_name:
+            elif tooltip_id == "tooltip2":
                 tooltip1_entity = "tooltip_02"
                 tooltip2_entity = "tooltip_02_2"
-            elif "3" in tooltip_name:
+            elif tooltip_id == "tooltip3":
                 tooltip1_entity = "tooltip_03"
                 tooltip2_entity = "tooltip_03_2"
             else:
-                return  # Unknown tooltip name
+                return  # Unknown tooltip id
 
             # Attach first tooltip to adapter 1
             print(f"Attaching {tooltip1_entity} to tooltip_adapter_1_link...")
