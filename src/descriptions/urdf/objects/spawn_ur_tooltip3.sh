@@ -7,7 +7,12 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 OBJECTS_DIR="$SCRIPT_DIR"
 
+# Gripper mounted on the quickchanger: "krvg" (default) or "koras_2f100".
+# Passed as $1 by the spawn GUI; defaults to krvg for standalone use.
+GRIPPER="${1:-krvg}"
+
 echo "Objects directory: $OBJECTS_DIR"
+echo "Quickchanger gripper: $GRIPPER"
 
 # Get current quickchanger_link pose from TF2
 echo "Getting current quickchanger_link pose from TF2..."
@@ -43,21 +48,21 @@ TOOL_YAW=$(awk "BEGIN {print $TF_YAW + 3.141592}")
 
 echo "  Adjusted (RPY): R=$TOOL_ROLL, P=$TOOL_PITCH, Y=$TOOL_YAW"
 
-# Spawn all three tools (tooltip_03, tooltip_03_2, krvg) in one batch process,
+# Spawn all three tools (tooltip_03, tooltip_03_2, $GRIPPER) in one batch process,
 # then attach each to the quickchanger.
 echo ""
-echo "Spawning tooltip_03, tooltip_03_2, krvg at ($TOOL_X, $TOOL_Y, $TOOL_Z) rot ($TOOL_ROLL, $TOOL_PITCH, $TOOL_YAW)"
+echo "Spawning tooltip_03, tooltip_03_2, $GRIPPER at ($TOOL_X, $TOOL_Y, $TOOL_Z) rot ($TOOL_ROLL, $TOOL_PITCH, $TOOL_YAW)"
 python3 "$OBJECTS_DIR/batch_spawn.py" \
     --obj "$OBJECTS_DIR/tooltip_03.sdf"   tooltip_03   $TOOL_X $TOOL_Y $TOOL_Z $TOOL_ROLL $TOOL_PITCH $TOOL_YAW \
     --obj "$OBJECTS_DIR/tooltip_03_2.sdf" tooltip_03_2 $TOOL_X $TOOL_Y $TOOL_Z $TOOL_ROLL $TOOL_PITCH $TOOL_YAW \
-    --obj "$OBJECTS_DIR/krvg.sdf"         krvg         $TOOL_X $TOOL_Y $TOOL_Z $TOOL_ROLL $TOOL_PITCH $TOOL_YAW
+    --obj "$OBJECTS_DIR/$GRIPPER.sdf"     $GRIPPER     $TOOL_X $TOOL_Y $TOOL_Z $TOOL_ROLL $TOOL_PITCH $TOOL_YAW
 
 # Attach all three tools to quickchanger from one batch_attach.py process
-echo "Attaching tooltip_03, tooltip_03_2, krvg to quickchanger_link..."
+echo "Attaching tooltip_03, tooltip_03_2, $GRIPPER to quickchanger_link..."
 python3 "$OBJECTS_DIR/batch_attach.py" \
     --attach ur quickchanger_link tooltip_03   link \
     --attach ur quickchanger_link tooltip_03_2 link \
-    --attach ur quickchanger_link krvg         link
+    --attach ur quickchanger_link $GRIPPER     link
 
 echo ""
 echo "Tools spawned successfully!"

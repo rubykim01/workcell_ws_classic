@@ -270,6 +270,25 @@ class MainWindow(QMainWindow):
         tooltip_title.setStyleSheet(column_title_style)
         tooltip_column.addWidget(tooltip_title)
 
+        # Gripper selector: which gripper rides on the UR quickchanger. Just sets
+        # state; the tooltip Spawn button below reads it. The other gripper stays
+        # on the rack. Labels map to SDF/entity names via GRIPPER_ENTITY.
+        gripper_row = QHBoxLayout()
+        gripper_row.setSpacing(10)
+
+        gripper_label = QLabel("Gripper")
+        gripper_label.setStyleSheet(column_title_style)
+        gripper_row.addWidget(gripper_label)
+
+        self.gripper_combobox = QComboBox()
+        self.gripper_combobox.addItems(list(self.GRIPPER_ENTITY.keys()))
+        self.gripper_combobox.setStyleSheet(feeder_combo_style)
+        self.gripper_combobox.setFixedWidth(180)
+        gripper_row.addWidget(self.gripper_combobox)
+        gripper_row.addStretch()
+
+        tooltip_column.addLayout(gripper_row)
+
         tooltip_row = QHBoxLayout()
         tooltip_row.setSpacing(10)
 
@@ -296,6 +315,7 @@ class MainWindow(QMainWindow):
         
         # Track spawned objects
         self.tooltip_spawned = None  # None, "tooltip1", "tooltip2", or "tooltip3"
+        self.tooltip_gripper_spawned = None  # entity name of gripper mounted on the arm ("krvg"/"koras_2f100")
         self.feeder_spawned = None  # None, "heater1", "heater2", "elec1", or "elec2"
         
         window.setLayout(main_layout)
@@ -685,6 +705,13 @@ class MainWindow(QMainWindow):
         "tooltip_03", "tooltip_03_2",
     ]
 
+    # Gripper dropdown label -> SDF/entity name. The selected gripper is mounted on
+    # the UR quickchanger; the other one stays on the toolchanger rack.
+    GRIPPER_ENTITY = {
+        "krvg": "krvg",
+        "koras": "koras_2f100",
+    }
+
     def _detach_link(self, ur_link, entity_name):
         """Detach an entity's 'link' from the given UR link. Failures are ignored
         (the entity may not be attached)."""
@@ -762,15 +789,18 @@ class MainWindow(QMainWindow):
             return
         print(f"Removing current tooltip set ({self.tooltip_spawned})...")
         suffix = self.tooltip_spawned[-1]  # "1", "2" or "3"
-        # Detach the pair currently held on the toolchanger adapters and krvg from
-        # the quickchanger before deleting, so no dangling attachment joints remain.
+        # Detach the pair currently held on the toolchanger adapters and the mounted
+        # gripper from the quickchanger before deleting, so no dangling attachment
+        # joints remain.
+        gripper = self.tooltip_gripper_spawned or "krvg"
         self._detach_links([
             ("tooltip_adapter_1_link", f"tooltip_0{suffix}"),
             ("tooltip_adapter_2_link", f"tooltip_0{suffix}_2"),
-            ("quickchanger_link", "krvg"),
+            ("quickchanger_link", gripper),
         ])
         self._delete_entities(self.TOOLTIP_ENTITIES)
         self.tooltip_spawned = None
+        self.tooltip_gripper_spawned = None
 
     def attach_tooltip_to_adapter(self, tooltip_entity, adapter_link):
         """Attach a tooltip to a tooltip adapter using ROS2 service"""
@@ -838,11 +868,18 @@ class MainWindow(QMainWindow):
     def _spawn_tooltip_and_tools(self, tooltip_script, tooltip_name, tooltip_id):
         """Run tooltip script first, then toolchanger_tools script.
 
-        If the requested tooltip is already spawned, do nothing. If a different
-        tooltip is spawned, replace it: remove the current set first, then spawn
-        the new selection."""
-        if self.tooltip_spawned == tooltip_id:
-            QMessageBox.information(self, "Already Spawned", f"{tooltip_name} is already spawned.")
+        If the requested tooltip AND gripper are already spawned, do nothing. If a
+        different tooltip or gripper is spawned, replace it: remove the current set
+        first, then spawn the new selection."""
+        # Gripper mounted on the quickchanger, chosen in the gripper dropdown.
+        gripper_label = self.gripper_combobox.currentText()
+        gripper_entity = self.GRIPPER_ENTITY[gripper_label]
+
+        if self.tooltip_spawned == tooltip_id and self.tooltip_gripper_spawned == gripper_entity:
+            QMessageBox.information(
+                self, "Already Spawned",
+                f"{tooltip_name} with {gripper_label} is already spawned."
+            )
             return
 
         replacing = self.tooltip_spawned is not None
@@ -862,10 +899,11 @@ class MainWindow(QMainWindow):
             return
         
         try:
-            # Run tooltip script first and wait for completion
-            print(f"Running: {tooltip_path}")
+            # Run tooltip script first and wait for completion. Pass the chosen
+            # gripper entity so it (not the hardcoded krvg) is mounted on the arm.
+            print(f"Running: {tooltip_path} {gripper_entity}")
             tooltip_process = subprocess.Popen(
-                ['bash', str(tooltip_path)],
+                ['bash', str(tooltip_path), gripper_entity],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 cwd=str(self.scripts_dir)
@@ -887,9 +925,10 @@ class MainWindow(QMainWindow):
             print("Preparing to attach tooltips...")
             time.sleep(0.3)
             
-            # Set flag only after successful spawn
+            # Set flags only after successful spawn
             self.tooltip_spawned = tooltip_id
-            print(f"Spawned Objects: {tooltip_name} + Toolchanger Tools")
+            self.tooltip_gripper_spawned = gripper_entity
+            print(f"Spawned Objects: {tooltip_name} + {gripper_label} + Toolchanger Tools")
 
             # Automatically attach tooltips to adapters
             # Determine which tooltips were spawned based on tooltip_name
@@ -926,7 +965,8 @@ class MainWindow(QMainWindow):
 
             # Now that spawning AND attaching are done, report the final result.
             action = "Replaced" if replacing else "Spawned"
-            prefix = f"{action} {previous.capitalize()} with {tooltip_name}" if replacing else f"{tooltip_name}"
+            tooltip_desc = f"{tooltip_name} ({gripper_label})"
+            prefix = f"{action} {previous.capitalize()} with {tooltip_desc}" if replacing else tooltip_desc
             if success1 and success2:
                 QMessageBox.information(
                     self, "Spawn Complete",
