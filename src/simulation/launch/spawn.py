@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton,
-    QComboBox, QMessageBox, QLabel, QGridLayout, QHBoxLayout
+    QComboBox, QMessageBox, QLabel, QGridLayout, QHBoxLayout, QFrame
 )
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt, QProcess, QTimer
@@ -27,22 +27,132 @@ FEEDER_OFFSET_BY_LABEL = {
 }
 
 
+# ============================ GUI theme ================================
+# One central palette + reusable widget styles so the whole window shares a
+# single flat, modern look instead of ad-hoc per-widget styling.
+THEME = {
+    "bg":            "#eceff4",  # window background
+    "card":          "#ffffff",  # panel / card surface
+    "border":        "#d6dce5",  # hairline borders
+    "text":          "#1f2933",  # primary text
+    "muted":         "#6b7688",  # secondary text
+    "field":         "#f4f6f9",  # input background
+    "primary":       "#2f6fed",  # main action (spawn / configure)
+    "primary_hover": "#245ad0",
+    "primary_press": "#1e4fb8",
+    "danger":        "#e2574c",  # destructive action (clear / reset)
+    "danger_hover":  "#cf4438",
+    "danger_press":  "#b93a2f",
+}
+
+# Base look applied to the whole window (font + background).
+APP_STYLE = f"""
+QWidget {{
+    font-family: "Segoe UI", "Ubuntu", "DejaVu Sans", sans-serif;
+    color: {THEME['text']};
+}}
+QMainWindow {{ background-color: {THEME['bg']}; }}
+"""
+
+# Shared dropdown style (used by every QComboBox in the window).
+COMBO_STYLE = f"""
+QComboBox {{
+    font-size: 14px;
+    padding: 6px 10px;
+    background-color: {THEME['field']};
+    color: {THEME['text']};
+    border: 1px solid {THEME['border']};
+    border-radius: 6px;
+}}
+QComboBox:hover {{ border-color: {THEME['primary']}; }}
+QComboBox:disabled {{ color: {THEME['muted']}; background-color: #eef1f5; }}
+QComboBox::drop-down {{ border: none; width: 22px; }}
+QComboBox QAbstractItemView {{
+    background-color: {THEME['card']};
+    border: 1px solid {THEME['border']};
+    selection-background-color: {THEME['primary']};
+    selection-color: #ffffff;
+    outline: none;
+}}
+"""
+
+
+def _button_style(base, hover, press):
+    """Build a flat button stylesheet with hover / pressed states."""
+    return f"""
+    QPushButton {{
+        font-size: 14px;
+        font-weight: 600;
+        padding: 9px 16px;
+        background-color: {base};
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+    }}
+    QPushButton:hover {{ background-color: {hover}; }}
+    QPushButton:pressed {{ background-color: {press}; }}
+    """
+
+
+PRIMARY_BTN = _button_style(THEME['primary'], THEME['primary_hover'], THEME['primary_press'])
+DANGER_BTN = _button_style(THEME['danger'], THEME['danger_hover'], THEME['danger_press'])
+
+# Section header: left-aligned bold title, paired with a thin divider (added
+# separately as a QFrame so the rule renders reliably across styles).
+SECTION_HEADER_STYLE = (
+    f"font-size: 14px; font-weight: 700; letter-spacing: 1.5px; color: {THEME['primary']};"
+    "padding: 2px 2px 2px 2px;"
+)
+
+
+def _make_divider():
+    """A thin horizontal rule used under section headers."""
+    line = QFrame()
+    line.setFrameShape(QFrame.HLine)
+    line.setStyleSheet(f"background-color: {THEME['border']}; border: none;")
+    line.setFixedHeight(1)
+    return line
+
+# Card surface for the position tiles and spawn panels.
+def _card_style(object_name):
+    return (
+        f"QFrame#{object_name} {{ background-color: {THEME['card']};"
+        f" border: 1px solid {THEME['border']}; border-radius: 10px; }}"
+    )
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Spawn Configuration")
+        self.setWindowTitle("Workcell Spawn Configuration")
 
         # Set window size
         #self.resize(400, 500)
-        self.setMinimumSize(950, 850)
-        self.setStyleSheet("background-color: #ffffff;")
-        # Create central widget 
+        self.setMinimumSize(970, 1090)
+        self.setStyleSheet(APP_STYLE)
+        # Create central widget
         window = QWidget()
         self.setCentralWidget(window)
 
         # Main layout
         main_layout = QVBoxLayout()
+        main_layout.setContentsMargins(26, 20, 26, 20)
+        main_layout.setSpacing(8)
+
+        # App title bar
+        app_title = QLabel("Workcell Spawn Configuration")
+        app_title.setAlignment(Qt.AlignCenter)
+        app_title.setStyleSheet(
+            f"font-size: 22px; font-weight: 700; color: {THEME['text']};"
+            "padding-bottom: 4px;"
+        )
+        main_layout.addWidget(app_title)
+
+        app_subtitle = QLabel("Assign trolleys to grid positions, then spawn objects into the scene")
+        app_subtitle.setAlignment(Qt.AlignCenter)
+        app_subtitle.setStyleSheet(f"font-size: 13px; color: {THEME['muted']}; padding-bottom: 8px;")
+        main_layout.addWidget(app_subtitle)
 
         # Trolley options for dropdowns
         self.trolley_options = ["-", "toolchanger", "denso", "ur", "arf", "vision", "feeder", "arf_elec"]
@@ -88,17 +198,17 @@ class MainWindow(QMainWindow):
 
         self._load_defaults_from_yaml()
         
-        combobox_label = QLabel("[Configure Spawn Positions]")
-        combobox_label.setAlignment(Qt.AlignCenter)
-        combobox_label.setStyleSheet("font-weight: bold; font-size: 16px; margin-top: 15px; color: #333333;")
+        combobox_label = QLabel("CONFIGURE SPAWN POSITIONS")
+        combobox_label.setStyleSheet(SECTION_HEADER_STYLE)
         main_layout.addWidget(combobox_label)
-        
+        main_layout.addWidget(_make_divider())
+
         # Add spacing between label and grid
-        main_layout.addSpacing(5)
-        
+        main_layout.addSpacing(14)
+
         # Create 3x3 grid layout
         grid_layout = QGridLayout()
-        grid_layout.setSpacing(15)
+        grid_layout.setSpacing(14)
         main_layout.addLayout(grid_layout)
         
         # Store comboboxes and rotation comboboxes by position number
@@ -109,24 +219,26 @@ class MainWindow(QMainWindow):
         position = 1
         for row in range(3):
             for col in range(3):
-                # Create container widget for each position
-                position_widget = QWidget()
-                position_widget.setFixedSize(200, 190)
-                # Add border to create lines between boxes
-                position_widget.setStyleSheet("border: 10px solid #cccccc; background-color: #f0f0f0; padding: 5px;")
+                # Create card container widget for each position
+                position_widget = QFrame()
+                position_widget.setObjectName("posCard")
+                position_widget.setFixedSize(210, 150)
+                position_widget.setStyleSheet(_card_style("posCard"))
                 position_layout = QVBoxLayout()
-                position_layout.setSpacing(5)
-                position_layout.setContentsMargins(1,1,1,1)
+                position_layout.setSpacing(7)
+                position_layout.setContentsMargins(14, 12, 14, 12)
 
                 # Position number label
                 position_label = QLabel(f"Position {position}")
-                position_label.setAlignment(Qt.AlignCenter)
-                position_label.setStyleSheet("font-weight: bold; font-size: 18px; border: none; background: transparent; color: #000000;")
+                position_label.setStyleSheet(
+                    f"font-weight: 700; font-size: 15px; border: none;"
+                    f" background: transparent; color: {THEME['text']};"
+                )
                 position_layout.addWidget(position_label)
 
                 # Dropdown for trolley selection
                 combobox = QComboBox()
-                combobox.setStyleSheet("border: 8px solid #cccccc; background-color: #f0f0f0; font-size: 18px;")
+                combobox.setStyleSheet(COMBO_STYLE)
                 combobox.addItems(self.trolley_options)
 
                 # Connect signal to prevent duplicate selections (before setting default)
@@ -136,15 +248,17 @@ class MainWindow(QMainWindow):
 
                 # Rotation (yaw) dropdown
                 rotation_row = QHBoxLayout()
-                rotation_row.setSpacing(5)
+                rotation_row.setSpacing(8)
                 rotation_row.setContentsMargins(0, 0, 0, 0)
 
                 rotation_label = QLabel("Rotation")
-                rotation_label.setStyleSheet("font-weight: bold; font-size: 14px; border: none; background: transparent; color: #000000;")
+                rotation_label.setStyleSheet(
+                    f"font-size: 13px; border: none; background: transparent; color: {THEME['muted']};"
+                )
                 rotation_row.addWidget(rotation_label)
 
                 rotation_combobox = QComboBox()
-                rotation_combobox.setStyleSheet("border: 4px solid #cccccc; background-color: #f0f0f0; font-size: 14px;")
+                rotation_combobox.setStyleSheet(COMBO_STYLE)
                 rotation_combobox.addItems(ROTATION_LABELS)
                 rotation_combobox.currentTextChanged.connect(
                     lambda text, pos=position: self.on_rotation_changed(pos, text)
@@ -190,84 +304,164 @@ class MainWindow(QMainWindow):
 
         # Button layout
         button_layout = QHBoxLayout()
-        button_layout.setSpacing(30)
+        button_layout.setSpacing(16)
         # Stretch on both sides centers the two buttons horizontally.
         button_layout.addStretch()
 
         # Configure button
         configure_button = QPushButton("Configure")
         configure_button.clicked.connect(self.configure_button_clicked)
-        configure_button.setStyleSheet("font-size: 18px; padding: 10px; background-color: #cce5ff; color: black; border: none; border-radius: 5px;")
-        configure_button.setFixedSize(300, 40)
+        configure_button.setStyleSheet(PRIMARY_BTN)
+        configure_button.setFixedSize(300, 44)
         button_layout.addWidget(configure_button)
 
         # Reset button
         reset_button = QPushButton("Reset to Default")
         reset_button.clicked.connect(self.reset_to_default)
-        reset_button.setStyleSheet("font-size: 18px; padding: 10px; background-color: #ffcccc; color: black; border: none; border-radius: 5px;")
-        reset_button.setFixedSize(300, 40)
+        reset_button.setStyleSheet(DANGER_BTN)
+        reset_button.setFixedSize(300, 44)
         button_layout.addWidget(reset_button)
         button_layout.addStretch()
-        
-        main_layout.addSpacing(5)
-        main_layout.addLayout(button_layout)
-        main_layout.addSpacing(10)
-        
-        # Spawn Objects section: one header, then two columns side by side, each
-        # with its own title above a dropdown + Spawn button.
-        spawn_objects_label = QLabel("[Spawn Objects]")
-        spawn_objects_label.setAlignment(Qt.AlignCenter)
-        spawn_objects_label.setStyleSheet("font-weight: bold; font-size: 16px; margin-top: 15px; color: #333333;")
-        main_layout.addWidget(spawn_objects_label)
 
-        feeder_combo_style = "font-size: 16px; padding: 6px; max-width: 450px; background-color: #f0f0f0; color: black; border: 1px solid #aaaaaa; border-radius: 5px;"
-        spawn_button_style = "font-size: 16px; padding: 10px; background-color: #cce5ff; color: black; border: none; border-radius: 5px;"
-        # Same red as the "Reset to Default" button, for Clear/delete actions.
-        clear_button_style = "font-size: 16px; padding: 10px; background-color: #ffcccc; color: black; border: none; border-radius: 5px;"
-        column_title_style = "font-weight: bold; font-size: 15px; color: #333333;"
+        main_layout.addSpacing(16)
+        main_layout.addLayout(button_layout)
+        main_layout.addSpacing(22)
+        
+        # Spawn Objects section: one header, then two panels side by side, each
+        # with its own title above dropdowns + Spawn/Clear buttons.
+        spawn_objects_label = QLabel("SPAWN OBJECTS")
+        spawn_objects_label.setStyleSheet(SECTION_HEADER_STYLE)
+        main_layout.addWidget(spawn_objects_label)
+        main_layout.addWidget(_make_divider())
+        main_layout.addSpacing(16)
+
+        # Reusable widget styles, drawn from the shared theme.
+        feeder_combo_style = COMBO_STYLE
+        spawn_button_style = PRIMARY_BTN
+        clear_button_style = DANGER_BTN
+        column_title_style = (
+            f"font-weight: 700; font-size: 16px; color: {THEME['text']};"
+            " background: transparent; padding-bottom: 4px;"
+        )
+        subgroup_title_style = (
+            f"font-weight: 700; font-size: 11px; letter-spacing: 1px;"
+            f" color: {THEME['muted']}; background: transparent;"
+        )
 
         spawn_objects_layout = QHBoxLayout()
-        spawn_objects_layout.setSpacing(40)
+        spawn_objects_layout.setSpacing(24)
         spawn_objects_layout.setContentsMargins(0, 5, 0, 0)
-        # Stretch on both sides centers the two columns horizontally.
+        # Stretch on both sides centers the two panels horizontally.
         spawn_objects_layout.addStretch()
 
         # --- Feeder column ---
-        # One button spawns the full feeder load: 7 trays stacked from the top
-        # (heater 1-3, elec 1-3, kiro), each with its own components. "Clear"
-        # removes whatever was spawned. Re-spawning clears first automatically.
+        # Per-floor spawning: pick a tray type and a floor (1-7), then "Spawn
+        # Tray" places it on that floor. A floor that already holds a tray is
+        # rejected; the same tray type may be spawned on several floors. "Spawn
+        # All" fills every empty floor with its default tray; "Clear All" removes
+        # everything. Floor occupancy is tracked in self.feeder_floor_occupants.
         feeder_column = QVBoxLayout()
-        feeder_column.setSpacing(5)
+        feeder_column.setSpacing(10)
+        feeder_column.setContentsMargins(18, 16, 18, 16)
 
         feeder_title = QLabel("Feeder")
         feeder_title.setAlignment(Qt.AlignCenter)
         feeder_title.setStyleSheet(column_title_style)
         feeder_column.addWidget(feeder_title)
 
+        # ---- Group 1: spawn one tray onto one floor -------------------------
+        by_floor_title = QLabel("SPAWN BY FLOOR")
+        by_floor_title.setStyleSheet(subgroup_title_style)
+        feeder_column.addWidget(by_floor_title)
+
+        # Tray-type dropdown + floor dropdown.
+        feeder_combo_row = QHBoxLayout()
+        feeder_combo_row.setSpacing(10)
+
+        self.feeder_type_combobox = QComboBox()
+        self.feeder_type_combobox.addItems(list(self.FEEDER_TRAY_TYPES.keys()))
+        self.feeder_type_combobox.setStyleSheet(feeder_combo_style)
+        self.feeder_type_combobox.setFixedWidth(200)
+        feeder_combo_row.addWidget(self.feeder_type_combobox)
+
+        floor_label = QLabel("Floor")
+        floor_label.setStyleSheet(f"font-weight: 600; font-size: 14px; color: {THEME['muted']};")
+        feeder_combo_row.addWidget(floor_label)
+
+        self.feeder_floor_combobox = QComboBox()
+        self.feeder_floor_combobox.addItems([str(f) for f in self.FEEDER_FLOORS])
+        self.feeder_floor_combobox.setStyleSheet(feeder_combo_style)
+        self.feeder_floor_combobox.setFixedWidth(70)
+        feeder_combo_row.addWidget(self.feeder_floor_combobox)
+        feeder_combo_row.addStretch()
+
+        feeder_column.addLayout(feeder_combo_row)
+
+        # Spawn / clear for the selected floor.
         feeder_row = QHBoxLayout()
         feeder_row.setSpacing(10)
 
-        feeder_spawn_button = QPushButton("Spawn")
-        feeder_spawn_button.clicked.connect(self.spawn_all_feeder)
+        feeder_spawn_button = QPushButton("Spawn Tray")
+        feeder_spawn_button.clicked.connect(self.spawn_feeder_tray)
         feeder_spawn_button.setStyleSheet(spawn_button_style)
         feeder_spawn_button.setFixedWidth(180)
         feeder_row.addWidget(feeder_spawn_button)
 
-        feeder_clear_button = QPushButton("Clear")
-        feeder_clear_button.clicked.connect(self.delete_feeder_objects)
-        feeder_clear_button.setStyleSheet(clear_button_style)
-        feeder_clear_button.setFixedWidth(120)
-        feeder_row.addWidget(feeder_clear_button)
+        feeder_clear_floor_button = QPushButton("Clear Floor")
+        feeder_clear_floor_button.clicked.connect(self.clear_feeder_floor)
+        feeder_clear_floor_button.setStyleSheet(clear_button_style)
+        feeder_clear_floor_button.setFixedWidth(120)
+        feeder_row.addWidget(feeder_clear_floor_button)
+        feeder_row.addStretch()
 
         feeder_column.addLayout(feeder_row)
-        spawn_objects_layout.addLayout(feeder_column)
+
+        # Divider between the per-floor group and the all-floors group.
+        feeder_column.addSpacing(6)
+        feeder_column.addWidget(_make_divider())
+        feeder_column.addSpacing(6)
+
+        # ---- Group 2: fill / clear every floor at once ----------------------
+        all_floors_title = QLabel("ALL FLOORS")
+        all_floors_title.setStyleSheet(subgroup_title_style)
+        feeder_column.addWidget(all_floors_title)
+
+        all_floors_hint = QLabel("Fills every empty floor with its default tray.")
+        all_floors_hint.setStyleSheet(f"font-size: 12px; color: {THEME['muted']}; background: transparent;")
+        feeder_column.addWidget(all_floors_hint)
+
+        feeder_all_row = QHBoxLayout()
+        feeder_all_row.setSpacing(10)
+
+        feeder_spawn_all_button = QPushButton("Spawn All")
+        feeder_spawn_all_button.clicked.connect(self.spawn_all_feeder)
+        feeder_spawn_all_button.setStyleSheet(spawn_button_style)
+        feeder_spawn_all_button.setFixedWidth(180)
+        feeder_all_row.addWidget(feeder_spawn_all_button)
+
+        feeder_clear_all_button = QPushButton("Clear All")
+        feeder_clear_all_button.clicked.connect(self.delete_feeder_objects)
+        feeder_clear_all_button.setStyleSheet(clear_button_style)
+        feeder_clear_all_button.setFixedWidth(120)
+        feeder_all_row.addWidget(feeder_clear_all_button)
+        feeder_all_row.addStretch()
+
+        feeder_column.addLayout(feeder_all_row)
+
+        feeder_card = QFrame()
+        feeder_card.setObjectName("panelCard")
+        feeder_card.setStyleSheet(_card_style("panelCard"))
+        feeder_card.setFixedWidth(440)
+        feeder_card.setLayout(feeder_column)
+        spawn_objects_layout.addWidget(feeder_card)
 
         # --- Tooltip + Toolchanger column ---
         # Two comboboxes side by side: gripper (rides the UR quickchanger; the
         # other gripper stays on the rack) and tooltip selection. Spawn/Clear
         # buttons sit below. GRIPPER_ENTITY maps gripper labels to SDF/entity names.
         tooltip_column = QVBoxLayout()
-        tooltip_column.setSpacing(5)
+        tooltip_column.setSpacing(10)
+        tooltip_column.setContentsMargins(18, 16, 18, 16)
 
         tooltip_title = QLabel("Tooltip + Toolchanger")
         tooltip_title.setAlignment(Qt.AlignCenter)
@@ -309,10 +503,20 @@ class MainWindow(QMainWindow):
         tooltip_button_row.addWidget(tooltip_clear_button)
 
         tooltip_column.addLayout(tooltip_button_row)
-        spawn_objects_layout.addLayout(tooltip_column)
+        # Keep content pinned to the top; the card may stretch taller to match
+        # the (taller) feeder card beside it.
+        tooltip_column.addStretch()
+
+        tooltip_card = QFrame()
+        tooltip_card.setObjectName("panelCard")
+        tooltip_card.setStyleSheet(_card_style("panelCard"))
+        tooltip_card.setFixedWidth(440)
+        tooltip_card.setLayout(tooltip_column)
+        spawn_objects_layout.addWidget(tooltip_card)
         spawn_objects_layout.addStretch()
 
         main_layout.addLayout(spawn_objects_layout)
+        main_layout.addStretch()
 
         # Path to shell scripts
         self.scripts_dir = workspace_root / "src" / "descriptions" / "urdf" / "objects"
@@ -320,7 +524,8 @@ class MainWindow(QMainWindow):
         # Track spawned objects
         self.tooltip_spawned = None  # None, "tooltip1", "tooltip2", or "tooltip3"
         self.tooltip_gripper_spawned = None  # entity name of gripper mounted on the arm ("krvg"/"koras_2f100")
-        self.feeder_spawned = False  # True once the full feeder load is spawned
+        # floor number (1-7) -> tray-type label currently spawned on that floor.
+        self.feeder_floor_occupants = {}
         
         window.setLayout(main_layout)
         self.show()
@@ -479,13 +684,13 @@ class MainWindow(QMainWindow):
         if configured_positions:
             message = "\n".join(configured_positions)
             if len(configured_positions) <= 0:
-                message += "\n\nNeed to configure other positions as well"
+                message += "\n\nConfigure other positions too"
                 QMessageBox.warning(self, "Not Configured", message)
             else:
-                message += "\n\nConfiguration saved to trolley_positions.yaml"
-                QMessageBox.information(self, "Configured", "All positions configured" + "\n\n" + message)
+                message += "\n\nSaved to YAML"
+                QMessageBox.information(self, "Configured", "All configured\n\n" + message)
         else:
-            message = "No trolleys assigned to any position"
+            message = "No trolleys assigned"
             QMessageBox.warning(self, "Not Configured", message)
 
         # Print to console
@@ -533,93 +738,151 @@ class MainWindow(QMainWindow):
         for pos in self.position_comboboxes:
             self._sync_rotation_combobox(pos)
 
-        QMessageBox.information(self, "Reset", "All positions reset to default assignments")
+        QMessageBox.information(self, "Reset", "Positions reset to defaults")
 
-    # All entities spawned by the single feeder load: 7 stacked trays
-    # (mobile_tray1..7) plus every component that rides on them. Kept in sync with
-    # spawn_feeder_all.sh so Clear/re-spawn can remove the whole set.
-    FEEDER_TRAYS = [f"mobile_tray{i}" for i in range(1, 8)]
-    FEEDER_HEATER_OBJECTS = [
-        "heating_plate_cover_1st", "heating_plate_cover_2nd",
-        "heating_plate_1st", "heating_plate_2nd",
-        "heating_plate_cover3",
-    ]
-    FEEDER_ELEC_OBJECTS = (
-        ["mccb_abe_32b_30a", "pdu_sps25_m66xm4_1", "pdu_sps25_m66xm4_2",
-         "noise_filter_rms_2030_din", "plug_socket_drc_220v_16a", "busbar_6p"]
-        + [f"single_mc_gmc_{n}" for n in (1, 2, 3)]
-        + ["smps_wdr_120_24v"]
-        + ["tb_jotn_15a"]
-    )
-    FEEDER_KIRO_OBJECTS = [
-        "relay_part_01", "relay_part_02", "relay_part_02_2",
-        "relay_part_03", "relay_part_04", "relay_part_04_2",
-    ]
+    # Feeder tray catalogue: selectable tray-type label -> (script code, [component
+    # base entity names]). The tray model itself is always spawned as
+    # "mobile_tray_f<floor>"; components get a matching "_f<floor>" suffix (see
+    # spawn_feeder_tray.sh), so the same tray type can sit on several floors at
+    # once without entity-name collisions.
+    FEEDER_TRAY_TYPES = {
+        "Heater - Covers": ("h1", ["heating_plate_cover_1st", "heating_plate_cover_2nd"]),
+        "Heater - Plates": ("h2", ["heating_plate_1st", "heating_plate_2nd"]),
+        "Heater - Cover3": ("h3", ["heating_plate_cover3"]),
+        "Elec - MCCB/PDU": ("e1", ["mccb_abe_32b_30a", "pdu_sps25_m66xm4_1",
+                                    "pdu_sps25_m66xm4_2", "noise_filter_rms_2030_din",
+                                    "plug_socket_drc_220v_16a", "busbar_6p"]),
+        "Elec - MC/SMPS":  ("e2", ["single_mc_gmc_1", "single_mc_gmc_2",
+                                    "single_mc_gmc_3", "smps_wdr_120_24v"]),
+        "Elec - Terminal": ("e3", ["tb_jotn_15a"]),
+        "Kiro - Relays":   ("r1", ["relay_part_01", "relay_part_02", "relay_part_02_2",
+                                    "relay_part_03", "relay_part_04", "relay_part_04_2"]),
+    }
 
-    @property
-    def FEEDER_ENTITIES(self):
-        return (self.FEEDER_TRAYS + self.FEEDER_HEATER_OBJECTS
-                + self.FEEDER_ELEC_OBJECTS + self.FEEDER_KIRO_OBJECTS)
+    # Feeder floors (slots), numbered from the top of the feeder down.
+    FEEDER_FLOORS = [1, 2, 3, 4, 5, 6, 7]
 
-    def _despawn_current_feeder(self):
-        """Delete the full feeder load so it can be spawned again cleanly."""
-        if not self.feeder_spawned:
-            return
-        print("Removing current feeder load...")
-        self._delete_entities(self.FEEDER_ENTITIES)
-        self.feeder_spawned = False
+    # Default tray type on each floor, used by "Spawn All" (matches the historical
+    # spawn_feeder_all.sh layout: heater x3, elec x3, kiro).
+    FEEDER_DEFAULT_FLOOR_TYPE = {
+        1: "Heater - Covers", 2: "Heater - Plates", 3: "Heater - Cover3",
+        4: "Elec - MCCB/PDU", 5: "Elec - MC/SMPS", 6: "Elec - Terminal",
+        7: "Kiro - Relays",
+    }
 
-    def delete_feeder_objects(self):
-        """Delete the full feeder load if it is currently spawned."""
-        if not self.feeder_spawned:
-            QMessageBox.information(self, "Nothing to Delete", "No feeder objects are currently spawned.")
-            return
-        self._despawn_current_feeder()
-        QMessageBox.information(self, "Deleted", "All feeder objects deleted.")
-        print("Deleted all feeder objects")
+    def _feeder_floor_entities(self, label, floor):
+        """Entity names spawned for tray `label` on `floor` (tray + components)."""
+        _code, components = self.FEEDER_TRAY_TYPES[label]
+        suffix = f"_f{floor}"
+        return [f"mobile_tray{suffix}"] + [f"{c}{suffix}" for c in components]
 
-    def spawn_all_feeder(self):
-        """Spawn the full feeder load (7 trays + components) via spawn_feeder_all.sh.
-
-        If a load is already spawned, remove it first so entity names don't collide,
-        then spawn a fresh one."""
-        replacing = self.feeder_spawned
-        if replacing:
-            self._despawn_current_feeder()
-
-        script_path = self.scripts_dir / "spawn_feeder_all.sh"
+    def _run_feeder_tray_script(self, label, floor):
+        """Spawn tray `label` on `floor` via spawn_feeder_tray.sh (blocking).
+        Returns True on success; shows an error dialog and returns False otherwise."""
+        code, _ = self.FEEDER_TRAY_TYPES[label]
+        script_path = self.scripts_dir / "spawn_feeder_tray.sh"
         if not script_path.exists():
             QMessageBox.critical(self, "Error", f"Script not found: {script_path}")
-            return
-
+            return False
         try:
-            print(f"Running: {script_path}")
+            print(f"Running: {script_path} {code} {floor}")
             process = subprocess.Popen(
-                ['bash', str(script_path)],
+                ['bash', str(script_path), code, str(floor)],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 cwd=str(self.scripts_dir)
             )
-            process.wait()  # Wait for all objects to spawn and attach
-            self.feeder_spawned = True
-            complete_msg = ("Re-spawned all feeder objects (7 trays + components)"
-                            if replacing else
-                            "All feeder objects spawned successfully (7 trays + components)")
-            QMessageBox.information(self, "Spawn Complete", complete_msg)
-            print("Spawned Objects: full feeder load")
+            process.wait()  # Wait for the tray to spawn and attach
+            return True
         except Exception as e:
             error_msg = f"Error running script: {str(e)}"
             print(error_msg)
             QMessageBox.critical(self, "Error", error_msg)
+            return False
+
+    def spawn_feeder_tray(self):
+        """Spawn the tray type selected in the dropdown onto the selected floor.
+        Rejects the spawn if that floor already holds a tray."""
+        label = self.feeder_type_combobox.currentText()
+        floor = int(self.feeder_floor_combobox.currentText())
+
+        if floor in self.feeder_floor_occupants:
+            QMessageBox.warning(
+                self, "Floor Occupied",
+                f"Floor {floor} already holds a tray "
+                f"('{self.feeder_floor_occupants[floor]}').\n"
+                "Clear that floor before spawning another tray on it."
+            )
+            return
+
+        if not self._run_feeder_tray_script(label, floor):
+            return
+        self.feeder_floor_occupants[floor] = label
+        QMessageBox.information(
+            self, "Spawn Complete", f"'{label}' spawned on floor {floor}."
+        )
+        print(f"Spawned feeder tray '{label}' on floor {floor}")
+
+    def clear_feeder_floor(self):
+        """Delete whatever tray is on the selected floor."""
+        floor = int(self.feeder_floor_combobox.currentText())
+        label = self.feeder_floor_occupants.get(floor)
+        if label is None:
+            QMessageBox.information(self, "Nothing to Clear", f"Floor {floor} is empty.")
+            return
+        self._delete_entities(self._feeder_floor_entities(label, floor))
+        del self.feeder_floor_occupants[floor]
+        QMessageBox.information(self, "Cleared", f"Floor {floor} ('{label}') cleared.")
+        print(f"Cleared feeder floor {floor} ('{label}')")
+
+    def spawn_all_feeder(self):
+        """Spawn each floor's default tray on every floor that is still empty.
+        Floors that already hold a tray are left untouched."""
+        to_spawn = [(f, lbl) for f, lbl in sorted(self.FEEDER_DEFAULT_FLOOR_TYPE.items())
+                    if f not in self.feeder_floor_occupants]
+        if not to_spawn:
+            QMessageBox.information(
+                self, "Already Full",
+                "All 7 floors already hold trays. Clear some floors first."
+            )
+            return
+
+        spawned = []
+        for floor, label in to_spawn:
+            if not self._run_feeder_tray_script(label, floor):
+                break
+            self.feeder_floor_occupants[floor] = label
+            spawned.append(floor)
+
+        if spawned:
+            QMessageBox.information(
+                self, "Spawn Complete",
+                "Spawned default trays on floors: "
+                + ", ".join(str(f) for f in spawned)
+            )
+            print(f"Spawned default feeder trays on floors {spawned}")
+
+    def delete_feeder_objects(self):
+        """Delete every spawned feeder tray across all floors."""
+        if not self.feeder_floor_occupants:
+            QMessageBox.information(self, "Nothing to Delete", "No feeder trays spawned.")
+            return
+        names = []
+        for floor, label in self.feeder_floor_occupants.items():
+            names += self._feeder_floor_entities(label, floor)
+        self._delete_entities(names)
+        self.feeder_floor_occupants.clear()
+        QMessageBox.information(self, "Deleted", "All feeder trays deleted.")
+        print("Deleted all feeder objects")
 
     def delete_tooltips(self):
         """Delete whichever tooltip + toolchanger tool set is currently spawned."""
         if self.tooltip_spawned is None:
-            QMessageBox.information(self, "Nothing to Delete", "No tooltips are currently spawned.")
+            QMessageBox.information(self, "Nothing to Delete", "No tooltips spawned.")
             return
         removed = self.tooltip_spawned
         self._despawn_current_tooltip()
-        QMessageBox.information(self, "Deleted", f"All {removed.capitalize()} + Toolchanger Tools deleted.")
+        QMessageBox.information(self, "Deleted", f"{removed.capitalize()} + tools deleted.")
         print(f"Deleted tooltip objects: {removed}")
 
     def spawn_tooltip1(self):
@@ -809,7 +1072,7 @@ class MainWindow(QMainWindow):
         if self.tooltip_spawned == tooltip_id and self.tooltip_gripper_spawned == gripper_entity:
             QMessageBox.information(
                 self, "Already Spawned",
-                f"{tooltip_name} with {gripper_label} is already spawned."
+                f"{tooltip_name} + {gripper_label} already spawned."
             )
             return
 
@@ -903,7 +1166,7 @@ class MainWindow(QMainWindow):
             if success1 and success2:
                 QMessageBox.information(
                     self, "Spawn Complete",
-                    f"{prefix} + Toolchanger Tools spawned and both tooltips attached to adapters."
+                    f"{prefix} + tools spawned, tooltips attached."
                 )
             else:
                 failed = []
@@ -913,7 +1176,7 @@ class MainWindow(QMainWindow):
                     failed.append(f"{tooltip2_entity} → adapter 2")
                 QMessageBox.warning(
                     self, "Spawned, Attach Incomplete",
-                    f"{prefix} + Toolchanger Tools spawned, but failed to attach:\n"
+                    f"{prefix} + tools spawned. Failed to attach:\n"
                     + "\n".join(failed)
                 )
         except Exception as e:
